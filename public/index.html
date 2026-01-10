@@ -91,6 +91,52 @@
             color: var(--ink-light);
         }
 
+        .top-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .toggle-group label {
+            color: var(--ink-light);
+        }
+
+        .toggle-btn {
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            border: 1px solid var(--ink);
+            background: var(--parchment-light);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn:first-of-type {
+            border-radius: 3px 0 0 3px;
+        }
+
+        .toggle-btn:last-of-type {
+            border-radius: 0 3px 3px 0;
+        }
+
+        .toggle-btn.active {
+            background: var(--ink);
+            color: var(--parchment);
+        }
+
+        .toggle-btn:hover:not(.active) {
+            background: var(--parchment-dark);
+        }
+
         .main-content {
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -228,6 +274,7 @@
 
         .schedule-grid {
             overflow-x: auto;
+            user-select: none;
         }
 
         .grid-container {
@@ -236,34 +283,71 @@
             min-width: fit-content;
         }
 
-        .grid-header {
+        .month-header {
             font-family: 'Cinzel', serif;
-            font-weight: 600;
+            font-weight: 400;
             text-align: center;
-            padding: 0.5rem 0.3rem;
+            padding: 0.4rem;
             background: var(--ink);
             color: var(--parchment);
+            font-size: 1.1rem;
+            opacity: 0.7;
+            letter-spacing: 0.1em;
+        }
+
+        .grid-header {
+            text-align: center;
+            padding: 0.4rem 0.2rem;
+            background: var(--ink);
+            color: var(--parchment);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 70px;
+        }
+
+        .grid-header .day-name {
+            font-family: 'Crimson Text', serif;
             font-size: 0.75rem;
+            font-weight: 400;
+            opacity: 0.85;
+            text-transform: capitalize;
+        }
+
+        .grid-header .day-number {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            font-weight: 600;
         }
 
         .time-label {
             font-family: 'Cinzel', serif;
             font-weight: 600;
-            padding: 0.3rem;
+            padding: 0.3rem 0.5rem;
             background: var(--ink);
             color: var(--parchment);
-            font-size: 0.7rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            min-width: 60px;
+        }
+
+        .time-label .hour {
+            font-size: 1rem;
+        }
+
+        .time-label .ampm {
+            font-size: 0.65rem;
+            margin-left: 1px;
+            opacity: 0.8;
         }
 
         .time-slot {
-            min-width: 60px;
+            min-width: 70px;
             min-height: 40px;
             border: 1px solid var(--ink-light);
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.1s ease;
             position: relative;
             display: flex;
             align-items: center;
@@ -271,9 +355,9 @@
         }
 
         .time-slot:hover {
-            transform: scale(1.05);
+            transform: scale(1.03);
             z-index: 10;
-            box-shadow: 0 4px 15px var(--shadow);
+            box-shadow: 0 2px 10px var(--shadow);
         }
 
         .time-slot.empty { background: rgba(255, 255, 255, 0.5); }
@@ -283,6 +367,7 @@
         .time-slot.level-4 { background: #2d7d2d; }
         .time-slot.level-5 { background: var(--available); }
         .time-slot.available { background: var(--available); }
+        .time-slot.dragging { background: var(--available-light); }
 
         .time-slot.has-note::after {
             content: '📜';
@@ -421,6 +506,20 @@
             font-size: 0.85rem;
         }
 
+        .instructions strong {
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .instructions ul {
+            margin: 0;
+            padding-left: 1.2rem;
+        }
+
+        .instructions li {
+            margin: 0.3rem 0;
+        }
+
         .share-box {
             background: var(--parchment-light);
             border: 2px dashed var(--gold);
@@ -547,30 +646,139 @@
     <div id="root"></div>
     
     <script type="text/babel">
-        const { useState, useEffect, useCallback } = React;
+        const { useState, useEffect, useCallback, useRef } = React;
+
+        // Translations
+        const translations = {
+            en: {
+                questBoard: "Quest Board",
+                tagline: "Schedule your next adventure with your party",
+                timeFormat: "Time",
+                language: "Language",
+                createNewQuest: "Create New Quest",
+                eventName: "Event Name",
+                eventNamePlaceholder: "e.g., D&D Session 3",
+                description: "Description (optional)",
+                descriptionPlaceholder: "e.g., Continuing the Velhmael campaign...",
+                selectDates: "Select Possible Dates",
+                selected: "selected",
+                startTime: "Start Time",
+                endTime: "End Time",
+                createQuestBoard: "Create Quest Board",
+                creating: "Creating...",
+                adventurer: "Adventurer",
+                joinQuest: "Join Quest",
+                joinPrompt: "Join the quest to mark your availability",
+                group: "Group",
+                edit: "Edit",
+                party: "Party",
+                noAdventurers: "No adventurers yet",
+                inviteParty: "Invite your party!",
+                copyLink: "Copy Link",
+                copied: "Copied!",
+                all: "All",
+                most: "Most",
+                some: "Some",
+                available: "Available",
+                hasNote: "Has note",
+                enterName: "Enter Your Name",
+                howShouldPartyKnow: "How should the party know you?",
+                yourName: "Your name...",
+                cancel: "Cancel",
+                addNote: "Add a Note",
+                yourNote: "Your note",
+                notePlaceholder: "e.g., Joining remotely, might need a dinner break...",
+                saveNote: "Save Note",
+                saved: "Saved!",
+                noOneAvailable: "No one available yet",
+                eventNotFound: "Event not found",
+                loadingDice: "Rolling for initiative...",
+                instructionsTitle: "Instructions:",
+                instruction1: "Click slots to mark availability",
+                instruction2: "Right-click (or long-press) available slots to add notes",
+                instruction3: "Notes appear as 📜 icons",
+                months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+                days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                daysShort: ["S", "M", "T", "W", "T", "F", "S"],
+                ordinal: (n) => {
+                    const s = ["th", "st", "nd", "rd"];
+                    const v = n % 100;
+                    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+                }
+            },
+            sr: {
+                questBoard: "Tabla Zadataka",
+                tagline: "Zakažite svoju sledeću avanturu sa svojom družinom",
+                timeFormat: "Vreme",
+                language: "Jezik",
+                createNewQuest: "Kreiraj Novi Zadatak",
+                eventName: "Naziv Događaja",
+                eventNamePlaceholder: "npr., D&D Sesija 3",
+                description: "Opis (opciono)",
+                descriptionPlaceholder: "npr., Nastavljamo Velhmael kampanju...",
+                selectDates: "Izaberi Moguće Datume",
+                selected: "izabrano",
+                startTime: "Početak",
+                endTime: "Kraj",
+                createQuestBoard: "Kreiraj Tablu",
+                creating: "Kreiranje...",
+                adventurer: "Avanturista",
+                joinQuest: "Pridruži se",
+                joinPrompt: "Pridruži se zadatku da označiš dostupnost",
+                group: "Grupa",
+                edit: "Izmeni",
+                party: "Družina",
+                noAdventurers: "Još nema avanturista",
+                inviteParty: "Pozovi družinu!",
+                copyLink: "Kopiraj Link",
+                copied: "Kopirano!",
+                all: "Svi",
+                most: "Većina",
+                some: "Neki",
+                available: "Dostupan",
+                hasNote: "Ima belešku",
+                enterName: "Unesi Svoje Ime",
+                howShouldPartyKnow: "Kako da te družina zove?",
+                yourName: "Tvoje ime...",
+                cancel: "Otkaži",
+                addNote: "Dodaj Belešku",
+                yourNote: "Tvoja beleška",
+                notePlaceholder: "npr., Priključujem se online, možda ću imati pauzu za večeru...",
+                saveNote: "Sačuvaj",
+                saved: "Sačuvano!",
+                noOneAvailable: "Niko još nije dostupan",
+                eventNotFound: "Događaj nije pronađen",
+                loadingDice: "Bacamo kockice...",
+                instructionsTitle: "Uputstva:",
+                instruction1: "Klikni na polja da označiš dostupnost",
+                instruction2: "Desni klik (ili dugi pritisak) na dostupna polja za beleške",
+                instruction3: "Beleške se prikazuju kao 📜 ikone",
+                months: ["Januar", "Februar", "Mart", "April", "Maj", "Jun", "Jul", "Avgust", "Septembar", "Oktobar", "Novembar", "Decembar"],
+                days: ["Nedelja", "Ponedeljak", "Utorak", "Sreda", "Četvrtak", "Petak", "Subota"],
+                daysShort: ["N", "P", "U", "S", "Č", "P", "S"],
+                ordinal: (n) => n + "."
+            }
+        };
 
         // Utility functions
-        function formatDate(dateStr) {
-            const date = new Date(dateStr + 'T12:00:00');
-            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            return `${days[date.getDay()]} ${months[date.getMonth()]} ${date.getDate()}`;
-        }
-
-        function formatHour(hour) {
-            if (hour === 0) return '12AM';
-            if (hour === 12) return '12PM';
-            if (hour < 12) return `${hour}AM`;
-            return `${hour - 12}PM`;
-        }
-
         function getSlotKey(date, hour) {
             return `${date}-${hour}`;
         }
 
-        // Router component
         function App() {
             const [route, setRoute] = useState({ page: 'home', params: {} });
+            const [lang, setLang] = useState(() => localStorage.getItem('quest-board-lang') || 'en');
+            const [timeFormat, setTimeFormat] = useState(() => localStorage.getItem('quest-board-time') || '12');
+
+            const t = translations[lang];
+
+            useEffect(() => {
+                localStorage.setItem('quest-board-lang', lang);
+            }, [lang]);
+
+            useEffect(() => {
+                localStorage.setItem('quest-board-time', timeFormat);
+            }, [timeFormat]);
 
             useEffect(() => {
                 function handleRoute() {
@@ -595,18 +803,50 @@
             return (
                 <div className="app-container">
                     <header className="header">
-                        <h1><a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>Quest Board</a></h1>
-                        <p>Schedule your next adventure with your party</p>
+                        <h1><a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>{t.questBoard}</a></h1>
+                        <p>{t.tagline}</p>
+                        <div className="top-controls">
+                            <div className="toggle-group">
+                                <label>{t.timeFormat}:</label>
+                                <button 
+                                    className={`toggle-btn ${timeFormat === '12' ? 'active' : ''}`}
+                                    onClick={() => setTimeFormat('12')}
+                                >
+                                    12h
+                                </button>
+                                <button 
+                                    className={`toggle-btn ${timeFormat === '24' ? 'active' : ''}`}
+                                    onClick={() => setTimeFormat('24')}
+                                >
+                                    24h
+                                </button>
+                            </div>
+                            <div className="toggle-group">
+                                <label>{t.language}:</label>
+                                <button 
+                                    className={`toggle-btn ${lang === 'en' ? 'active' : ''}`}
+                                    onClick={() => setLang('en')}
+                                >
+                                    EN
+                                </button>
+                                <button 
+                                    className={`toggle-btn ${lang === 'sr' ? 'active' : ''}`}
+                                    onClick={() => setLang('sr')}
+                                >
+                                    SR
+                                </button>
+                            </div>
+                        </div>
                     </header>
 
-                    {route.page === 'home' && <CreateEventPage navigate={navigate} />}
-                    {route.page === 'event' && <EventPage eventId={route.params.eventId} />}
+                    {route.page === 'home' && <CreateEventPage navigate={navigate} t={t} lang={lang} timeFormat={timeFormat} />}
+                    {route.page === 'event' && <EventPage eventId={route.params.eventId} t={t} lang={lang} timeFormat={timeFormat} />}
                 </div>
             );
         }
 
         // Create Event Page
-        function CreateEventPage({ navigate }) {
+        function CreateEventPage({ navigate, t, lang, timeFormat }) {
             const [name, setName] = useState('');
             const [description, setDescription] = useState('');
             const [selectedDates, setSelectedDates] = useState([]);
@@ -619,6 +859,16 @@
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
+            const formatHourOption = (hour) => {
+                if (timeFormat === '24') {
+                    return `${hour.toString().padStart(2, '0')}:00`;
+                }
+                if (hour === 0) return '12:00 AM';
+                if (hour === 12) return '12:00 PM';
+                if (hour < 12) return `${hour}:00 AM`;
+                return `${hour - 12}:00 PM`;
+            };
+
             const getDaysInMonth = (date) => {
                 const year = date.getFullYear();
                 const month = date.getMonth();
@@ -626,12 +876,10 @@
                 const lastDay = new Date(year, month + 1, 0);
                 const days = [];
                 
-                // Add empty cells for days before the first day
                 for (let i = 0; i < firstDay.getDay(); i++) {
                     days.push(null);
                 }
                 
-                // Add all days in the month
                 for (let d = 1; d <= lastDay.getDate(); d++) {
                     days.push(new Date(year, month, d));
                 }
@@ -652,7 +900,7 @@
             const handleSubmit = async (e) => {
                 e.preventDefault();
                 if (!name.trim() || selectedDates.length === 0) {
-                    setError('Please enter a name and select at least one date');
+                    setError(lang === 'sr' ? 'Molimo unesite naziv i izaberite bar jedan datum' : 'Please enter a name and select at least one date');
                     return;
                 }
 
@@ -679,46 +927,46 @@
                         setError(data.error || 'Failed to create event');
                     }
                 } catch (err) {
-                    setError('Network error. Please try again.');
+                    setError(lang === 'sr' ? 'Greška mreže. Pokušajte ponovo.' : 'Network error. Please try again.');
                 } finally {
                     setLoading(false);
                 }
             };
 
             const days = getDaysInMonth(currentMonth);
-            const monthName = currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+            const monthName = t.months[currentMonth.getMonth()] + ' ' + currentMonth.getFullYear();
 
             return (
                 <div className="center-panel">
                     <div className="panel">
-                        <h2>📜 Create New Quest</h2>
+                        <h2>📜 {t.createNewQuest}</h2>
                         
                         {error && <div className="error-message">{error}</div>}
                         
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
-                                <label>Event Name *</label>
+                                <label>{t.eventName} *</label>
                                 <input 
                                     type="text" 
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder="e.g., D&D Session 3"
+                                    placeholder={t.eventNamePlaceholder}
                                     required
                                 />
                             </div>
 
                             <div className="form-group">
-                                <label>Description (optional)</label>
+                                <label>{t.description}</label>
                                 <textarea 
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
-                                    placeholder="e.g., Continuing the Velhmael campaign..."
+                                    placeholder={t.descriptionPlaceholder}
                                     rows={2}
                                 />
                             </div>
 
                             <div className="form-group">
-                                <label>Select Possible Dates * ({selectedDates.length} selected)</label>
+                                <label>{t.selectDates} * ({selectedDates.length} {t.selected})</label>
                                 <div className="month-nav">
                                     <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}>
                                         ◀
@@ -729,7 +977,7 @@
                                     </button>
                                 </div>
                                 <div className="date-picker-grid">
-                                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                                    {t.daysShort.map((d, i) => (
                                         <div key={i} className="date-picker-header">{d}</div>
                                     ))}
                                     {days.map((date, i) => (
@@ -746,25 +994,25 @@
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label>Start Time</label>
+                                    <label>{t.startTime}</label>
                                     <select value={startHour} onChange={(e) => setStartHour(Number(e.target.value))}>
                                         {Array.from({length: 24}, (_, i) => (
-                                            <option key={i} value={i}>{formatHour(i)}</option>
+                                            <option key={i} value={i}>{formatHourOption(i)}</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>End Time</label>
+                                    <label>{t.endTime}</label>
                                     <select value={endHour} onChange={(e) => setEndHour(Number(e.target.value))}>
                                         {Array.from({length: 24}, (_, i) => (
-                                            <option key={i} value={i}>{formatHour(i)}</option>
+                                            <option key={i} value={i}>{formatHourOption(i)}</option>
                                         ))}
                                     </select>
                                 </div>
                             </div>
 
                             <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
-                                {loading ? 'Creating...' : '⚔️ Create Quest Board'}
+                                {loading ? t.creating : `⚔️ ${t.createQuestBoard}`}
                             </button>
                         </form>
                     </div>
@@ -773,7 +1021,7 @@
         }
 
         // Event Page
-        function EventPage({ eventId }) {
+        function EventPage({ eventId, t, lang, timeFormat }) {
             const [event, setEvent] = useState(null);
             const [loading, setLoading] = useState(true);
             const [error, setError] = useState('');
@@ -788,8 +1036,13 @@
             const [saving, setSaving] = useState(false);
             const [showSaved, setShowSaved] = useState(false);
             const [copied, setCopied] = useState(false);
+            
+            // Drag selection state
+            const [isDragging, setIsDragging] = useState(false);
+            const [dragMode, setDragMode] = useState(null); // 'add' or 'remove'
+            const [draggedSlots, setDraggedSlots] = useState(new Set());
+            const gridRef = useRef(null);
 
-            // Load event data
             useEffect(() => {
                 fetchEvent();
             }, [eventId]);
@@ -801,23 +1054,21 @@
                         const data = await res.json();
                         setEvent(data);
                         
-                        // Load saved user from localStorage
                         const savedUser = localStorage.getItem(`quest-board-user-${eventId}`);
                         if (savedUser && data.participants.includes(savedUser)) {
                             setCurrentUser(savedUser);
                             setUserSlots(data.availability[savedUser] || {});
                         }
                     } else {
-                        setError('Event not found');
+                        setError(t.eventNotFound);
                     }
                 } catch (err) {
-                    setError('Failed to load event');
+                    setError(t.eventNotFound);
                 } finally {
                     setLoading(false);
                 }
             };
 
-            // Save availability to server
             const saveAvailability = async (slots) => {
                 if (!currentUser) return;
                 
@@ -832,7 +1083,6 @@
                         })
                     });
                     
-                    // Refresh event data
                     await fetchEvent();
                     setShowSaved(true);
                     setTimeout(() => setShowSaved(false), 2000);
@@ -850,7 +1100,6 @@
                 setCurrentUser(name);
                 localStorage.setItem(`quest-board-user-${eventId}`, name);
                 
-                // Load existing availability if user already participated
                 if (event.availability[name]) {
                     setUserSlots(event.availability[name]);
                 } else {
@@ -862,21 +1111,57 @@
                 setViewMode('edit');
             };
 
-            const toggleSlot = (date, hour) => {
-                if (viewMode !== 'edit' || !currentUser) return;
+            // Drag handlers
+            const handleMouseDown = (date, hour, e) => {
+                if (viewMode !== 'edit' || !currentUser || e.button !== 0) return;
+                e.preventDefault();
                 
                 const key = getSlotKey(date, hour);
+                const isCurrentlyAvailable = userSlots[key]?.available;
+                
+                setIsDragging(true);
+                setDragMode(isCurrentlyAvailable ? 'remove' : 'add');
+                setDraggedSlots(new Set([key]));
+            };
+
+            const handleMouseEnter = (date, hour) => {
+                if (!isDragging || viewMode !== 'edit') return;
+                
+                const key = getSlotKey(date, hour);
+                setDraggedSlots(prev => new Set([...prev, key]));
+            };
+
+            const handleMouseUp = () => {
+                if (!isDragging) return;
+                
                 const newSlots = { ...userSlots };
                 
-                if (newSlots[key]?.available) {
-                    delete newSlots[key];
-                } else {
-                    newSlots[key] = { available: true, note: '' };
-                }
+                draggedSlots.forEach(key => {
+                    if (dragMode === 'add') {
+                        newSlots[key] = { available: true, note: '' };
+                    } else {
+                        delete newSlots[key];
+                    }
+                });
                 
                 setUserSlots(newSlots);
                 saveAvailability(newSlots);
+                
+                setIsDragging(false);
+                setDragMode(null);
+                setDraggedSlots(new Set());
             };
+
+            useEffect(() => {
+                const handleGlobalMouseUp = () => {
+                    if (isDragging) {
+                        handleMouseUp();
+                    }
+                };
+                
+                window.addEventListener('mouseup', handleGlobalMouseUp);
+                return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+            }, [isDragging, dragMode, draggedSlots, userSlots]);
 
             const openNoteModal = (date, hour, e) => {
                 e.preventDefault();
@@ -925,8 +1210,14 @@
             };
 
             const getSlotClass = (date, hour) => {
+                const key = getSlotKey(date, hour);
+                
+                // Check if being dragged
+                if (isDragging && draggedSlots.has(key)) {
+                    return dragMode === 'add' ? 'dragging' : 'empty';
+                }
+                
                 if (viewMode === 'edit') {
-                    const key = getSlotKey(date, hour);
                     return userSlots[key]?.available ? 'available' : 'empty';
                 }
                 
@@ -968,8 +1259,56 @@
                 setTimeout(() => setCopied(false), 2000);
             };
 
+            const formatHour = (hour) => {
+                if (timeFormat === '24') {
+                    return { hour: hour.toString().padStart(2, '0') + ':00', ampm: '' };
+                }
+                if (hour === 0) return { hour: '12', ampm: 'AM' };
+                if (hour === 12) return { hour: '12', ampm: 'PM' };
+                if (hour < 12) return { hour: hour.toString(), ampm: 'AM' };
+                return { hour: (hour - 12).toString(), ampm: 'PM' };
+            };
+
+            const formatDateForDisplay = (dateStr) => {
+                const date = new Date(dateStr + 'T12:00:00');
+                const dayName = t.days[date.getDay()];
+                const dayNum = t.ordinal(date.getDate());
+                return { dayName, dayNum };
+            };
+
+            const formatTooltipDate = (dateStr, hour) => {
+                const date = new Date(dateStr + 'T12:00:00');
+                const dayName = t.days[date.getDay()];
+                const dayNum = t.ordinal(date.getDate());
+                const monthName = t.months[date.getMonth()];
+                const hourFormatted = formatHour(hour);
+                const timeStr = timeFormat === '24' ? hourFormatted.hour : `${hourFormatted.hour} ${hourFormatted.ampm}`;
+                return `${dayName}, ${monthName} ${dayNum} @ ${timeStr}`;
+            };
+
+            // Group dates by month for header rendering
+            const groupDatesByMonth = (dates) => {
+                const groups = [];
+                let currentGroup = null;
+                
+                dates.forEach((dateStr, index) => {
+                    const date = new Date(dateStr + 'T12:00:00');
+                    const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+                    const monthName = t.months[date.getMonth()];
+                    
+                    if (!currentGroup || currentGroup.key !== monthKey) {
+                        currentGroup = { key: monthKey, name: monthName, count: 1, startIndex: index };
+                        groups.push(currentGroup);
+                    } else {
+                        currentGroup.count++;
+                    }
+                });
+                
+                return groups;
+            };
+
             if (loading) {
-                return <div className="panel loading">🎲 Rolling for initiative...</div>;
+                return <div className="panel loading">🎲 {t.loadingDice}</div>;
             }
 
             if (error) {
@@ -981,19 +1320,21 @@
                 hours.push(h);
             }
 
+            const monthGroups = groupDatesByMonth(event.dates);
+
             return (
                 <>
                     <div className="main-content">
                         <aside className="panel">
-                            <h2>⚔️ Adventurer</h2>
+                            <h2>⚔️ {t.adventurer}</h2>
                             
                             {!currentUser ? (
                                 <>
                                     <p style={{marginBottom: '1rem', fontStyle: 'italic'}}>
-                                        Join the quest to mark your availability
+                                        {t.joinPrompt}
                                     </p>
                                     <button className="btn btn-primary btn-block" onClick={() => setNameModal(true)}>
-                                        🎭 Join Quest
+                                        🎭 {t.joinQuest}
                                     </button>
                                 </>
                             ) : (
@@ -1007,29 +1348,33 @@
                                             className={`btn ${viewMode === 'group' ? 'active' : 'btn-secondary'}`}
                                             onClick={() => setViewMode('group')}
                                         >
-                                            👥 Group
+                                            👥 {t.group}
                                         </button>
                                         <button 
                                             className={`btn ${viewMode === 'edit' ? 'active' : 'btn-secondary'}`}
                                             onClick={() => setViewMode('edit')}
                                         >
-                                            ✏️ Edit
+                                            ✏️ {t.edit}
                                         </button>
                                     </div>
 
                                     {viewMode === 'edit' && (
                                         <div className="instructions">
-                                            <strong>Click</strong> to toggle availability<br/>
-                                            <strong>Right-click</strong> to add notes
+                                            <strong>{t.instructionsTitle}</strong>
+                                            <ul>
+                                                <li>{t.instruction1}</li>
+                                                <li>{t.instruction2}</li>
+                                                <li>{t.instruction3}</li>
+                                            </ul>
                                         </div>
                                     )}
                                 </>
                             )}
 
-                            <h2 style={{marginTop: '1.5rem'}}>🎭 Party ({event.participants.length})</h2>
+                            <h2 style={{marginTop: '1.5rem'}}>🎭 {t.party} ({event.participants.length})</h2>
                             <div>
                                 {event.participants.length === 0 ? (
-                                    <p style={{fontStyle: 'italic', fontSize: '0.9rem'}}>No adventurers yet</p>
+                                    <p style={{fontStyle: 'italic', fontSize: '0.9rem'}}>{t.noAdventurers}</p>
                                 ) : (
                                     event.participants.map(name => (
                                         <span 
@@ -1043,10 +1388,10 @@
                             </div>
 
                             <div className="share-box">
-                                <strong>📨 Invite your party!</strong>
+                                <strong>📨 {t.inviteParty}</strong>
                                 <span className="share-url">{window.location.href}</span>
                                 <button className="btn btn-secondary" onClick={copyLink}>
-                                    {copied ? '✓ Copied!' : '📋 Copy Link'}
+                                    {copied ? `✓ ${t.copied}` : `📋 ${t.copyLink}`}
                                 </button>
                             </div>
 
@@ -1055,26 +1400,26 @@
                                     <>
                                         <div className="legend-item">
                                             <div className="legend-color" style={{background: 'var(--available)'}}></div>
-                                            <span>All</span>
+                                            <span>{t.all}</span>
                                         </div>
                                         <div className="legend-item">
                                             <div className="legend-color" style={{background: '#7bc47a'}}></div>
-                                            <span>Most</span>
+                                            <span>{t.most}</span>
                                         </div>
                                         <div className="legend-item">
                                             <div className="legend-color" style={{background: '#a8d5a2'}}></div>
-                                            <span>Some</span>
+                                            <span>{t.some}</span>
                                         </div>
                                     </>
                                 ) : (
                                     <div className="legend-item">
                                         <div className="legend-color" style={{background: 'var(--available)'}}></div>
-                                        <span>Available</span>
+                                        <span>{t.available}</span>
                                     </div>
                                 )}
                                 <div className="legend-item">
                                     <span>📜</span>
-                                    <span>Has note</span>
+                                    <span>{t.hasNote}</span>
                                 </div>
                             </div>
                         </aside>
@@ -1083,7 +1428,28 @@
                             <h2>📅 {event.name}</h2>
                             {event.description && <p style={{marginBottom: '1rem', fontStyle: 'italic'}}>{event.description}</p>}
                             
-                            <div className="schedule-grid">
+                            <div className="schedule-grid" ref={gridRef}>
+                                {/* Month headers row */}
+                                <div 
+                                    className="grid-container"
+                                    style={{
+                                        gridTemplateColumns: `60px repeat(${event.dates.length}, 1fr)`,
+                                        marginBottom: '2px'
+                                    }}
+                                >
+                                    <div style={{background: 'transparent'}}></div>
+                                    {monthGroups.map((group, i) => (
+                                        <div 
+                                            key={group.key}
+                                            className="month-header"
+                                            style={{ gridColumn: `span ${group.count}` }}
+                                        >
+                                            {group.name}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Main grid */}
                                 <div 
                                     className="grid-container"
                                     style={{
@@ -1091,47 +1457,60 @@
                                         gridTemplateRows: `auto repeat(${hours.length}, 1fr)`
                                     }}
                                 >
-                                    <div className="grid-header"></div>
-                                    {event.dates.map(date => (
-                                        <div key={date} className="grid-header">
-                                            {formatDate(date)}
-                                        </div>
-                                    ))}
+                                    {/* Date headers */}
+                                    <div style={{background: 'transparent'}}></div>
+                                    {event.dates.map(date => {
+                                        const { dayName, dayNum } = formatDateForDisplay(date);
+                                        return (
+                                            <div key={date} className="grid-header">
+                                                <span className="day-name">{dayName}</span>
+                                                <span className="day-number">{dayNum}</span>
+                                            </div>
+                                        );
+                                    })}
                                     
-                                    {hours.map(hour => (
-                                        <React.Fragment key={hour}>
-                                            <div className="time-label">{formatHour(hour)}</div>
-                                            {event.dates.map(date => {
-                                                const available = getSlotAvailability(date, hour);
-                                                return (
-                                                    <div
-                                                        key={`${date}-${hour}`}
-                                                        className={`time-slot ${getSlotClass(date, hour)} ${hasNote(date, hour) ? 'has-note' : ''}`}
-                                                        onClick={() => toggleSlot(date, hour)}
-                                                        onContextMenu={(e) => openNoteModal(date, hour, e)}
-                                                        onMouseEnter={(e) => handleSlotHover(e, date, hour)}
-                                                        onMouseLeave={() => setTooltip(null)}
-                                                    >
-                                                        {viewMode === 'group' && available.length > 0 && (
-                                                            <span className="availability-count">
-                                                                {available.length}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
-                                        </React.Fragment>
-                                    ))}
+                                    {/* Time slots */}
+                                    {hours.map(hour => {
+                                        const { hour: hourStr, ampm } = formatHour(hour);
+                                        return (
+                                            <React.Fragment key={hour}>
+                                                <div className="time-label">
+                                                    <span className="hour">{hourStr}</span>
+                                                    {ampm && <span className="ampm">{ampm}</span>}
+                                                </div>
+                                                {event.dates.map(date => {
+                                                    const available = getSlotAvailability(date, hour);
+                                                    return (
+                                                        <div
+                                                            key={`${date}-${hour}`}
+                                                            className={`time-slot ${getSlotClass(date, hour)} ${hasNote(date, hour) ? 'has-note' : ''}`}
+                                                            onMouseDown={(e) => handleMouseDown(date, hour, e)}
+                                                            onMouseEnter={() => handleMouseEnter(date, hour)}
+                                                            onContextMenu={(e) => openNoteModal(date, hour, e)}
+                                                            onMouseOver={(e) => !isDragging && handleSlotHover(e, date, hour)}
+                                                            onMouseLeave={() => !isDragging && setTooltip(null)}
+                                                        >
+                                                            {viewMode === 'group' && available.length > 0 && (
+                                                                <span className="availability-count">
+                                                                    {available.length}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </React.Fragment>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </main>
                     </div>
 
-                    {tooltip && (
+                    {tooltip && !isDragging && (
                         <div className="tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
-                            <h4>{formatDate(tooltip.date)} at {formatHour(tooltip.hour)}</h4>
+                            <h4>{formatTooltipDate(tooltip.date, tooltip.hour)}</h4>
                             {tooltip.available.length === 0 ? (
-                                <p style={{fontStyle: 'italic'}}>No one available yet</p>
+                                <p style={{fontStyle: 'italic'}}>{t.noOneAvailable}</p>
                             ) : (
                                 tooltip.available.map((a, i) => (
                                     <div key={i} className="tooltip-entry">
@@ -1146,26 +1525,26 @@
                     {nameModal && (
                         <div className="modal-overlay" onClick={() => setNameModal(false)}>
                             <div className="modal" onClick={e => e.stopPropagation()}>
-                                <h3>🎭 Enter Your Name</h3>
+                                <h3>🎭 {t.enterName}</h3>
                                 <p style={{marginBottom: '1rem', color: 'var(--ink-light)'}}>
-                                    How should the party know you?
+                                    {t.howShouldPartyKnow}
                                 </p>
                                 <div className="form-group">
                                     <input
                                         type="text"
                                         value={tempName}
                                         onChange={(e) => setTempName(e.target.value)}
-                                        placeholder="Your name..."
+                                        placeholder={t.yourName}
                                         autoFocus
                                         onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
                                     />
                                 </div>
                                 <div className="modal-buttons">
                                     <button className="btn btn-secondary" onClick={() => setNameModal(false)}>
-                                        Cancel
+                                        {t.cancel}
                                     </button>
                                     <button className="btn btn-primary" onClick={handleJoin} disabled={!tempName.trim()}>
-                                        Join Quest
+                                        {t.joinQuest}
                                     </button>
                                 </div>
                             </div>
@@ -1175,33 +1554,33 @@
                     {noteModal && (
                         <div className="modal-overlay" onClick={() => setNoteModal(null)}>
                             <div className="modal" onClick={e => e.stopPropagation()}>
-                                <h3>📜 Add a Note</h3>
+                                <h3>📜 {t.addNote}</h3>
                                 <p style={{marginBottom: '1rem', color: 'var(--ink-light)'}}>
-                                    {formatDate(noteModal.date)} at {formatHour(noteModal.hour)}
+                                    {formatTooltipDate(noteModal.date, noteModal.hour)}
                                 </p>
                                 <div className="form-group">
-                                    <label>Your note</label>
+                                    <label>{t.yourNote}</label>
                                     <textarea
                                         value={tempNote}
                                         onChange={(e) => setTempNote(e.target.value)}
                                         rows={3}
-                                        placeholder="e.g., Joining remotely, might need a dinner break..."
+                                        placeholder={t.notePlaceholder}
                                         autoFocus
                                     />
                                 </div>
                                 <div className="modal-buttons">
                                     <button className="btn btn-secondary" onClick={() => setNoteModal(null)}>
-                                        Cancel
+                                        {t.cancel}
                                     </button>
                                     <button className="btn btn-primary" onClick={saveNote}>
-                                        Save Note
+                                        {t.saveNote}
                                     </button>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {showSaved && <div className="saved-indicator">✓ Saved!</div>}
+                    {showSaved && <div className="saved-indicator">✓ {t.saved}</div>}
                 </>
             );
         }
