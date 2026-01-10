@@ -1,0 +1,18 @@
+{
+  "name": "quest-board",
+  "version": "1.0.0",
+  "description": "D&D Session Scheduler - Like When2Meet but with notes per time slot",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sql.js": "^1.10.3",
+    "nanoid": "^3.3.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

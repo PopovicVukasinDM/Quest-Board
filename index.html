@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quest Board - D&D Session Scheduler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        :root {
+            --parchment: #f4e4bc;
+            --parchment-dark: #e8d4a8;
+            --parchment-light: #faf3e3;
+            --ink: #2c1810;
+            --ink-light: #4a3728;
+            --gold: #c9a227;
+            --gold-light: #e8c547;
+            --available: #4a7c59;
+            --available-light: #6b9b7a;
+            --unavailable: #8b4049;
+            --partial: #b8860b;
+            --shadow: rgba(44, 24, 16, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', Georgia, serif;
+            background: 
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"),
+                linear-gradient(135deg, #1a0f0a 0%, #2d1f15 50%, #1a0f0a 100%);
+            min-height: 100vh;
+            color: var(--ink);
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: 
+                linear-gradient(to bottom, rgba(244, 228, 188, 0.95), rgba(232, 212, 168, 0.95));
+            border: 3px solid var(--ink);
+            border-radius: 4px;
+            box-shadow: 
+                0 4px 20px var(--shadow),
+                inset 0 0 60px rgba(44, 24, 16, 0.1);
+            position: relative;
+        }
+
+        .header::before {
+            content: '⚔️';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            background: var(--parchment);
+            padding: 0 1rem;
+        }
+
+        .header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--ink);
+            text-shadow: 2px 2px 0 var(--gold);
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .header h1 a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--ink-light);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .header h1 { font-size: 1.8rem; }
+        }
+
+        .panel {
+            background: 
+                linear-gradient(to bottom, rgba(244, 228, 188, 0.97), rgba(232, 212, 168, 0.97));
+            border: 2px solid var(--ink);
+            border-radius: 4px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .panel h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--ink);
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--ink);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.6rem;
+            font-family: 'Crimson Text', serif;
+            font-size: 1rem;
+            border: 1px solid var(--ink-light);
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.7);
+            color: var(--ink);
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 5px var(--gold-light);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.7rem 1.2rem;
+            border: 2px solid var(--ink);
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--ink);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--parchment);
+            color: var(--ink);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--parchment-dark);
+        }
+
+        .btn-success {
+            background: var(--available);
+            color: white;
+            border-color: var(--available);
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: var(--available-light);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .participant-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--ink);
+            color: var(--parchment);
+            padding: 0.3rem 0.7rem;
+            border-radius: 3px;
+            margin: 0.2rem;
+            font-size: 0.9rem;
+        }
+
+        .participant-tag.active {
+            background: var(--gold);
+            color: var(--ink);
+        }
+
+        .schedule-grid {
+            overflow-x: auto;
+        }
+
+        .grid-container {
+            display: grid;
+            gap: 2px;
+            min-width: fit-content;
+        }
+
+        .grid-header {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            text-align: center;
+            padding: 0.5rem 0.3rem;
+            background: var(--ink);
+            color: var(--parchment);
+            font-size: 0.75rem;
+        }
+
+        .time-label {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            padding: 0.3rem;
+            background: var(--ink);
+            color: var(--parchment);
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .time-slot {
+            min-width: 60px;
+            min-height: 40px;
+            border: 1px solid var(--ink-light);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .time-slot:hover {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .time-slot.empty { background: rgba(255, 255, 255, 0.5); }
+        .time-slot.level-1 { background: #a8d5a2; }
+        .time-slot.level-2 { background: #7bc47a; }
+        .time-slot.level-3 { background: #4a9f4a; }
+        .time-slot.level-4 { background: #2d7d2d; }
+        .time-slot.level-5 { background: var(--available); }
+        .time-slot.available { background: var(--available); }
+
+        .time-slot.has-note::after {
+            content: '📜';
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            font-size: 0.6rem;
+        }
+
+        .availability-count {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .legend {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--ink-light);
+            font-size: 0.85rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .legend-color {
+            width: 18px;
+            height: 18px;
+            border: 1px solid var(--ink);
+            border-radius: 2px;
+        }
+
+        .tooltip {
+            position: fixed;
+            background: var(--ink);
+            color: var(--parchment);
+            padding: 1rem;
+            border-radius: 4px;
+            max-width: 280px;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            pointer-events: none;
+        }
+
+        .tooltip h4 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: var(--gold);
+        }
+
+        .tooltip-entry {
+            margin: 0.5rem 0;
+            padding-left: 0.5rem;
+            border-left: 2px solid var(--gold);
+        }
+
+        .tooltip-name { font-weight: 600; }
+
+        .tooltip-note {
+            font-style: italic;
+            font-size: 0.9rem;
+            color: var(--parchment-dark);
+            margin-top: 0.2rem;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 1rem;
+        }
+
+        .modal {
+            background: var(--parchment);
+            border: 3px solid var(--ink);
+            border-radius: 4px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            font-family: 'Cinzel', serif;
+            margin-bottom: 1rem;
+            color: var(--ink);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .view-toggle .btn {
+            flex: 1;
+            font-size: 0.75rem;
+            padding: 0.5rem 0.3rem;
+        }
+
+        .view-toggle .btn.active {
+            background: var(--ink);
+            color: var(--parchment);
+        }
+
+        .instructions {
+            background: rgba(201, 162, 39, 0.2);
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .share-box {
+            background: var(--parchment-light);
+            border: 2px dashed var(--gold);
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .share-url {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 3px;
+            word-break: break-all;
+            margin: 0.5rem 0;
+            display: block;
+        }
+
+        .center-panel {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .date-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin: 1rem 0;
+        }
+
+        .date-picker-header {
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 0.3rem;
+            color: var(--ink-light);
+        }
+
+        .date-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--ink-light);
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.15s;
+        }
+
+        .date-cell:hover { background: var(--parchment-dark); }
+        .date-cell.selected { background: var(--available); color: white; }
+        .date-cell.disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .month-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .month-nav button {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.3rem 0.6rem;
+        }
+
+        .month-nav span {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-style: italic;
+            color: var(--ink-light);
+        }
+
+        .error-message {
+            background: #ffebee;
+            border: 1px solid var(--unavailable);
+            color: var(--unavailable);
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            border: 1px solid var(--available);
+            color: var(--available);
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+
+        .saved-indicator {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--available);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            font-family: 'Cinzel', serif;
+            box-shadow: 0 4px 15px var(--shadow);
+            animation: fadeInOut 2s ease;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useCallback } = React;
+
+        // Utility functions
+        function formatDate(dateStr) {
+            const date = new Date(dateStr + 'T12:00:00');
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${days[date.getDay()]} ${months[date.getMonth()]} ${date.getDate()}`;
+        }
+
+        function formatHour(hour) {
+            if (hour === 0) return '12AM';
+            if (hour === 12) return '12PM';
+            if (hour < 12) return `${hour}AM`;
+            return `${hour - 12}PM`;
+        }
+
+        function getSlotKey(date, hour) {
+            return `${date}-${hour}`;
+        }
+
+        // Router component
+        function App() {
+            const [route, setRoute] = useState({ page: 'home', params: {} });
+
+            useEffect(() => {
+                function handleRoute() {
+                    const path = window.location.pathname;
+                    if (path.startsWith('/event/')) {
+                        const eventId = path.split('/event/')[1];
+                        setRoute({ page: 'event', params: { eventId } });
+                    } else {
+                        setRoute({ page: 'home', params: {} });
+                    }
+                }
+                handleRoute();
+                window.addEventListener('popstate', handleRoute);
+                return () => window.removeEventListener('popstate', handleRoute);
+            }, []);
+
+            const navigate = (path) => {
+                window.history.pushState({}, '', path);
+                window.dispatchEvent(new PopStateEvent('popstate'));
+            };
+
+            return (
+                <div className="app-container">
+                    <header className="header">
+                        <h1><a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>Quest Board</a></h1>
+                        <p>Schedule your next adventure with your party</p>
+                    </header>
+
+                    {route.page === 'home' && <CreateEventPage navigate={navigate} />}
+                    {route.page === 'event' && <EventPage eventId={route.params.eventId} />}
+                </div>
+            );
+        }
+
+        // Create Event Page
+        function CreateEventPage({ navigate }) {
+            const [name, setName] = useState('');
+            const [description, setDescription] = useState('');
+            const [selectedDates, setSelectedDates] = useState([]);
+            const [startHour, setStartHour] = useState(10);
+            const [endHour, setEndHour] = useState(22);
+            const [currentMonth, setCurrentMonth] = useState(new Date());
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const getDaysInMonth = (date) => {
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const days = [];
+                
+                // Add empty cells for days before the first day
+                for (let i = 0; i < firstDay.getDay(); i++) {
+                    days.push(null);
+                }
+                
+                // Add all days in the month
+                for (let d = 1; d <= lastDay.getDate(); d++) {
+                    days.push(new Date(year, month, d));
+                }
+                
+                return days;
+            };
+
+            const toggleDate = (date) => {
+                if (date < today) return;
+                const dateStr = date.toISOString().split('T')[0];
+                setSelectedDates(prev => 
+                    prev.includes(dateStr) 
+                        ? prev.filter(d => d !== dateStr)
+                        : [...prev, dateStr].sort()
+                );
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                if (!name.trim() || selectedDates.length === 0) {
+                    setError('Please enter a name and select at least one date');
+                    return;
+                }
+
+                setLoading(true);
+                setError('');
+
+                try {
+                    const res = await fetch('/api/events', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: name.trim(),
+                            description: description.trim(),
+                            dates: selectedDates,
+                            startHour,
+                            endHour
+                        })
+                    });
+
+                    const data = await res.json();
+                    if (res.ok) {
+                        navigate(data.url);
+                    } else {
+                        setError(data.error || 'Failed to create event');
+                    }
+                } catch (err) {
+                    setError('Network error. Please try again.');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const days = getDaysInMonth(currentMonth);
+            const monthName = currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+            return (
+                <div className="center-panel">
+                    <div className="panel">
+                        <h2>📜 Create New Quest</h2>
+                        
+                        {error && <div className="error-message">{error}</div>}
+                        
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label>Event Name *</label>
+                                <input 
+                                    type="text" 
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="e.g., D&D Session 3"
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Description (optional)</label>
+                                <textarea 
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    placeholder="e.g., Continuing the Velhmael campaign..."
+                                    rows={2}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Select Possible Dates * ({selectedDates.length} selected)</label>
+                                <div className="month-nav">
+                                    <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}>
+                                        ◀
+                                    </button>
+                                    <span>{monthName}</span>
+                                    <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}>
+                                        ▶
+                                    </button>
+                                </div>
+                                <div className="date-picker-grid">
+                                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                                        <div key={i} className="date-picker-header">{d}</div>
+                                    ))}
+                                    {days.map((date, i) => (
+                                        <div 
+                                            key={i}
+                                            className={`date-cell ${!date ? 'disabled' : ''} ${date && date < today ? 'disabled' : ''} ${date && selectedDates.includes(date.toISOString().split('T')[0]) ? 'selected' : ''}`}
+                                            onClick={() => date && toggleDate(date)}
+                                        >
+                                            {date ? date.getDate() : ''}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Start Time</label>
+                                    <select value={startHour} onChange={(e) => setStartHour(Number(e.target.value))}>
+                                        {Array.from({length: 24}, (_, i) => (
+                                            <option key={i} value={i}>{formatHour(i)}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>End Time</label>
+                                    <select value={endHour} onChange={(e) => setEndHour(Number(e.target.value))}>
+                                        {Array.from({length: 24}, (_, i) => (
+                                            <option key={i} value={i}>{formatHour(i)}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+                                {loading ? 'Creating...' : '⚔️ Create Quest Board'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        // Event Page
+        function EventPage({ eventId }) {
+            const [event, setEvent] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState('');
+            const [currentUser, setCurrentUser] = useState('');
+            const [userSlots, setUserSlots] = useState({});
+            const [viewMode, setViewMode] = useState('group');
+            const [tooltip, setTooltip] = useState(null);
+            const [noteModal, setNoteModal] = useState(null);
+            const [tempNote, setTempNote] = useState('');
+            const [nameModal, setNameModal] = useState(false);
+            const [tempName, setTempName] = useState('');
+            const [saving, setSaving] = useState(false);
+            const [showSaved, setShowSaved] = useState(false);
+            const [copied, setCopied] = useState(false);
+
+            // Load event data
+            useEffect(() => {
+                fetchEvent();
+            }, [eventId]);
+
+            const fetchEvent = async () => {
+                try {
+                    const res = await fetch(`/api/events/${eventId}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        setEvent(data);
+                        
+                        // Load saved user from localStorage
+                        const savedUser = localStorage.getItem(`quest-board-user-${eventId}`);
+                        if (savedUser && data.participants.includes(savedUser)) {
+                            setCurrentUser(savedUser);
+                            setUserSlots(data.availability[savedUser] || {});
+                        }
+                    } else {
+                        setError('Event not found');
+                    }
+                } catch (err) {
+                    setError('Failed to load event');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            // Save availability to server
+            const saveAvailability = async (slots) => {
+                if (!currentUser) return;
+                
+                setSaving(true);
+                try {
+                    await fetch(`/api/events/${eventId}/availability`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            participantName: currentUser,
+                            slots: slots
+                        })
+                    });
+                    
+                    // Refresh event data
+                    await fetchEvent();
+                    setShowSaved(true);
+                    setTimeout(() => setShowSaved(false), 2000);
+                } catch (err) {
+                    console.error('Failed to save:', err);
+                } finally {
+                    setSaving(false);
+                }
+            };
+
+            const handleJoin = () => {
+                const name = tempName.trim();
+                if (!name) return;
+                
+                setCurrentUser(name);
+                localStorage.setItem(`quest-board-user-${eventId}`, name);
+                
+                // Load existing availability if user already participated
+                if (event.availability[name]) {
+                    setUserSlots(event.availability[name]);
+                } else {
+                    setUserSlots({});
+                }
+                
+                setNameModal(false);
+                setTempName('');
+                setViewMode('edit');
+            };
+
+            const toggleSlot = (date, hour) => {
+                if (viewMode !== 'edit' || !currentUser) return;
+                
+                const key = getSlotKey(date, hour);
+                const newSlots = { ...userSlots };
+                
+                if (newSlots[key]?.available) {
+                    delete newSlots[key];
+                } else {
+                    newSlots[key] = { available: true, note: '' };
+                }
+                
+                setUserSlots(newSlots);
+                saveAvailability(newSlots);
+            };
+
+            const openNoteModal = (date, hour, e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (viewMode !== 'edit' || !currentUser) return;
+                
+                const key = getSlotKey(date, hour);
+                if (!userSlots[key]?.available) return;
+                
+                setTempNote(userSlots[key]?.note || '');
+                setNoteModal({ date, hour });
+            };
+
+            const saveNote = () => {
+                if (!noteModal) return;
+                
+                const key = getSlotKey(noteModal.date, noteModal.hour);
+                const newSlots = { ...userSlots };
+                
+                if (newSlots[key]) {
+                    newSlots[key] = { ...newSlots[key], note: tempNote };
+                }
+                
+                setUserSlots(newSlots);
+                saveAvailability(newSlots);
+                setNoteModal(null);
+                setTempNote('');
+            };
+
+            const getSlotAvailability = (date, hour) => {
+                if (!event) return [];
+                const key = getSlotKey(date, hour);
+                const available = [];
+                
+                event.participants.forEach(name => {
+                    const userAvail = event.availability[name];
+                    if (userAvail && userAvail[key]?.available) {
+                        available.push({
+                            name,
+                            note: userAvail[key].note || ''
+                        });
+                    }
+                });
+                
+                return available;
+            };
+
+            const getSlotClass = (date, hour) => {
+                if (viewMode === 'edit') {
+                    const key = getSlotKey(date, hour);
+                    return userSlots[key]?.available ? 'available' : 'empty';
+                }
+                
+                const available = getSlotAvailability(date, hour);
+                const total = event.participants.length || 1;
+                const ratio = available.length / total;
+                
+                if (ratio === 0) return 'empty';
+                if (ratio < 0.2) return 'level-1';
+                if (ratio < 0.4) return 'level-2';
+                if (ratio < 0.6) return 'level-3';
+                if (ratio < 0.8) return 'level-4';
+                return 'level-5';
+            };
+
+            const hasNote = (date, hour) => {
+                const key = getSlotKey(date, hour);
+                if (viewMode === 'edit') {
+                    return (userSlots[key]?.note || '').length > 0;
+                }
+                return getSlotAvailability(date, hour).some(a => a.note.length > 0);
+            };
+
+            const handleSlotHover = (e, date, hour) => {
+                const available = getSlotAvailability(date, hour);
+                const rect = e.target.getBoundingClientRect();
+                setTooltip({
+                    x: Math.min(rect.right + 10, window.innerWidth - 300),
+                    y: Math.min(rect.top, window.innerHeight - 200),
+                    date,
+                    hour,
+                    available
+                });
+            };
+
+            const copyLink = () => {
+                navigator.clipboard.writeText(window.location.href);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            };
+
+            if (loading) {
+                return <div className="panel loading">🎲 Rolling for initiative...</div>;
+            }
+
+            if (error) {
+                return <div className="panel"><div className="error-message">{error}</div></div>;
+            }
+
+            const hours = [];
+            for (let h = event.startHour; h < event.endHour; h++) {
+                hours.push(h);
+            }
+
+            return (
+                <>
+                    <div className="main-content">
+                        <aside className="panel">
+                            <h2>⚔️ Adventurer</h2>
+                            
+                            {!currentUser ? (
+                                <>
+                                    <p style={{marginBottom: '1rem', fontStyle: 'italic'}}>
+                                        Join the quest to mark your availability
+                                    </p>
+                                    <button className="btn btn-primary btn-block" onClick={() => setNameModal(true)}>
+                                        🎭 Join Quest
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="participant-tag active" style={{marginBottom: '1rem'}}>
+                                        {currentUser}
+                                    </div>
+                                    
+                                    <div className="view-toggle">
+                                        <button 
+                                            className={`btn ${viewMode === 'group' ? 'active' : 'btn-secondary'}`}
+                                            onClick={() => setViewMode('group')}
+                                        >
+                                            👥 Group
+                                        </button>
+                                        <button 
+                                            className={`btn ${viewMode === 'edit' ? 'active' : 'btn-secondary'}`}
+                                            onClick={() => setViewMode('edit')}
+                                        >
+                                            ✏️ Edit
+                                        </button>
+                                    </div>
+
+                                    {viewMode === 'edit' && (
+                                        <div className="instructions">
+                                            <strong>Click</strong> to toggle availability<br/>
+                                            <strong>Right-click</strong> to add notes
+                                        </div>
+                                    )}
+                                </>
+                            )}
+
+                            <h2 style={{marginTop: '1.5rem'}}>🎭 Party ({event.participants.length})</h2>
+                            <div>
+                                {event.participants.length === 0 ? (
+                                    <p style={{fontStyle: 'italic', fontSize: '0.9rem'}}>No adventurers yet</p>
+                                ) : (
+                                    event.participants.map(name => (
+                                        <span 
+                                            key={name} 
+                                            className={`participant-tag ${name === currentUser ? 'active' : ''}`}
+                                        >
+                                            {name}
+                                        </span>
+                                    ))
+                                )}
+                            </div>
+
+                            <div className="share-box">
+                                <strong>📨 Invite your party!</strong>
+                                <span className="share-url">{window.location.href}</span>
+                                <button className="btn btn-secondary" onClick={copyLink}>
+                                    {copied ? '✓ Copied!' : '📋 Copy Link'}
+                                </button>
+                            </div>
+
+                            <div className="legend">
+                                {viewMode === 'group' ? (
+                                    <>
+                                        <div className="legend-item">
+                                            <div className="legend-color" style={{background: 'var(--available)'}}></div>
+                                            <span>All</span>
+                                        </div>
+                                        <div className="legend-item">
+                                            <div className="legend-color" style={{background: '#7bc47a'}}></div>
+                                            <span>Most</span>
+                                        </div>
+                                        <div className="legend-item">
+                                            <div className="legend-color" style={{background: '#a8d5a2'}}></div>
+                                            <span>Some</span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="legend-item">
+                                        <div className="legend-color" style={{background: 'var(--available)'}}></div>
+                                        <span>Available</span>
+                                    </div>
+                                )}
+                                <div className="legend-item">
+                                    <span>📜</span>
+                                    <span>Has note</span>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <main className="panel">
+                            <h2>📅 {event.name}</h2>
+                            {event.description && <p style={{marginBottom: '1rem', fontStyle: 'italic'}}>{event.description}</p>}
+                            
+                            <div className="schedule-grid">
+                                <div 
+                                    className="grid-container"
+                                    style={{
+                                        gridTemplateColumns: `60px repeat(${event.dates.length}, 1fr)`,
+                                        gridTemplateRows: `auto repeat(${hours.length}, 1fr)`
+                                    }}
+                                >
+                                    <div className="grid-header"></div>
+                                    {event.dates.map(date => (
+                                        <div key={date} className="grid-header">
+                                            {formatDate(date)}
+                                        </div>
+                                    ))}
+                                    
+                                    {hours.map(hour => (
+                                        <React.Fragment key={hour}>
+                                            <div className="time-label">{formatHour(hour)}</div>
+                                            {event.dates.map(date => {
+                                                const available = getSlotAvailability(date, hour);
+                                                return (
+                                                    <div
+                                                        key={`${date}-${hour}`}
+                                                        className={`time-slot ${getSlotClass(date, hour)} ${hasNote(date, hour) ? 'has-note' : ''}`}
+                                                        onClick={() => toggleSlot(date, hour)}
+                                                        onContextMenu={(e) => openNoteModal(date, hour, e)}
+                                                        onMouseEnter={(e) => handleSlotHover(e, date, hour)}
+                                                        onMouseLeave={() => setTooltip(null)}
+                                                    >
+                                                        {viewMode === 'group' && available.length > 0 && (
+                                                            <span className="availability-count">
+                                                                {available.length}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+
+                    {tooltip && (
+                        <div className="tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
+                            <h4>{formatDate(tooltip.date)} at {formatHour(tooltip.hour)}</h4>
+                            {tooltip.available.length === 0 ? (
+                                <p style={{fontStyle: 'italic'}}>No one available yet</p>
+                            ) : (
+                                tooltip.available.map((a, i) => (
+                                    <div key={i} className="tooltip-entry">
+                                        <div className="tooltip-name">{a.name}</div>
+                                        {a.note && <div className="tooltip-note">"{a.note}"</div>}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
+
+                    {nameModal && (
+                        <div className="modal-overlay" onClick={() => setNameModal(false)}>
+                            <div className="modal" onClick={e => e.stopPropagation()}>
+                                <h3>🎭 Enter Your Name</h3>
+                                <p style={{marginBottom: '1rem', color: 'var(--ink-light)'}}>
+                                    How should the party know you?
+                                </p>
+                                <div className="form-group">
+                                    <input
+                                        type="text"
+                                        value={tempName}
+                                        onChange={(e) => setTempName(e.target.value)}
+                                        placeholder="Your name..."
+                                        autoFocus
+                                        onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
+                                    />
+                                </div>
+                                <div className="modal-buttons">
+                                    <button className="btn btn-secondary" onClick={() => setNameModal(false)}>
+                                        Cancel
+                                    </button>
+                                    <button className="btn btn-primary" onClick={handleJoin} disabled={!tempName.trim()}>
+                                        Join Quest
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {noteModal && (
+                        <div className="modal-overlay" onClick={() => setNoteModal(null)}>
+                            <div className="modal" onClick={e => e.stopPropagation()}>
+                                <h3>📜 Add a Note</h3>
+                                <p style={{marginBottom: '1rem', color: 'var(--ink-light)'}}>
+                                    {formatDate(noteModal.date)} at {formatHour(noteModal.hour)}
+                                </p>
+                                <div className="form-group">
+                                    <label>Your note</label>
+                                    <textarea
+                                        value={tempNote}
+                                        onChange={(e) => setTempNote(e.target.value)}
+                                        rows={3}
+                                        placeholder="e.g., Joining remotely, might need a dinner break..."
+                                        autoFocus
+                                    />
+                                </div>
+                                <div className="modal-buttons">
+                                    <button className="btn btn-secondary" onClick={() => setNoteModal(null)}>
+                                        Cancel
+                                    </button>
+                                    <button className="btn btn-primary" onClick={saveNote}>
+                                        Save Note
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {showSaved && <div className="saved-indicator">✓ Saved!</div>}
+                </>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
