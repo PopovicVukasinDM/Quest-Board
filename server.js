@@ -11,7 +11,37 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 let db;
 
-// Simple password hashing (using crypto since bcrypt requires native modules)
+// Helper function for parameterized SELECT queries in sql.js
+function dbQuery(sql, params = []) {
+    try {
+        const stmt = db.prepare(sql);
+        if (params.length > 0) {
+            stmt.bind(params);
+        }
+        const results = [];
+        while (stmt.step()) {
+            results.push(stmt.getAsObject());
+        }
+        stmt.free();
+        return results;
+    } catch (err) {
+        console.error('DB Query Error:', err, sql, params);
+        return [];
+    }
+}
+
+// Helper function for parameterized INSERT/UPDATE/DELETE
+function dbRun(sql, params = []) {
+    try {
+        db.run(sql, params);
+        return true;
+    } catch (err) {
+        console.error('DB Run Error:', err, sql, params);
+        return false;
+    }
+}
+
+// Simple password hashing
 function hashPassword(password) {
     const salt = crypto.randomBytes(16).toString('hex');
     const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
@@ -24,7 +54,6 @@ function verifyPassword(password, stored) {
     return hash === verifyHash;
 }
 
-// Generate session token
 function generateToken() {
     return crypto.randomBytes(32).toString('hex');
 }
@@ -34,7 +63,6 @@ async function initDatabase() {
     const SQL = await initSqlJs();
     db = new SQL.Database();
     
-    // Users table
     db.run(`
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,7 +74,6 @@ async function initDatabase() {
         )
     `);
     
-    // Sessions table
     db.run(`
         CREATE TABLE IF NOT EXISTS sessions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,7 +84,6 @@ async function initDatabase() {
         )
     `);
     
-    // Adventurers table (user's saved characters)
     db.run(`
         CREATE TABLE IF NOT EXISTS adventurers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,7 +95,6 @@ async function initDatabase() {
         )
     `);
     
-    // Events table
     db.run(`
         CREATE TABLE IF NOT EXISTS events (
             id TEXT PRIMARY KEY,
@@ -84,7 +109,6 @@ async function initDatabase() {
         )
     `);
     
-    // Availability table
     db.run(`
         CREATE TABLE IF NOT EXISTS availability (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -111,24 +135,27 @@ function authenticateToken(req, res, next) {
         return next();
     }
     
-    const session = db.exec(`
+    const results = dbQuery(`
         SELECT s.user_id, u.username, u.display_name, u.profile_image 
         FROM sessions s 
         JOIN users u ON s.user_id = u.id 
         WHERE s.token = ?
     `, [token]);
     
-    if (session.length === 0 || session[0].values.length === 0) {
+    if (results.length > 0) {
+        const row = results[0];
+        req.user = { 
+            id: row.user_id, 
+            username: row.username, 
+            displayName: row.display_name, 
+            profileImage: row.profile_image 
+        };
+    } else {
         req.user = null;
-        return next();
     }
-    
-    const [userId, username, displayName, profileImage] = session[0].values[0];
-    req.user = { id: userId, username, displayName, profileImage };
     next();
 }
 
-// Require auth middleware
 function requireAuth(req, res, next) {
     if (!req.user) {
         return res.status(401).json({ error: 'Authentication required' });
@@ -138,7 +165,6 @@ function requireAuth(req, res, next) {
 
 // ============ AUTH ROUTES ============
 
-// Register
 app.post('/api/auth/register', (req, res) => {
     const { username, password, displayName } = req.body;
     
@@ -154,22 +180,22 @@ app.post('/api/auth/register', (req, res) => {
         return res.status(400).json({ error: 'Password must be at least 4 characters' });
     }
     
-    // Check if username exists
-    const existing = db.exec(`SELECT id FROM users WHERE username = ?`, [username.toLowerCase()]);
-    if (existing.length > 0 && existing[0].values.length > 0) {
+    const existing = dbQuery(`SELECT id FROM users WHERE username = ?`, [username.toLowerCase()]);
+    if (existing.length > 0) {
         return res.status(400).json({ error: 'Username already taken' });
     }
     
     const hashedPassword = hashPassword(password);
     const name = displayName || username;
     
-    db.run(`INSERT INTO users (username, password, display_name) VALUES (?, ?, ?)`, 
+    dbRun(`INSERT INTO users (username, password, display_name) VALUES (?, ?, ?)`, 
         [username.toLowerCase(), hashedPassword, name]);
     
-    const userId = db.exec(`SELECT last_insert_rowid()`)[0].values[0][0];
+    const userResult = dbQuery(`SELECT last_insert_rowid() as id`);
+    const userId = userResult[0].id;
     const token = generateToken();
     
-    db.run(`INSERT INTO sessions (user_id, token) VALUES (?, ?)`, [userId, token]);
+    dbRun(`INSERT INTO sessions (user_id, token) VALUES (?, ?)`, [userId, token]);
     
     res.json({
         token,
@@ -182,7 +208,6 @@ app.post('/api/auth/register', (req, res) => {
     });
 });
 
-// Login
 app.post('/api/auth/login', (req, res) => {
     const { username, password } = req.body;
     
@@ -190,43 +215,41 @@ app.post('/api/auth/login', (req, res) => {
         return res.status(400).json({ error: 'Username and password required' });
     }
     
-    const result = db.exec(`SELECT id, username, password, display_name, profile_image FROM users WHERE username = ?`, 
+    const results = dbQuery(`SELECT id, username, password, display_name, profile_image FROM users WHERE username = ?`, 
         [username.toLowerCase()]);
     
-    if (result.length === 0 || result[0].values.length === 0) {
+    if (results.length === 0) {
         return res.status(401).json({ error: 'Invalid username or password' });
     }
     
-    const [userId, uname, hashedPassword, displayName, profileImage] = result[0].values[0];
+    const user = results[0];
     
-    if (!verifyPassword(password, hashedPassword)) {
+    if (!verifyPassword(password, user.password)) {
         return res.status(401).json({ error: 'Invalid username or password' });
     }
     
     const token = generateToken();
-    db.run(`INSERT INTO sessions (user_id, token) VALUES (?, ?)`, [userId, token]);
+    dbRun(`INSERT INTO sessions (user_id, token) VALUES (?, ?)`, [user.id, token]);
     
     res.json({
         token,
         user: {
-            id: userId,
-            username: uname,
-            displayName,
-            profileImage
+            id: user.id,
+            username: user.username,
+            displayName: user.display_name,
+            profileImage: user.profile_image
         }
     });
 });
 
-// Logout
 app.post('/api/auth/logout', authenticateToken, (req, res) => {
     const token = req.headers['authorization']?.replace('Bearer ', '');
     if (token) {
-        db.run(`DELETE FROM sessions WHERE token = ?`, [token]);
+        dbRun(`DELETE FROM sessions WHERE token = ?`, [token]);
     }
     res.json({ success: true });
 });
 
-// Get current user
 app.get('/api/auth/me', authenticateToken, (req, res) => {
     if (!req.user) {
         return res.json({ user: null });
@@ -236,17 +259,15 @@ app.get('/api/auth/me', authenticateToken, (req, res) => {
 
 // ============ PROFILE ROUTES ============
 
-// Update profile
 app.put('/api/profile', authenticateToken, requireAuth, (req, res) => {
     const { displayName, profileImage } = req.body;
     
-    db.run(`UPDATE users SET display_name = ?, profile_image = ? WHERE id = ?`,
+    dbRun(`UPDATE users SET display_name = ?, profile_image = ? WHERE id = ?`,
         [displayName || req.user.displayName, profileImage || null, req.user.id]);
     
     res.json({ success: true });
 });
 
-// Change password
 app.put('/api/profile/password', authenticateToken, requireAuth, (req, res) => {
     const { currentPassword, newPassword } = req.body;
     
@@ -258,48 +279,43 @@ app.put('/api/profile/password', authenticateToken, requireAuth, (req, res) => {
         return res.status(400).json({ error: 'New password must be at least 4 characters' });
     }
     
-    // Verify current password
-    const result = db.exec(`SELECT password FROM users WHERE id = ?`, [req.user.id]);
-    const storedPassword = result[0].values[0][0];
+    const results = dbQuery(`SELECT password FROM users WHERE id = ?`, [req.user.id]);
+    if (results.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
+    }
     
-    if (!verifyPassword(currentPassword, storedPassword)) {
+    if (!verifyPassword(currentPassword, results[0].password)) {
         return res.status(401).json({ error: 'Current password is incorrect' });
     }
     
     const hashedNew = hashPassword(newPassword);
-    db.run(`UPDATE users SET password = ? WHERE id = ?`, [hashedNew, req.user.id]);
+    dbRun(`UPDATE users SET password = ? WHERE id = ?`, [hashedNew, req.user.id]);
     
     res.json({ success: true });
 });
 
-// Get user's quest boards
 app.get('/api/profile/events', authenticateToken, requireAuth, (req, res) => {
-    // Get events user created
-    const created = db.exec(`
+    const created = dbQuery(`
         SELECT id, name, description, dates, created_at 
         FROM events WHERE creator_id = ?
         ORDER BY created_at DESC
     `, [req.user.id]);
     
-    // Get events user participated in
-    const participated = db.exec(`
+    const participated = dbQuery(`
         SELECT DISTINCT e.id, e.name, e.description, e.dates, e.created_at
         FROM events e
         JOIN availability a ON e.id = a.event_id
-        WHERE a.user_id = ? AND e.creator_id != ?
+        WHERE a.user_id = ? AND (e.creator_id IS NULL OR e.creator_id != ?)
         ORDER BY e.created_at DESC
     `, [req.user.id, req.user.id]);
     
-    const formatEvents = (result) => {
-        if (result.length === 0) return [];
-        return result[0].values.map(row => ({
-            id: row[0],
-            name: row[1],
-            description: row[2],
-            dates: JSON.parse(row[3]),
-            createdAt: row[4]
-        }));
-    };
+    const formatEvents = (rows) => rows.map(row => ({
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        dates: JSON.parse(row.dates),
+        createdAt: row.created_at
+    }));
     
     res.json({
         created: formatEvents(created),
@@ -309,29 +325,23 @@ app.get('/api/profile/events', authenticateToken, requireAuth, (req, res) => {
 
 // ============ ADVENTURER ROUTES ============
 
-// Get user's adventurers
 app.get('/api/adventurers', authenticateToken, requireAuth, (req, res) => {
-    const result = db.exec(`
+    const results = dbQuery(`
         SELECT id, name, image, created_at 
         FROM adventurers WHERE user_id = ?
         ORDER BY created_at DESC
     `, [req.user.id]);
     
-    if (result.length === 0) {
-        return res.json([]);
-    }
-    
-    const adventurers = result[0].values.map(row => ({
-        id: row[0],
-        name: row[1],
-        image: row[2],
-        createdAt: row[3]
+    const adventurers = results.map(row => ({
+        id: row.id,
+        name: row.name,
+        image: row.image,
+        createdAt: row.created_at
     }));
     
     res.json(adventurers);
 });
 
-// Create adventurer
 app.post('/api/adventurers', authenticateToken, requireAuth, (req, res) => {
     const { name, image } = req.body;
     
@@ -339,49 +349,45 @@ app.post('/api/adventurers', authenticateToken, requireAuth, (req, res) => {
         return res.status(400).json({ error: 'Name required' });
     }
     
-    db.run(`INSERT INTO adventurers (user_id, name, image) VALUES (?, ?, ?)`,
+    dbRun(`INSERT INTO adventurers (user_id, name, image) VALUES (?, ?, ?)`,
         [req.user.id, name, image || null]);
     
-    const id = db.exec(`SELECT last_insert_rowid()`)[0].values[0][0];
+    const result = dbQuery(`SELECT last_insert_rowid() as id`);
+    const id = result[0].id;
     
     res.json({ id, name, image });
 });
 
-// Update adventurer
 app.put('/api/adventurers/:id', authenticateToken, requireAuth, (req, res) => {
     const { name, image } = req.body;
     const { id } = req.params;
     
-    // Verify ownership
-    const check = db.exec(`SELECT id FROM adventurers WHERE id = ? AND user_id = ?`, [id, req.user.id]);
-    if (check.length === 0 || check[0].values.length === 0) {
+    const check = dbQuery(`SELECT id FROM adventurers WHERE id = ? AND user_id = ?`, [id, req.user.id]);
+    if (check.length === 0) {
         return res.status(404).json({ error: 'Adventurer not found' });
     }
     
-    db.run(`UPDATE adventurers SET name = ?, image = ? WHERE id = ?`,
+    dbRun(`UPDATE adventurers SET name = ?, image = ? WHERE id = ?`,
         [name, image || null, id]);
     
     res.json({ success: true });
 });
 
-// Delete adventurer
 app.delete('/api/adventurers/:id', authenticateToken, requireAuth, (req, res) => {
     const { id } = req.params;
     
-    // Verify ownership
-    const check = db.exec(`SELECT id FROM adventurers WHERE id = ? AND user_id = ?`, [id, req.user.id]);
-    if (check.length === 0 || check[0].values.length === 0) {
+    const check = dbQuery(`SELECT id FROM adventurers WHERE id = ? AND user_id = ?`, [id, req.user.id]);
+    if (check.length === 0) {
         return res.status(404).json({ error: 'Adventurer not found' });
     }
     
-    db.run(`DELETE FROM adventurers WHERE id = ?`, [id]);
+    dbRun(`DELETE FROM adventurers WHERE id = ?`, [id]);
     
     res.json({ success: true });
 });
 
 // ============ EVENT ROUTES ============
 
-// Create event
 app.post('/api/events', authenticateToken, (req, res) => {
     const { name, description, dates, startHour, endHour } = req.body;
     
@@ -392,7 +398,7 @@ app.post('/api/events', authenticateToken, (req, res) => {
     const eventId = crypto.randomBytes(4).toString('hex');
     const creatorId = req.user ? req.user.id : null;
     
-    db.run(`
+    dbRun(`
         INSERT INTO events (id, name, description, dates, start_hour, end_hour, creator_id)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     `, [eventId, name, description || '', JSON.stringify(dates), startHour || 9, endHour || 22, creatorId]);
@@ -403,22 +409,21 @@ app.post('/api/events', authenticateToken, (req, res) => {
     });
 });
 
-// Get event
 app.get('/api/events/:id', (req, res) => {
     const { id } = req.params;
     
-    const eventResult = db.exec(`
+    const eventResults = dbQuery(`
         SELECT id, name, description, dates, start_hour, end_hour, creator_id, created_at
         FROM events WHERE id = ?
     `, [id]);
     
-    if (eventResult.length === 0 || eventResult[0].values.length === 0) {
+    if (eventResults.length === 0) {
         return res.status(404).json({ error: 'Event not found' });
     }
     
-    const [eventId, name, description, dates, startHour, endHour, creatorId, createdAt] = eventResult[0].values[0];
+    const event = eventResults[0];
     
-    const availResult = db.exec(`
+    const availResults = dbQuery(`
         SELECT participant_name, participant_image, user_id, slots
         FROM availability WHERE event_id = ?
     `, [id]);
@@ -427,33 +432,29 @@ app.get('/api/events/:id', (req, res) => {
     const availability = {};
     const participantImages = {};
     
-    if (availResult.length > 0) {
-        availResult[0].values.forEach(row => {
-            const [participantName, participantImage, userId, slots] = row;
-            participants.push(participantName);
-            availability[participantName] = JSON.parse(slots);
-            if (participantImage) {
-                participantImages[participantName] = participantImage;
-            }
-        });
-    }
+    availResults.forEach(row => {
+        participants.push(row.participant_name);
+        availability[row.participant_name] = JSON.parse(row.slots);
+        if (row.participant_image) {
+            participantImages[row.participant_name] = row.participant_image;
+        }
+    });
     
     res.json({
-        id: eventId,
-        name,
-        description,
-        dates: JSON.parse(dates),
-        startHour,
-        endHour,
-        creatorId,
-        createdAt,
+        id: event.id,
+        name: event.name,
+        description: event.description,
+        dates: JSON.parse(event.dates),
+        startHour: event.start_hour,
+        endHour: event.end_hour,
+        creatorId: event.creator_id,
+        createdAt: event.created_at,
         participants,
         participantImages,
         availability
     });
 });
 
-// Save availability
 app.post('/api/events/:id/availability', authenticateToken, (req, res) => {
     const { id } = req.params;
     const { participantName, participantImage, slots } = req.body;
@@ -462,25 +463,23 @@ app.post('/api/events/:id/availability', authenticateToken, (req, res) => {
         return res.status(400).json({ error: 'Participant name required' });
     }
     
-    // Check if event exists
-    const eventCheck = db.exec(`SELECT id FROM events WHERE id = ?`, [id]);
-    if (eventCheck.length === 0 || eventCheck[0].values.length === 0) {
+    const eventCheck = dbQuery(`SELECT id FROM events WHERE id = ?`, [id]);
+    if (eventCheck.length === 0) {
         return res.status(404).json({ error: 'Event not found' });
     }
     
     const userId = req.user ? req.user.id : null;
     
-    // Check if participant already exists
-    const existing = db.exec(`SELECT id FROM availability WHERE event_id = ? AND participant_name = ?`, [id, participantName]);
+    const existing = dbQuery(`SELECT id FROM availability WHERE event_id = ? AND participant_name = ?`, [id, participantName]);
     
-    if (existing.length > 0 && existing[0].values.length > 0) {
-        db.run(`
+    if (existing.length > 0) {
+        dbRun(`
             UPDATE availability 
             SET slots = ?, participant_image = ?, user_id = ?, updated_at = CURRENT_TIMESTAMP
             WHERE event_id = ? AND participant_name = ?
         `, [JSON.stringify(slots), participantImage || null, userId, id, participantName]);
     } else {
-        db.run(`
+        dbRun(`
             INSERT INTO availability (event_id, participant_name, participant_image, user_id, slots)
             VALUES (?, ?, ?, ?, ?)
         `, [id, participantName, participantImage || null, userId, JSON.stringify(slots)]);
