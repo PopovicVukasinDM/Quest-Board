@@ -619,6 +619,8 @@ app.get('/api/events/:id', async (req, res) => {
             image: event.image,
             tags: event.tags || [],
             completed: event.completed || false,
+            allowComments: event.allow_comments !== false,
+            notifyComments: event.notify_comments !== false,
             participants,
             participantImages,
             availability
@@ -632,7 +634,7 @@ app.get('/api/events/:id', async (req, res) => {
 // Update event (only creator can edit)
 app.put('/api/events/:id', authenticateToken, requireAuth, async (req, res) => {
     const { id } = req.params;
-    const { name, description, dates, startHour, endHour, image, tags, completed } = req.body;
+    const { name, description, dates, startHour, endHour, image, tags, completed, allowComments, notifyComments } = req.body;
     
     try {
         // Check if user is the creator
@@ -660,7 +662,9 @@ app.put('/api/events/:id', authenticateToken, requireAuth, async (req, res) => {
                 end_hour: endHour,
                 image: image || null,
                 tags: tags || [],
-                completed: completed || false
+                completed: completed || false,
+                allow_comments: allowComments !== false,
+                notify_comments: notifyComments !== false
             })
             .eq('id', id);
         
@@ -802,6 +806,273 @@ app.delete('/api/profile', authenticateToken, requireAuth, async (req, res) => {
     } catch (err) {
         console.error('Delete profile error:', err);
         res.status(500).json({ error: 'Failed to delete profile' });
+    }
+});
+
+// ============ COMMENT ROUTES ============
+
+// Get comments for an event
+app.get('/api/events/:id/comments', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const { data, error } = await supabase
+            .from('comments')
+            .select('*')
+            .eq('event_id', id)
+            .order('created_at', { ascending: true });
+        
+        if (error) throw error;
+        res.json(data || []);
+    } catch (err) {
+        console.error('Get comments error:', err);
+        res.status(500).json({ error: 'Failed to load comments' });
+    }
+});
+
+// Add a comment
+app.post('/api/events/:id/comments', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { adventurerName, content, mentions } = req.body;
+    
+    if (!adventurerName || !content) {
+        return res.status(400).json({ error: 'Adventurer name and content are required' });
+    }
+    
+    try {
+        // Check if event exists and allows comments
+        const { data: event } = await supabase
+            .from('events')
+            .select('allow_comments, notify_comments')
+            .eq('id', id)
+            .single();
+        
+        if (!event) {
+            return res.status(404).json({ error: 'Event not found' });
+        }
+        
+        if (event.allow_comments === false) {
+            return res.status(403).json({ error: 'Comments are disabled for this quest board' });
+        }
+        
+        // Get adventurer image
+        const { data: adventurer } = await supabase
+            .from('adventurers')
+            .select('image')
+            .eq('name', adventurerName)
+            .eq('user_id', req.user?.id)
+            .single();
+        
+        // Insert comment
+        const { data: comment, error } = await supabase
+            .from('comments')
+            .insert({
+                event_id: id,
+                adventurer_name: adventurerName,
+                adventurer_image: adventurer?.image || null,
+                user_id: req.user?.id || null,
+                content,
+                mentions: mentions || []
+            })
+            .select()
+            .single();
+        
+        if (error) throw error;
+        
+        // Create notifications for mentioned adventurers if enabled
+        if (event.notify_comments !== false && mentions && mentions.length > 0) {
+            // Get user IDs for mentioned adventurers
+            const { data: availability } = await supabase
+                .from('availability')
+                .select('user_id, participant_name')
+                .eq('event_id', id)
+                .in('participant_name', mentions);
+            
+            if (availability) {
+                const notificationData = availability
+                    .filter(a => a.user_id && a.participant_name !== adventurerName)
+                    .map(a => ({
+                        user_id: a.user_id,
+                        type: 'mention',
+                        event_id: id,
+                        comment_id: comment.id,
+                        from_adventurer: adventurerName
+                    }));
+                
+                if (notificationData.length > 0) {
+                    await supabase.from('notifications').insert(notificationData);
+                }
+            }
+        }
+        
+        res.json(comment);
+    } catch (err) {
+        console.error('Add comment error:', err);
+        res.status(500).json({ error: 'Failed to add comment' });
+    }
+});
+
+// Update a comment
+app.put('/api/comments/:commentId', authenticateToken, async (req, res) => {
+    const { commentId } = req.params;
+    const { content, mentions } = req.body;
+    
+    try {
+        // Check if user owns the comment
+        const { data: comment } = await supabase
+            .from('comments')
+            .select('user_id, event_id')
+            .eq('id', commentId)
+            .single();
+        
+        if (!comment) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+        
+        if (comment.user_id !== req.user?.id) {
+            return res.status(403).json({ error: 'You can only edit your own comments' });
+        }
+        
+        const { error } = await supabase
+            .from('comments')
+            .update({
+                content,
+                mentions: mentions || [],
+                edited: true,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', commentId);
+        
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Update comment error:', err);
+        res.status(500).json({ error: 'Failed to update comment' });
+    }
+});
+
+// Delete a comment
+app.delete('/api/comments/:commentId', authenticateToken, async (req, res) => {
+    const { commentId } = req.params;
+    
+    try {
+        // Check if user owns the comment or is event owner
+        const { data: comment } = await supabase
+            .from('comments')
+            .select('user_id, event_id')
+            .eq('id', commentId)
+            .single();
+        
+        if (!comment) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+        
+        const { data: event } = await supabase
+            .from('events')
+            .select('creator_id')
+            .eq('id', comment.event_id)
+            .single();
+        
+        if (comment.user_id !== req.user?.id && event?.creator_id !== req.user?.id) {
+            return res.status(403).json({ error: 'You can only delete your own comments' });
+        }
+        
+        // Delete notifications first
+        await supabase.from('notifications').delete().eq('comment_id', commentId);
+        
+        // Delete comment
+        const { error } = await supabase
+            .from('comments')
+            .delete()
+            .eq('id', commentId);
+        
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Delete comment error:', err);
+        res.status(500).json({ error: 'Failed to delete comment' });
+    }
+});
+
+// ============ NOTIFICATION ROUTES ============
+
+// Get unread notification count
+app.get('/api/notifications/count', authenticateToken, requireAuth, async (req, res) => {
+    try {
+        const { count, error } = await supabase
+            .from('notifications')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', req.user.id)
+            .eq('read', false);
+        
+        if (error) throw error;
+        res.json({ count: count || 0 });
+    } catch (err) {
+        console.error('Get notification count error:', err);
+        res.status(500).json({ error: 'Failed to get notification count' });
+    }
+});
+
+// Get all notifications
+app.get('/api/notifications', authenticateToken, requireAuth, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('notifications')
+            .select(`
+                *,
+                comments (
+                    content,
+                    adventurer_name,
+                    created_at
+                ),
+                events (
+                    name,
+                    image
+                )
+            `)
+            .eq('user_id', req.user.id)
+            .order('created_at', { ascending: false })
+            .limit(50);
+        
+        if (error) throw error;
+        res.json(data || []);
+    } catch (err) {
+        console.error('Get notifications error:', err);
+        res.status(500).json({ error: 'Failed to load notifications' });
+    }
+});
+
+// Mark notifications as read for an event
+app.put('/api/notifications/read/:eventId', authenticateToken, requireAuth, async (req, res) => {
+    const { eventId } = req.params;
+    
+    try {
+        const { error } = await supabase
+            .from('notifications')
+            .update({ read: true })
+            .eq('user_id', req.user.id)
+            .eq('event_id', eventId);
+        
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Mark notifications read error:', err);
+        res.status(500).json({ error: 'Failed to mark notifications as read' });
+    }
+});
+
+// Mark all notifications as read
+app.put('/api/notifications/read-all', authenticateToken, requireAuth, async (req, res) => {
+    try {
+        const { error } = await supabase
+            .from('notifications')
+            .update({ read: true })
+            .eq('user_id', req.user.id);
+        
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Mark all notifications read error:', err);
+        res.status(500).json({ error: 'Failed to mark notifications as read' });
     }
 });
 
