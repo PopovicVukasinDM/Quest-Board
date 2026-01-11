@@ -1093,12 +1093,6 @@
                 return eventList.filter(ev => (ev.tags || []).includes(tagFilter));
             };
 
-            const loadData = async () => {
-                try { const [advData, eventsData] = await Promise.all([api('/api/adventurers'), api('/api/profile/events')]); setAdventurers(advData); setEvents(eventsData); } 
-                catch (err) { console.error(err); } 
-                finally { setLoading(false); }
-            };
-
             const saveName = async () => {
                 try { await api('/api/profile', { method: 'PUT', body: JSON.stringify({ displayName: tempName, profileImage: user.profileImage }) }); setUser({ ...user, displayName: tempName }); setEditingName(false); setMessage(t.profileUpdated); setTimeout(() => setMessage(''), 3000); } 
                 catch (err) { setError(err.message); }
