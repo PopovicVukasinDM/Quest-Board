@@ -250,7 +250,7 @@ app.get('/api/profile/events', authenticateToken, requireAuth, async (req, res) 
         // Get events user created
         const { data: created } = await supabase
             .from('events')
-            .select('id, name, description, dates, created_at')
+            .select('id, name, description, dates, start_hour, end_hour, created_at')
             .eq('creator_id', req.user.id)
             .order('created_at', { ascending: false });
         
@@ -265,7 +265,7 @@ app.get('/api/profile/events', authenticateToken, requireAuth, async (req, res) 
             const eventIds = participatedAvail.map(a => a.event_id);
             const { data: participatedEvents } = await supabase
                 .from('events')
-                .select('id, name, description, dates, created_at')
+                .select('id, name, description, dates, start_hour, end_hour, created_at')
                 .in('id', eventIds)
                 .neq('creator_id', req.user.id)
                 .order('created_at', { ascending: false });
@@ -288,22 +288,29 @@ app.get('/api/profile/events', authenticateToken, requireAuth, async (req, res) 
                     if (!participantsMap[a.event_id]) {
                         participantsMap[a.event_id] = [];
                     }
-                    participantsMap[a.event_id].push({
-                        name: a.participant_name,
-                        image: a.participant_image
-                    });
+                    // Only add if not already in the list (avoid duplicates)
+                    if (!participantsMap[a.event_id].some(p => p.name === a.participant_name)) {
+                        participantsMap[a.event_id].push({
+                            name: a.participant_name,
+                            image: a.participant_image || null
+                        });
+                    }
                 });
             }
         }
         
         res.json({
             created: (created || []).map(e => ({ 
-                ...e, 
+                ...e,
+                startHour: e.start_hour,
+                endHour: e.end_hour,
                 dates: e.dates,
                 participants: participantsMap[e.id] || []
             })),
             participated: participated.map(e => ({ 
-                ...e, 
+                ...e,
+                startHour: e.start_hour,
+                endHour: e.end_hour,
                 dates: e.dates,
                 participants: participantsMap[e.id] || []
             }))
@@ -707,6 +714,75 @@ app.delete('/api/events/:id/availability/:participantName', authenticateToken, a
     } catch (err) {
         console.error('Delete availability error:', err);
         res.status(500).json({ error: 'Failed to delete availability' });
+    }
+});
+
+// Delete event (only creator can delete)
+app.delete('/api/events/:id', authenticateToken, requireAuth, async (req, res) => {
+    const { id } = req.params;
+    
+    try {
+        // Check if user is the creator
+        const { data: event } = await supabase
+            .from('events')
+            .select('creator_id')
+            .eq('id', id)
+            .single();
+        
+        if (!event) {
+            return res.status(404).json({ error: 'Event not found' });
+        }
+        
+        if (event.creator_id !== req.user.id) {
+            return res.status(403).json({ error: 'Only the creator can delete this event' });
+        }
+        
+        // Delete all availability for this event first
+        await supabase.from('availability').delete().eq('event_id', id);
+        
+        // Delete the event
+        await supabase.from('events').delete().eq('id', id);
+        
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Delete event error:', err);
+        res.status(500).json({ error: 'Failed to delete event' });
+    }
+});
+
+// Delete user profile and all associated data
+app.delete('/api/profile', authenticateToken, requireAuth, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        
+        // Get all events created by user
+        const { data: userEvents } = await supabase
+            .from('events')
+            .select('id')
+            .eq('creator_id', userId);
+        
+        // Delete availability for all user's events
+        if (userEvents && userEvents.length > 0) {
+            const eventIds = userEvents.map(e => e.id);
+            await supabase.from('availability').delete().in('event_id', eventIds);
+        }
+        
+        // Delete all events created by user
+        await supabase.from('events').delete().eq('creator_id', userId);
+        
+        // Delete all adventurers
+        await supabase.from('adventurers').delete().eq('user_id', userId);
+        
+        // Delete all sessions
+        await supabase.from('sessions').delete().eq('user_id', userId);
+        
+        // Delete user
+        await supabase.from('users').delete().eq('id', userId);
+        
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Delete profile error:', err);
+        res.status(500).json({ error: 'Failed to delete profile' });
     }
 });
 
