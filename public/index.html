@@ -91,6 +91,39 @@
             color: var(--ink-light);
         }
 
+        .header-right {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--ink);
+            color: var(--parchment);
+            padding: 0.4rem 0.8rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .user-badge:hover {
+            background: var(--ink-light);
+        }
+
+        .user-badge img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
         .top-controls {
             display: flex;
             justify-content: center;
@@ -148,6 +181,7 @@
                 grid-template-columns: 1fr;
             }
             .header h1 { font-size: 1.8rem; }
+            .header-right { position: static; margin-top: 1rem; justify-content: center; }
         }
 
         .panel {
@@ -251,8 +285,19 @@
             background: var(--available-light);
         }
 
+        .btn-danger {
+            background: var(--unavailable);
+            color: white;
+            border-color: var(--unavailable);
+        }
+
         .btn-block {
             width: 100%;
+        }
+
+        .btn-small {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
         }
 
         .participant-tag {
@@ -265,6 +310,13 @@
             border-radius: 3px;
             margin: 0.2rem;
             font-size: 0.9rem;
+        }
+
+        .participant-tag img {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .participant-tag.active {
@@ -640,15 +692,225 @@
             80% { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(-10px); }
         }
+
+        .landing-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .landing-card {
+            background: var(--parchment-light);
+            border: 2px solid var(--ink-light);
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .landing-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px var(--shadow);
+        }
+
+        .landing-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .landing-card h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .landing-card p {
+            font-size: 0.85rem;
+            color: var(--ink-light);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--ink);
+            object-fit: cover;
+            background: var(--parchment-dark);
+        }
+
+        .profile-image-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--ink);
+            background: var(--parchment-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .profile-info h2 {
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .profile-info p {
+            color: var(--ink-light);
+            font-size: 0.9rem;
+        }
+
+        .adventurer-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--parchment-light);
+            border: 1px solid var(--ink-light);
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .adventurer-card img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--ink);
+        }
+
+        .adventurer-card .no-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--ink);
+            color: var(--parchment);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            border: 2px solid var(--ink);
+        }
+
+        .adventurer-card .info {
+            flex: 1;
+        }
+
+        .adventurer-card .name {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+        }
+
+        .adventurer-card .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .event-list-item {
+            display: block;
+            background: var(--parchment-light);
+            border: 1px solid var(--ink-light);
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            text-decoration: none;
+            color: var(--ink);
+            transition: all 0.2s;
+        }
+
+        .event-list-item:hover {
+            border-color: var(--gold);
+            background: var(--parchment);
+        }
+
+        .event-list-item h4 {
+            font-family: 'Cinzel', serif;
+            margin-bottom: 0.3rem;
+        }
+
+        .event-list-item p {
+            font-size: 0.85rem;
+            color: var(--ink-light);
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--ink-light);
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            padding: 0.7rem 1.2rem;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--ink-light);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--ink);
+        }
+
+        .tab.active {
+            color: var(--ink);
+            border-bottom-color: var(--gold);
+        }
+
+        .image-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .image-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--ink);
+        }
+
+        .image-preview-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px dashed var(--ink-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--ink-light);
+        }
     </style>
 </head>
 <body>
     <div id="root"></div>
     
     <script type="text/babel">
-        const { useState, useEffect, useCallback, useRef } = React;
+        const { useState, useEffect, useCallback, useRef, createContext, useContext } = React;
 
-        // Translations
+        const AuthContext = createContext(null);
+        function useAuth() { return useContext(AuthContext); }
+
         const translations = {
             en: {
                 questBoard: "Quest Board",
@@ -700,11 +962,53 @@
                 months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                 days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
                 daysShort: ["S", "M", "T", "W", "T", "F", "S"],
-                ordinal: (n) => {
-                    const s = ["th", "st", "nd", "rd"];
-                    const v = n % 100;
-                    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-                }
+                ordinal: (n) => { const s = ["th", "st", "nd", "rd"]; const v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); },
+                atTime: "at",
+                welcome: "Welcome, Adventurer!",
+                whatToDo: "What would you like to do?",
+                login: "Login",
+                register: "Register",
+                createEvent: "Create Event",
+                joinEvent: "Join Event",
+                loginDesc: "Access your profile",
+                registerDesc: "Create a new account",
+                createEventDesc: "Start a new quest board",
+                joinEventDesc: "Join with a link",
+                username: "Username",
+                password: "Password",
+                displayName: "Display Name",
+                loginTitle: "Login to Quest Board",
+                registerTitle: "Create Your Account",
+                loggingIn: "Logging in...",
+                registering: "Creating account...",
+                logout: "Logout",
+                profile: "Profile",
+                myProfile: "My Profile",
+                myAdventurers: "My Adventurers",
+                myQuestBoards: "My Quest Boards",
+                createdByMe: "Created by Me",
+                participating: "Participating In",
+                changePassword: "Change Password",
+                currentPassword: "Current Password",
+                newPassword: "New Password",
+                updateProfile: "Update Profile",
+                passwordChanged: "Password changed successfully!",
+                profileUpdated: "Profile updated!",
+                createAdventurer: "Create Adventurer",
+                editAdventurer: "Edit Adventurer",
+                adventurerName: "Adventurer Name",
+                adventurerImage: "Adventurer Image (URL)",
+                deleteAdventurer: "Delete",
+                noAdventurersSaved: "No adventurers saved yet",
+                selectAdventurer: "Select an Adventurer",
+                orEnterName: "Or enter a name manually",
+                useAdventurer: "Use This Adventurer",
+                joinEventTitle: "Join a Quest Board",
+                pasteLink: "Paste the link your friend sent you",
+                eventLink: "Event Link",
+                go: "Go",
+                profileImage: "Profile Image (URL)",
+                save: "Save",
             },
             sr: {
                 questBoard: "Tabla Zadataka",
@@ -756,96 +1060,411 @@
                 months: ["Januar", "Februar", "Mart", "April", "Maj", "Jun", "Jul", "Avgust", "Septembar", "Oktobar", "Novembar", "Decembar"],
                 days: ["Nedelja", "Ponedeljak", "Utorak", "Sreda", "Četvrtak", "Petak", "Subota"],
                 daysShort: ["N", "P", "U", "S", "Č", "P", "S"],
-                ordinal: (n) => n + "."
+                ordinal: (n) => n + ".",
+                atTime: "u",
+                welcome: "Dobrodošli, Avanturisto!",
+                whatToDo: "Šta želite da uradite?",
+                login: "Prijava",
+                register: "Registracija",
+                createEvent: "Kreiraj Događaj",
+                joinEvent: "Pridruži se",
+                loginDesc: "Pristupite svom profilu",
+                registerDesc: "Napravite novi nalog",
+                createEventDesc: "Započnite novu tablu",
+                joinEventDesc: "Pridružite se putem linka",
+                username: "Korisničko ime",
+                password: "Lozinka",
+                displayName: "Ime za prikaz",
+                loginTitle: "Prijavite se",
+                registerTitle: "Kreirajte nalog",
+                loggingIn: "Prijavljivanje...",
+                registering: "Kreiranje naloga...",
+                logout: "Odjava",
+                profile: "Profil",
+                myProfile: "Moj Profil",
+                myAdventurers: "Moji Avanturisti",
+                myQuestBoards: "Moje Table",
+                createdByMe: "Moje kreacije",
+                participating: "Učestvujem u",
+                changePassword: "Promeni lozinku",
+                currentPassword: "Trenutna lozinka",
+                newPassword: "Nova lozinka",
+                updateProfile: "Ažuriraj profil",
+                passwordChanged: "Lozinka promenjena!",
+                profileUpdated: "Profil ažuriran!",
+                createAdventurer: "Kreiraj Avanturistu",
+                editAdventurer: "Izmeni Avanturistu",
+                adventurerName: "Ime Avanturiste",
+                adventurerImage: "Slika Avanturiste (URL)",
+                deleteAdventurer: "Obriši",
+                noAdventurersSaved: "Nema sačuvanih avanturista",
+                selectAdventurer: "Izaberi Avanturistu",
+                orEnterName: "Ili unesi ime ručno",
+                useAdventurer: "Koristi ovog Avanturistu",
+                joinEventTitle: "Pridruži se Tabli",
+                pasteLink: "Nalepi link koji ti je prijatelj poslao",
+                eventLink: "Link događaja",
+                go: "Idi",
+                profileImage: "Slika profila (URL)",
+                save: "Sačuvaj",
             }
         };
 
-        // Utility functions
-        function getSlotKey(date, hour) {
-            return `${date}-${hour}`;
+        function getSlotKey(date, hour) { return `${date}-${hour}`; }
+
+        async function api(endpoint, options = {}) {
+            const token = localStorage.getItem('quest-board-token');
+            const headers = { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) };
+            const res = await fetch(endpoint, { ...options, headers });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Request failed');
+            return data;
         }
 
         function App() {
             const [route, setRoute] = useState({ page: 'home', params: {} });
             const [lang, setLang] = useState(() => localStorage.getItem('quest-board-lang') || 'en');
             const [timeFormat, setTimeFormat] = useState(() => localStorage.getItem('quest-board-time') || '12');
-
+            const [user, setUser] = useState(null);
+            const [authLoading, setAuthLoading] = useState(true);
             const t = translations[lang];
 
-            useEffect(() => {
-                localStorage.setItem('quest-board-lang', lang);
-            }, [lang]);
+            useEffect(() => { localStorage.setItem('quest-board-lang', lang); }, [lang]);
+            useEffect(() => { localStorage.setItem('quest-board-time', timeFormat); }, [timeFormat]);
 
             useEffect(() => {
-                localStorage.setItem('quest-board-time', timeFormat);
-            }, [timeFormat]);
+                async function checkAuth() {
+                    const token = localStorage.getItem('quest-board-token');
+                    if (token) {
+                        try { const data = await api('/api/auth/me'); setUser(data.user); } 
+                        catch { localStorage.removeItem('quest-board-token'); }
+                    }
+                    setAuthLoading(false);
+                }
+                checkAuth();
+            }, []);
 
             useEffect(() => {
                 function handleRoute() {
                     const path = window.location.pathname;
-                    if (path.startsWith('/event/')) {
-                        const eventId = path.split('/event/')[1];
-                        setRoute({ page: 'event', params: { eventId } });
-                    } else {
-                        setRoute({ page: 'home', params: {} });
-                    }
+                    if (path.startsWith('/event/')) setRoute({ page: 'event', params: { eventId: path.split('/event/')[1] } });
+                    else if (path === '/create') setRoute({ page: 'create', params: {} });
+                    else if (path === '/profile') setRoute({ page: 'profile', params: {} });
+                    else if (path === '/join') setRoute({ page: 'join', params: {} });
+                    else setRoute({ page: 'home', params: {} });
                 }
                 handleRoute();
                 window.addEventListener('popstate', handleRoute);
                 return () => window.removeEventListener('popstate', handleRoute);
             }, []);
 
-            const navigate = (path) => {
-                window.history.pushState({}, '', path);
-                window.dispatchEvent(new PopStateEvent('popstate'));
-            };
+            const navigate = (path) => { window.history.pushState({}, '', path); window.dispatchEvent(new PopStateEvent('popstate')); };
+            const login = (token, userData) => { localStorage.setItem('quest-board-token', token); setUser(userData); };
+            const logout = async () => { try { await api('/api/auth/logout', { method: 'POST' }); } catch {} localStorage.removeItem('quest-board-token'); setUser(null); navigate('/'); };
+
+            if (authLoading) return <div className="app-container"><div className="panel loading">🎲 {t.loadingDice}</div></div>;
 
             return (
-                <div className="app-container">
-                    <header className="header">
-                        <h1><a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>{t.questBoard}</a></h1>
-                        <p>{t.tagline}</p>
-                        <div className="top-controls">
-                            <div className="toggle-group">
-                                <label>{t.timeFormat}:</label>
-                                <button 
-                                    className={`toggle-btn ${timeFormat === '12' ? 'active' : ''}`}
-                                    onClick={() => setTimeFormat('12')}
-                                >
-                                    12h
-                                </button>
-                                <button 
-                                    className={`toggle-btn ${timeFormat === '24' ? 'active' : ''}`}
-                                    onClick={() => setTimeFormat('24')}
-                                >
-                                    24h
-                                </button>
+                <AuthContext.Provider value={{ user, setUser, login, logout, t, lang, timeFormat }}>
+                    <div className="app-container">
+                        <header className="header">
+                            {user && (
+                                <div className="header-right">
+                                    <div className="user-badge" onClick={() => navigate('/profile')}>
+                                        {user.profileImage ? <img src={user.profileImage} alt="" /> : <span>👤</span>}
+                                        {user.displayName}
+                                    </div>
+                                    <button className="btn btn-small btn-secondary" onClick={logout}>{t.logout}</button>
+                                </div>
+                            )}
+                            <h1><a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>{t.questBoard}</a></h1>
+                            <p>{t.tagline}</p>
+                            <div className="top-controls">
+                                <div className="toggle-group">
+                                    <label>{t.timeFormat}:</label>
+                                    <button className={`toggle-btn ${timeFormat === '12' ? 'active' : ''}`} onClick={() => setTimeFormat('12')}>12h</button>
+                                    <button className={`toggle-btn ${timeFormat === '24' ? 'active' : ''}`} onClick={() => setTimeFormat('24')}>24h</button>
+                                </div>
+                                <div className="toggle-group">
+                                    <label>{t.language}:</label>
+                                    <button className={`toggle-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>EN</button>
+                                    <button className={`toggle-btn ${lang === 'sr' ? 'active' : ''}`} onClick={() => setLang('sr')}>SR</button>
+                                </div>
                             </div>
-                            <div className="toggle-group">
-                                <label>{t.language}:</label>
-                                <button 
-                                    className={`toggle-btn ${lang === 'en' ? 'active' : ''}`}
-                                    onClick={() => setLang('en')}
-                                >
-                                    EN
-                                </button>
-                                <button 
-                                    className={`toggle-btn ${lang === 'sr' ? 'active' : ''}`}
-                                    onClick={() => setLang('sr')}
-                                >
-                                    SR
-                                </button>
-                            </div>
-                        </div>
-                    </header>
+                        </header>
+                        {route.page === 'home' && <LandingPage navigate={navigate} t={t} />}
+                        {route.page === 'create' && <CreateEventPage navigate={navigate} t={t} lang={lang} timeFormat={timeFormat} />}
+                        {route.page === 'join' && <JoinEventPage navigate={navigate} t={t} />}
+                        {route.page === 'profile' && <ProfilePage navigate={navigate} t={t} />}
+                        {route.page === 'event' && <EventPage eventId={route.params.eventId} t={t} lang={lang} timeFormat={timeFormat} />}
+                    </div>
+                </AuthContext.Provider>
+            );
+        }
 
-                    {route.page === 'home' && <CreateEventPage navigate={navigate} t={t} lang={lang} timeFormat={timeFormat} />}
-                    {route.page === 'event' && <EventPage eventId={route.params.eventId} t={t} lang={lang} timeFormat={timeFormat} />}
+        function LandingPage({ navigate, t }) {
+            const { user } = useAuth();
+            const [showLogin, setShowLogin] = useState(false);
+            const [showRegister, setShowRegister] = useState(false);
+
+            return (
+                <div className="center-panel">
+                    <div className="panel">
+                        <h2>🏰 {t.welcome}</h2>
+                        <p style={{ marginBottom: '1.5rem', color: 'var(--ink-light)' }}>{t.whatToDo}</p>
+                        <div className="landing-options">
+                            {!user ? (
+                                <>
+                                    <div className="landing-card" onClick={() => setShowLogin(true)}><div className="icon">🔑</div><h3>{t.login}</h3><p>{t.loginDesc}</p></div>
+                                    <div className="landing-card" onClick={() => setShowRegister(true)}><div className="icon">📝</div><h3>{t.register}</h3><p>{t.registerDesc}</p></div>
+                                </>
+                            ) : (
+                                <div className="landing-card" onClick={() => navigate('/profile')}><div className="icon">👤</div><h3>{t.myProfile}</h3><p>{t.loginDesc}</p></div>
+                            )}
+                            <div className="landing-card" onClick={() => navigate('/create')}><div className="icon">⚔️</div><h3>{t.createEvent}</h3><p>{t.createEventDesc}</p></div>
+                            <div className="landing-card" onClick={() => navigate('/join')}><div className="icon">🎭</div><h3>{t.joinEvent}</h3><p>{t.joinEventDesc}</p></div>
+                        </div>
+                    </div>
+                    {showLogin && <LoginModal onClose={() => setShowLogin(false)} t={t} />}
+                    {showRegister && <RegisterModal onClose={() => setShowRegister(false)} t={t} />}
                 </div>
             );
         }
 
-        // Create Event Page
+        function LoginModal({ onClose, t }) {
+            const { login } = useAuth();
+            const [username, setUsername] = useState('');
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true); setError('');
+                try { const data = await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) }); login(data.token, data.user); onClose(); } 
+                catch (err) { setError(err.message); } 
+                finally { setLoading(false); }
+            };
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={e => e.stopPropagation()}>
+                        <h3>🔑 {t.loginTitle}</h3>
+                        {error && <div className="error-message">{error}</div>}
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group"><label>{t.username}</label><input type="text" value={username} onChange={e => setUsername(e.target.value)} required autoFocus /></div>
+                            <div className="form-group"><label>{t.password}</label><input type="password" value={password} onChange={e => setPassword(e.target.value)} required /></div>
+                            <div className="modal-buttons">
+                                <button type="button" className="btn btn-secondary" onClick={onClose}>{t.cancel}</button>
+                                <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? t.loggingIn : t.login}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        function RegisterModal({ onClose, t }) {
+            const { login } = useAuth();
+            const [username, setUsername] = useState('');
+            const [password, setPassword] = useState('');
+            const [displayName, setDisplayName] = useState('');
+            const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true); setError('');
+                try { const data = await api('/api/auth/register', { method: 'POST', body: JSON.stringify({ username, password, displayName: displayName || username }) }); login(data.token, data.user); onClose(); } 
+                catch (err) { setError(err.message); } 
+                finally { setLoading(false); }
+            };
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={e => e.stopPropagation()}>
+                        <h3>📝 {t.registerTitle}</h3>
+                        {error && <div className="error-message">{error}</div>}
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group"><label>{t.username} *</label><input type="text" value={username} onChange={e => setUsername(e.target.value)} required autoFocus /></div>
+                            <div className="form-group"><label>{t.displayName}</label><input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder={username || t.yourName} /></div>
+                            <div className="form-group"><label>{t.password} *</label><input type="password" value={password} onChange={e => setPassword(e.target.value)} required /></div>
+                            <div className="modal-buttons">
+                                <button type="button" className="btn btn-secondary" onClick={onClose}>{t.cancel}</button>
+                                <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? t.registering : t.register}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        function JoinEventPage({ navigate, t }) {
+            const [link, setLink] = useState('');
+            const [error, setError] = useState('');
+
+            const handleGo = () => {
+                let eventId = link.trim();
+                if (eventId.includes('/event/')) eventId = eventId.split('/event/')[1].split(/[?#]/)[0];
+                if (!eventId) { setError(t.eventNotFound); return; }
+                navigate(`/event/${eventId}`);
+            };
+
+            return (
+                <div className="center-panel">
+                    <div className="panel">
+                        <h2>🎭 {t.joinEventTitle}</h2>
+                        <p style={{ marginBottom: '1rem', color: 'var(--ink-light)' }}>{t.pasteLink}</p>
+                        {error && <div className="error-message">{error}</div>}
+                        <div className="form-group"><label>{t.eventLink}</label><input type="text" value={link} onChange={e => setLink(e.target.value)} placeholder="https://... or event ID" onKeyDown={e => e.key === 'Enter' && handleGo()} /></div>
+                        <button className="btn btn-primary btn-block" onClick={handleGo}>🚀 {t.go}</button>
+                    </div>
+                </div>
+            );
+        }
+
+        function ProfilePage({ navigate, t }) {
+            const { user, setUser } = useAuth();
+            const [activeTab, setActiveTab] = useState('profile');
+            const [adventurers, setAdventurers] = useState([]);
+            const [events, setEvents] = useState({ created: [], participated: [] });
+            const [loading, setLoading] = useState(true);
+            const [displayName, setDisplayName] = useState(user?.displayName || '');
+            const [profileImage, setProfileImage] = useState(user?.profileImage || '');
+            const [currentPassword, setCurrentPassword] = useState('');
+            const [newPassword, setNewPassword] = useState('');
+            const [message, setMessage] = useState('');
+            const [error, setError] = useState('');
+            const [advModal, setAdvModal] = useState(null);
+            const [advName, setAdvName] = useState('');
+            const [advImage, setAdvImage] = useState('');
+
+            useEffect(() => { if (!user) { navigate('/'); return; } loadData(); }, [user]);
+
+            const loadData = async () => {
+                try { const [advData, eventsData] = await Promise.all([api('/api/adventurers'), api('/api/profile/events')]); setAdventurers(advData); setEvents(eventsData); } 
+                catch (err) { console.error(err); } 
+                finally { setLoading(false); }
+            };
+
+            const handleUpdateProfile = async (e) => {
+                e.preventDefault(); setError(''); setMessage('');
+                try { await api('/api/profile', { method: 'PUT', body: JSON.stringify({ displayName, profileImage }) }); setUser({ ...user, displayName, profileImage }); setMessage(t.profileUpdated); } 
+                catch (err) { setError(err.message); }
+            };
+
+            const handleChangePassword = async (e) => {
+                e.preventDefault(); setError(''); setMessage('');
+                try { await api('/api/profile/password', { method: 'PUT', body: JSON.stringify({ currentPassword, newPassword }) }); setCurrentPassword(''); setNewPassword(''); setMessage(t.passwordChanged); } 
+                catch (err) { setError(err.message); }
+            };
+
+            const openAdvModal = (adv = null) => {
+                if (adv) { setAdvName(adv.name); setAdvImage(adv.image || ''); setAdvModal({ mode: 'edit', id: adv.id }); } 
+                else { setAdvName(''); setAdvImage(''); setAdvModal({ mode: 'create' }); }
+            };
+
+            const saveAdventurer = async () => {
+                try {
+                    if (advModal.mode === 'create') { const data = await api('/api/adventurers', { method: 'POST', body: JSON.stringify({ name: advName, image: advImage || null }) }); setAdventurers([data, ...adventurers]); } 
+                    else { await api(`/api/adventurers/${advModal.id}`, { method: 'PUT', body: JSON.stringify({ name: advName, image: advImage || null }) }); setAdventurers(adventurers.map(a => a.id === advModal.id ? { ...a, name: advName, image: advImage } : a)); }
+                    setAdvModal(null);
+                } catch (err) { setError(err.message); }
+            };
+
+            const deleteAdventurer = async (id) => {
+                try { await api(`/api/adventurers/${id}`, { method: 'DELETE' }); setAdventurers(adventurers.filter(a => a.id !== id)); } 
+                catch (err) { setError(err.message); }
+            };
+
+            if (!user) return null;
+
+            return (
+                <div className="center-panel">
+                    <div className="panel">
+                        <div className="profile-header">
+                            {profileImage ? <img src={profileImage} alt="" className="profile-image" /> : <div className="profile-image-placeholder">👤</div>}
+                            <div className="profile-info"><h2>{user.displayName}</h2><p>@{user.username}</p></div>
+                        </div>
+                        <div className="tabs">
+                            <button className={`tab ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}>{t.myProfile}</button>
+                            <button className={`tab ${activeTab === 'adventurers' ? 'active' : ''}`} onClick={() => setActiveTab('adventurers')}>{t.myAdventurers}</button>
+                            <button className={`tab ${activeTab === 'events' ? 'active' : ''}`} onClick={() => setActiveTab('events')}>{t.myQuestBoards}</button>
+                        </div>
+                        {error && <div className="error-message">{error}</div>}
+                        {message && <div className="success-message">{message}</div>}
+
+                        {activeTab === 'profile' && (
+                            <>
+                                <form onSubmit={handleUpdateProfile}>
+                                    <div className="form-group"><label>{t.displayName}</label><input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} /></div>
+                                    <div className="form-group">
+                                        <label>{t.profileImage}</label>
+                                        <input type="url" value={profileImage} onChange={e => setProfileImage(e.target.value)} placeholder="https://..." />
+                                        {profileImage && <div className="image-upload" style={{ marginTop: '0.5rem' }}><img src={profileImage} alt="Preview" className="image-preview" onError={e => e.target.style.display = 'none'} /></div>}
+                                    </div>
+                                    <button type="submit" className="btn btn-primary">{t.updateProfile}</button>
+                                </form>
+                                <h3 style={{ marginTop: '2rem', fontFamily: 'Cinzel', borderTop: '1px solid var(--ink-light)', paddingTop: '1rem' }}>🔒 {t.changePassword}</h3>
+                                <form onSubmit={handleChangePassword}>
+                                    <div className="form-group"><label>{t.currentPassword}</label><input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required /></div>
+                                    <div className="form-group"><label>{t.newPassword}</label><input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required /></div>
+                                    <button type="submit" className="btn btn-secondary">{t.changePassword}</button>
+                                </form>
+                            </>
+                        )}
+
+                        {activeTab === 'adventurers' && (
+                            <>
+                                <button className="btn btn-primary btn-block" onClick={() => openAdvModal()} style={{ marginBottom: '1rem' }}>➕ {t.createAdventurer}</button>
+                                {adventurers.length === 0 ? <p style={{ fontStyle: 'italic', color: 'var(--ink-light)' }}>{t.noAdventurersSaved}</p> : adventurers.map(adv => (
+                                    <div key={adv.id} className="adventurer-card">
+                                        {adv.image ? <img src={adv.image} alt="" /> : <div className="no-image">⚔️</div>}
+                                        <div className="info"><div className="name">{adv.name}</div></div>
+                                        <div className="actions">
+                                            <button className="btn btn-small btn-secondary" onClick={() => openAdvModal(adv)}>✏️</button>
+                                            <button className="btn btn-small btn-danger" onClick={() => deleteAdventurer(adv.id)}>🗑️</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </>
+                        )}
+
+                        {activeTab === 'events' && (
+                            <>
+                                <h3 style={{ fontFamily: 'Cinzel', fontSize: '1rem', marginBottom: '0.5rem' }}>📜 {t.createdByMe}</h3>
+                                {events.created.length === 0 ? <p style={{ fontStyle: 'italic', color: 'var(--ink-light)', marginBottom: '1rem' }}>—</p> : events.created.map(ev => (
+                                    <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}><h4>{ev.name}</h4><p>{ev.dates.length} dates • {ev.description || '...'}</p></a>
+                                ))}
+                                <h3 style={{ fontFamily: 'Cinzel', fontSize: '1rem', marginTop: '1.5rem', marginBottom: '0.5rem' }}>🎭 {t.participating}</h3>
+                                {events.participated.length === 0 ? <p style={{ fontStyle: 'italic', color: 'var(--ink-light)' }}>—</p> : events.participated.map(ev => (
+                                    <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}><h4>{ev.name}</h4><p>{ev.dates.length} dates • {ev.description || '...'}</p></a>
+                                ))}
+                            </>
+                        )}
+                    </div>
+
+                    {advModal && (
+                        <div className="modal-overlay" onClick={() => setAdvModal(null)}>
+                            <div className="modal" onClick={e => e.stopPropagation()}>
+                                <h3>⚔️ {advModal.mode === 'create' ? t.createAdventurer : t.editAdventurer}</h3>
+                                <div className="form-group"><label>{t.adventurerName} *</label><input type="text" value={advName} onChange={e => setAdvName(e.target.value)} autoFocus /></div>
+                                <div className="form-group">
+                                    <label>{t.adventurerImage}</label>
+                                    <input type="url" value={advImage} onChange={e => setAdvImage(e.target.value)} placeholder="https://..." />
+                                    <div className="image-upload" style={{ marginTop: '0.5rem' }}>{advImage ? <img src={advImage} alt="Preview" className="image-preview" onError={e => e.target.style.display = 'none'} /> : <div className="image-preview-placeholder">⚔️</div>}</div>
+                                </div>
+                                <div className="modal-buttons">
+                                    <button className="btn btn-secondary" onClick={() => setAdvModal(null)}>{t.cancel}</button>
+                                    <button className="btn btn-primary" onClick={saveAdventurer} disabled={!advName.trim()}>{t.save}</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
         function CreateEventPage({ navigate, t, lang, timeFormat }) {
             const [name, setName] = useState('');
             const [description, setDescription] = useState('');
@@ -856,13 +1475,10 @@
             const [loading, setLoading] = useState(false);
             const [error, setError] = useState('');
 
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            const today = new Date(); today.setHours(0, 0, 0, 0);
 
             const formatHourOption = (hour) => {
-                if (timeFormat === '24') {
-                    return `${hour.toString().padStart(2, '0')}:00`;
-                }
+                if (timeFormat === '24') return `${hour.toString().padStart(2, '0')}:00`;
                 if (hour === 0) return '12:00 AM';
                 if (hour === 12) return '12:00 PM';
                 if (hour < 12) return `${hour}:00 AM`;
@@ -870,67 +1486,27 @@
             };
 
             const getDaysInMonth = (date) => {
-                const year = date.getFullYear();
-                const month = date.getMonth();
-                const firstDay = new Date(year, month, 1);
-                const lastDay = new Date(year, month + 1, 0);
+                const year = date.getFullYear(), month = date.getMonth();
+                const firstDay = new Date(year, month, 1), lastDay = new Date(year, month + 1, 0);
                 const days = [];
-                
-                for (let i = 0; i < firstDay.getDay(); i++) {
-                    days.push(null);
-                }
-                
-                for (let d = 1; d <= lastDay.getDate(); d++) {
-                    days.push(new Date(year, month, d));
-                }
-                
+                for (let i = 0; i < firstDay.getDay(); i++) days.push(null);
+                for (let d = 1; d <= lastDay.getDate(); d++) days.push(new Date(year, month, d));
                 return days;
             };
 
             const toggleDate = (date) => {
                 if (date < today) return;
                 const dateStr = date.toISOString().split('T')[0];
-                setSelectedDates(prev => 
-                    prev.includes(dateStr) 
-                        ? prev.filter(d => d !== dateStr)
-                        : [...prev, dateStr].sort()
-                );
+                setSelectedDates(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr].sort());
             };
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
-                if (!name.trim() || selectedDates.length === 0) {
-                    setError(lang === 'sr' ? 'Molimo unesite naziv i izaberite bar jedan datum' : 'Please enter a name and select at least one date');
-                    return;
-                }
-
-                setLoading(true);
-                setError('');
-
-                try {
-                    const res = await fetch('/api/events', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            name: name.trim(),
-                            description: description.trim(),
-                            dates: selectedDates,
-                            startHour,
-                            endHour
-                        })
-                    });
-
-                    const data = await res.json();
-                    if (res.ok) {
-                        navigate(data.url);
-                    } else {
-                        setError(data.error || 'Failed to create event');
-                    }
-                } catch (err) {
-                    setError(lang === 'sr' ? 'Greška mreže. Pokušajte ponovo.' : 'Network error. Please try again.');
-                } finally {
-                    setLoading(false);
-                }
+                if (!name.trim() || selectedDates.length === 0) { setError(lang === 'sr' ? 'Molimo unesite naziv i izaberite bar jedan datum' : 'Please enter a name and select at least one date'); return; }
+                setLoading(true); setError('');
+                try { const res = await api('/api/events', { method: 'POST', body: JSON.stringify({ name: name.trim(), description: description.trim(), dates: selectedDates, startHour, endHour }) }); navigate(res.url); } 
+                catch (err) { setError(err.message || 'Network error'); } 
+                finally { setLoading(false); }
             };
 
             const days = getDaysInMonth(currentMonth);
@@ -940,92 +1516,40 @@
                 <div className="center-panel">
                     <div className="panel">
                         <h2>📜 {t.createNewQuest}</h2>
-                        
                         {error && <div className="error-message">{error}</div>}
-                        
                         <form onSubmit={handleSubmit}>
-                            <div className="form-group">
-                                <label>{t.eventName} *</label>
-                                <input 
-                                    type="text" 
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    placeholder={t.eventNamePlaceholder}
-                                    required
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>{t.description}</label>
-                                <textarea 
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    placeholder={t.descriptionPlaceholder}
-                                    rows={2}
-                                />
-                            </div>
-
+                            <div className="form-group"><label>{t.eventName} *</label><input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder={t.eventNamePlaceholder} required /></div>
+                            <div className="form-group"><label>{t.description}</label><textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t.descriptionPlaceholder} rows={2} /></div>
                             <div className="form-group">
                                 <label>{t.selectDates} * ({selectedDates.length} {t.selected})</label>
                                 <div className="month-nav">
-                                    <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}>
-                                        ◀
-                                    </button>
+                                    <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}>◀</button>
                                     <span>{monthName}</span>
-                                    <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}>
-                                        ▶
-                                    </button>
+                                    <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}>▶</button>
                                 </div>
                                 <div className="date-picker-grid">
-                                    {t.daysShort.map((d, i) => (
-                                        <div key={i} className="date-picker-header">{d}</div>
-                                    ))}
-                                    {days.map((date, i) => (
-                                        <div 
-                                            key={i}
-                                            className={`date-cell ${!date ? 'disabled' : ''} ${date && date < today ? 'disabled' : ''} ${date && selectedDates.includes(date.toISOString().split('T')[0]) ? 'selected' : ''}`}
-                                            onClick={() => date && toggleDate(date)}
-                                        >
-                                            {date ? date.getDate() : ''}
-                                        </div>
-                                    ))}
+                                    {t.daysShort.map((d, i) => <div key={i} className="date-picker-header">{d}</div>)}
+                                    {days.map((date, i) => <div key={i} className={`date-cell ${!date ? 'disabled' : ''} ${date && date < today ? 'disabled' : ''} ${date && selectedDates.includes(date.toISOString().split('T')[0]) ? 'selected' : ''}`} onClick={() => date && toggleDate(date)}>{date ? date.getDate() : ''}</div>)}
                                 </div>
                             </div>
-
                             <div className="form-row">
-                                <div className="form-group">
-                                    <label>{t.startTime}</label>
-                                    <select value={startHour} onChange={(e) => setStartHour(Number(e.target.value))}>
-                                        {Array.from({length: 24}, (_, i) => (
-                                            <option key={i} value={i}>{formatHourOption(i)}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>{t.endTime}</label>
-                                    <select value={endHour} onChange={(e) => setEndHour(Number(e.target.value))}>
-                                        {Array.from({length: 24}, (_, i) => (
-                                            <option key={i} value={i}>{formatHourOption(i)}</option>
-                                        ))}
-                                    </select>
-                                </div>
+                                <div className="form-group"><label>{t.startTime}</label><select value={startHour} onChange={(e) => setStartHour(Number(e.target.value))}>{Array.from({length: 24}, (_, i) => <option key={i} value={i}>{formatHourOption(i)}</option>)}</select></div>
+                                <div className="form-group"><label>{t.endTime}</label><select value={endHour} onChange={(e) => setEndHour(Number(e.target.value))}>{Array.from({length: 24}, (_, i) => <option key={i} value={i}>{formatHourOption(i)}</option>)}</select></div>
                             </div>
-
-                            <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
-                                {loading ? t.creating : `⚔️ ${t.createQuestBoard}`}
-                            </button>
+                            <button type="submit" className="btn btn-primary btn-block" disabled={loading}>{loading ? t.creating : `⚔️ ${t.createQuestBoard}`}</button>
                         </form>
                     </div>
                 </div>
             );
         }
 
-        // Event Page
         function EventPage({ eventId, t, lang, timeFormat }) {
+            const { user } = useAuth();
             const [event, setEvent] = useState(null);
             const [loading, setLoading] = useState(true);
             const [error, setError] = useState('');
             const [currentUser, setCurrentUser] = useState('');
+            const [currentUserImage, setCurrentUserImage] = useState('');
             const [userSlots, setUserSlots] = useState({});
             const [viewMode, setViewMode] = useState('group');
             const [tooltip, setTooltip] = useState(null);
@@ -1033,293 +1557,93 @@
             const [tempNote, setTempNote] = useState('');
             const [nameModal, setNameModal] = useState(false);
             const [tempName, setTempName] = useState('');
-            const [saving, setSaving] = useState(false);
             const [showSaved, setShowSaved] = useState(false);
             const [copied, setCopied] = useState(false);
-            
-            // Drag selection state
+            const [adventurers, setAdventurers] = useState([]);
+            const [selectedAdventurer, setSelectedAdventurer] = useState(null);
             const [isDragging, setIsDragging] = useState(false);
-            const [dragMode, setDragMode] = useState(null); // 'add' or 'remove'
+            const [dragMode, setDragMode] = useState(null);
             const [draggedSlots, setDraggedSlots] = useState(new Set());
-            const gridRef = useRef(null);
 
-            useEffect(() => {
-                fetchEvent();
-            }, [eventId]);
+            useEffect(() => { fetchEvent(); if (user) fetchAdventurers(); }, [eventId, user]);
 
             const fetchEvent = async () => {
                 try {
-                    const res = await fetch(`/api/events/${eventId}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        setEvent(data);
-                        
-                        const savedUser = localStorage.getItem(`quest-board-user-${eventId}`);
-                        if (savedUser && data.participants.includes(savedUser)) {
-                            setCurrentUser(savedUser);
-                            setUserSlots(data.availability[savedUser] || {});
-                        }
-                    } else {
-                        setError(t.eventNotFound);
-                    }
-                } catch (err) {
-                    setError(t.eventNotFound);
-                } finally {
-                    setLoading(false);
-                }
+                    const data = await api(`/api/events/${eventId}`);
+                    setEvent(data);
+                    const savedUser = localStorage.getItem(`quest-board-user-${eventId}`);
+                    const savedImage = localStorage.getItem(`quest-board-user-image-${eventId}`);
+                    if (savedUser && data.participants.includes(savedUser)) { setCurrentUser(savedUser); setCurrentUserImage(savedImage || ''); setUserSlots(data.availability[savedUser] || {}); }
+                } catch (err) { setError(t.eventNotFound); } finally { setLoading(false); }
             };
+
+            const fetchAdventurers = async () => { try { const data = await api('/api/adventurers'); setAdventurers(data); } catch {} };
 
             const saveAvailability = async (slots) => {
                 if (!currentUser) return;
-                
-                setSaving(true);
-                try {
-                    await fetch(`/api/events/${eventId}/availability`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            participantName: currentUser,
-                            slots: slots
-                        })
-                    });
-                    
-                    await fetchEvent();
-                    setShowSaved(true);
-                    setTimeout(() => setShowSaved(false), 2000);
-                } catch (err) {
-                    console.error('Failed to save:', err);
-                } finally {
-                    setSaving(false);
-                }
+                try { await api(`/api/events/${eventId}/availability`, { method: 'POST', body: JSON.stringify({ participantName: currentUser, participantImage: currentUserImage || null, slots }) }); await fetchEvent(); setShowSaved(true); setTimeout(() => setShowSaved(false), 2000); } 
+                catch (err) { console.error('Failed to save:', err); }
             };
 
             const handleJoin = () => {
-                const name = tempName.trim();
+                let name, image;
+                if (selectedAdventurer) { name = selectedAdventurer.name; image = selectedAdventurer.image || ''; } 
+                else { name = tempName.trim(); image = ''; }
                 if (!name) return;
-                
-                setCurrentUser(name);
+                setCurrentUser(name); setCurrentUserImage(image);
                 localStorage.setItem(`quest-board-user-${eventId}`, name);
-                
-                if (event.availability[name]) {
-                    setUserSlots(event.availability[name]);
-                } else {
-                    setUserSlots({});
-                }
-                
-                setNameModal(false);
-                setTempName('');
-                setViewMode('edit');
+                localStorage.setItem(`quest-board-user-image-${eventId}`, image);
+                if (event.availability[name]) setUserSlots(event.availability[name]); else setUserSlots({});
+                setNameModal(false); setTempName(''); setSelectedAdventurer(null); setViewMode('edit');
             };
 
-            // Drag handlers
             const handleMouseDown = (date, hour, e) => {
                 if (viewMode !== 'edit' || !currentUser || e.button !== 0) return;
                 e.preventDefault();
-                
                 const key = getSlotKey(date, hour);
-                const isCurrentlyAvailable = userSlots[key]?.available;
-                
-                setIsDragging(true);
-                setDragMode(isCurrentlyAvailable ? 'remove' : 'add');
-                setDraggedSlots(new Set([key]));
+                setIsDragging(true); setDragMode(userSlots[key]?.available ? 'remove' : 'add'); setDraggedSlots(new Set([key]));
             };
 
-            const handleMouseEnter = (date, hour) => {
-                if (!isDragging || viewMode !== 'edit') return;
-                
-                const key = getSlotKey(date, hour);
-                setDraggedSlots(prev => new Set([...prev, key]));
-            };
+            const handleMouseEnter = (date, hour) => { if (!isDragging || viewMode !== 'edit') return; setDraggedSlots(prev => new Set([...prev, getSlotKey(date, hour)])); };
 
             const handleMouseUp = () => {
                 if (!isDragging) return;
-                
                 const newSlots = { ...userSlots };
-                
-                draggedSlots.forEach(key => {
-                    if (dragMode === 'add') {
-                        newSlots[key] = { available: true, note: '' };
-                    } else {
-                        delete newSlots[key];
-                    }
-                });
-                
-                setUserSlots(newSlots);
-                saveAvailability(newSlots);
-                
-                setIsDragging(false);
-                setDragMode(null);
-                setDraggedSlots(new Set());
+                draggedSlots.forEach(key => { if (dragMode === 'add') newSlots[key] = { available: true, note: '' }; else delete newSlots[key]; });
+                setUserSlots(newSlots); saveAvailability(newSlots);
+                setIsDragging(false); setDragMode(null); setDraggedSlots(new Set());
             };
 
-            useEffect(() => {
-                const handleGlobalMouseUp = () => {
-                    if (isDragging) {
-                        handleMouseUp();
-                    }
-                };
-                
-                window.addEventListener('mouseup', handleGlobalMouseUp);
-                return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
-            }, [isDragging, dragMode, draggedSlots, userSlots]);
+            useEffect(() => { const handler = () => { if (isDragging) handleMouseUp(); }; window.addEventListener('mouseup', handler); return () => window.removeEventListener('mouseup', handler); }, [isDragging, dragMode, draggedSlots, userSlots]);
 
-            const openNoteModal = (date, hour, e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (viewMode !== 'edit' || !currentUser) return;
-                
-                const key = getSlotKey(date, hour);
-                if (!userSlots[key]?.available) return;
-                
-                setTempNote(userSlots[key]?.note || '');
-                setNoteModal({ date, hour });
-            };
+            const openNoteModal = (date, hour, e) => { e.preventDefault(); e.stopPropagation(); if (viewMode !== 'edit' || !currentUser) return; const key = getSlotKey(date, hour); if (!userSlots[key]?.available) return; setTempNote(userSlots[key]?.note || ''); setNoteModal({ date, hour }); };
 
-            const saveNote = () => {
-                if (!noteModal) return;
-                
-                const key = getSlotKey(noteModal.date, noteModal.hour);
-                const newSlots = { ...userSlots };
-                
-                if (newSlots[key]) {
-                    newSlots[key] = { ...newSlots[key], note: tempNote };
-                }
-                
-                setUserSlots(newSlots);
-                saveAvailability(newSlots);
-                setNoteModal(null);
-                setTempNote('');
-            };
+            const saveNote = () => { if (!noteModal) return; const key = getSlotKey(noteModal.date, noteModal.hour); const newSlots = { ...userSlots }; if (newSlots[key]) newSlots[key] = { ...newSlots[key], note: tempNote }; setUserSlots(newSlots); saveAvailability(newSlots); setNoteModal(null); setTempNote(''); };
 
-            const getSlotAvailability = (date, hour) => {
-                if (!event) return [];
-                const key = getSlotKey(date, hour);
-                const available = [];
-                
-                event.participants.forEach(name => {
-                    const userAvail = event.availability[name];
-                    if (userAvail && userAvail[key]?.available) {
-                        available.push({
-                            name,
-                            note: userAvail[key].note || ''
-                        });
-                    }
-                });
-                
-                return available;
-            };
+            const getSlotAvailability = (date, hour) => { if (!event) return []; const key = getSlotKey(date, hour); return event.participants.filter(name => event.availability[name]?.[key]?.available).map(name => ({ name, note: event.availability[name][key].note || '', image: event.participantImages?.[name] || '' })); };
 
             const getSlotClass = (date, hour) => {
                 const key = getSlotKey(date, hour);
-                
-                // Check if being dragged
-                if (isDragging && draggedSlots.has(key)) {
-                    return dragMode === 'add' ? 'dragging' : 'empty';
-                }
-                
-                if (viewMode === 'edit') {
-                    return userSlots[key]?.available ? 'available' : 'empty';
-                }
-                
+                if (isDragging && draggedSlots.has(key)) return dragMode === 'add' ? 'dragging' : 'empty';
+                if (viewMode === 'edit') return userSlots[key]?.available ? 'available' : 'empty';
                 const available = getSlotAvailability(date, hour);
-                const total = event.participants.length || 1;
-                const ratio = available.length / total;
-                
-                if (ratio === 0) return 'empty';
-                if (ratio < 0.2) return 'level-1';
-                if (ratio < 0.4) return 'level-2';
-                if (ratio < 0.6) return 'level-3';
-                if (ratio < 0.8) return 'level-4';
-                return 'level-5';
+                const ratio = available.length / (event.participants.length || 1);
+                if (ratio === 0) return 'empty'; if (ratio < 0.2) return 'level-1'; if (ratio < 0.4) return 'level-2'; if (ratio < 0.6) return 'level-3'; if (ratio < 0.8) return 'level-4'; return 'level-5';
             };
 
-            const hasNote = (date, hour) => {
-                const key = getSlotKey(date, hour);
-                if (viewMode === 'edit') {
-                    return (userSlots[key]?.note || '').length > 0;
-                }
-                return getSlotAvailability(date, hour).some(a => a.note.length > 0);
-            };
+            const hasNote = (date, hour) => { const key = getSlotKey(date, hour); if (viewMode === 'edit') return (userSlots[key]?.note || '').length > 0; return getSlotAvailability(date, hour).some(a => a.note.length > 0); };
+            const handleSlotHover = (e, date, hour) => { const rect = e.target.getBoundingClientRect(); setTooltip({ x: Math.min(rect.right + 10, window.innerWidth - 300), y: Math.min(rect.top, window.innerHeight - 200), date, hour, available: getSlotAvailability(date, hour) }); };
+            const copyLink = () => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); };
 
-            const handleSlotHover = (e, date, hour) => {
-                const available = getSlotAvailability(date, hour);
-                const rect = e.target.getBoundingClientRect();
-                setTooltip({
-                    x: Math.min(rect.right + 10, window.innerWidth - 300),
-                    y: Math.min(rect.top, window.innerHeight - 200),
-                    date,
-                    hour,
-                    available
-                });
-            };
+            const formatHour = (hour) => { if (timeFormat === '24') return { hour: hour.toString().padStart(2, '0') + ':00', ampm: '' }; if (hour === 0) return { hour: '12', ampm: 'AM' }; if (hour === 12) return { hour: '12', ampm: 'PM' }; if (hour < 12) return { hour: hour.toString(), ampm: 'AM' }; return { hour: (hour - 12).toString(), ampm: 'PM' }; };
+            const formatDateForDisplay = (dateStr) => { const date = new Date(dateStr + 'T12:00:00'); return { dayName: t.days[date.getDay()], dayNum: t.ordinal(date.getDate()) }; };
+            const formatTooltipDate = (dateStr, hour) => { const date = new Date(dateStr + 'T12:00:00'); const h = formatHour(hour); return `${t.days[date.getDay()]}, ${t.months[date.getMonth()]} ${t.ordinal(date.getDate())} ${t.atTime} ${timeFormat === '24' ? h.hour : `${h.hour} ${h.ampm}`}`; };
+            const groupDatesByMonth = (dates) => { const groups = []; let cur = null; dates.forEach((ds, i) => { const d = new Date(ds + 'T12:00:00'); const k = `${d.getFullYear()}-${d.getMonth()}`; if (!cur || cur.key !== k) { cur = { key: k, name: t.months[d.getMonth()], count: 1 }; groups.push(cur); } else cur.count++; }); return groups; };
 
-            const copyLink = () => {
-                navigator.clipboard.writeText(window.location.href);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
-            };
+            if (loading) return <div className="panel loading">🎲 {t.loadingDice}</div>;
+            if (error) return <div className="panel"><div className="error-message">{error}</div></div>;
 
-            const formatHour = (hour) => {
-                if (timeFormat === '24') {
-                    return { hour: hour.toString().padStart(2, '0') + ':00', ampm: '' };
-                }
-                if (hour === 0) return { hour: '12', ampm: 'AM' };
-                if (hour === 12) return { hour: '12', ampm: 'PM' };
-                if (hour < 12) return { hour: hour.toString(), ampm: 'AM' };
-                return { hour: (hour - 12).toString(), ampm: 'PM' };
-            };
-
-            const formatDateForDisplay = (dateStr) => {
-                const date = new Date(dateStr + 'T12:00:00');
-                const dayName = t.days[date.getDay()];
-                const dayNum = t.ordinal(date.getDate());
-                return { dayName, dayNum };
-            };
-
-            const formatTooltipDate = (dateStr, hour) => {
-                const date = new Date(dateStr + 'T12:00:00');
-                const dayName = t.days[date.getDay()];
-                const dayNum = t.ordinal(date.getDate());
-                const monthName = t.months[date.getMonth()];
-                const hourFormatted = formatHour(hour);
-                const timeStr = timeFormat === '24' ? hourFormatted.hour : `${hourFormatted.hour} ${hourFormatted.ampm}`;
-                return `${dayName}, ${monthName} ${dayNum} @ ${timeStr}`;
-            };
-
-            // Group dates by month for header rendering
-            const groupDatesByMonth = (dates) => {
-                const groups = [];
-                let currentGroup = null;
-                
-                dates.forEach((dateStr, index) => {
-                    const date = new Date(dateStr + 'T12:00:00');
-                    const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
-                    const monthName = t.months[date.getMonth()];
-                    
-                    if (!currentGroup || currentGroup.key !== monthKey) {
-                        currentGroup = { key: monthKey, name: monthName, count: 1, startIndex: index };
-                        groups.push(currentGroup);
-                    } else {
-                        currentGroup.count++;
-                    }
-                });
-                
-                return groups;
-            };
-
-            if (loading) {
-                return <div className="panel loading">🎲 {t.loadingDice}</div>;
-            }
-
-            if (error) {
-                return <div className="panel"><div className="error-message">{error}</div></div>;
-            }
-
-            const hours = [];
-            for (let h = event.startHour; h < event.endHour; h++) {
-                hours.push(h);
-            }
-
+            const hours = []; for (let h = event.startHour; h < event.endHour; h++) hours.push(h);
             const monthGroups = groupDatesByMonth(event.dates);
 
             return (
@@ -1327,225 +1651,63 @@
                     <div className="main-content">
                         <aside className="panel">
                             <h2>⚔️ {t.adventurer}</h2>
-                            
                             {!currentUser ? (
-                                <>
-                                    <p style={{marginBottom: '1rem', fontStyle: 'italic'}}>
-                                        {t.joinPrompt}
-                                    </p>
-                                    <button className="btn btn-primary btn-block" onClick={() => setNameModal(true)}>
-                                        🎭 {t.joinQuest}
-                                    </button>
-                                </>
+                                <><p style={{marginBottom: '1rem', fontStyle: 'italic'}}>{t.joinPrompt}</p><button className="btn btn-primary btn-block" onClick={() => setNameModal(true)}>🎭 {t.joinQuest}</button></>
                             ) : (
                                 <>
-                                    <div className="participant-tag active" style={{marginBottom: '1rem'}}>
-                                        {currentUser}
-                                    </div>
-                                    
+                                    <div className="participant-tag active" style={{marginBottom: '1rem'}}>{currentUserImage && <img src={currentUserImage} alt="" />}{currentUser}</div>
                                     <div className="view-toggle">
-                                        <button 
-                                            className={`btn ${viewMode === 'group' ? 'active' : 'btn-secondary'}`}
-                                            onClick={() => setViewMode('group')}
-                                        >
-                                            👥 {t.group}
-                                        </button>
-                                        <button 
-                                            className={`btn ${viewMode === 'edit' ? 'active' : 'btn-secondary'}`}
-                                            onClick={() => setViewMode('edit')}
-                                        >
-                                            ✏️ {t.edit}
-                                        </button>
+                                        <button className={`btn ${viewMode === 'group' ? 'active' : 'btn-secondary'}`} onClick={() => setViewMode('group')}>👥 {t.group}</button>
+                                        <button className={`btn ${viewMode === 'edit' ? 'active' : 'btn-secondary'}`} onClick={() => setViewMode('edit')}>✏️ {t.edit}</button>
                                     </div>
-
-                                    {viewMode === 'edit' && (
-                                        <div className="instructions">
-                                            <strong>{t.instructionsTitle}</strong>
-                                            <ul>
-                                                <li>{t.instruction1}</li>
-                                                <li>{t.instruction2}</li>
-                                                <li>{t.instruction3}</li>
-                                            </ul>
-                                        </div>
-                                    )}
+                                    {viewMode === 'edit' && <div className="instructions"><strong>{t.instructionsTitle}</strong><ul><li>{t.instruction1}</li><li>{t.instruction2}</li><li>{t.instruction3}</li></ul></div>}
                                 </>
                             )}
-
                             <h2 style={{marginTop: '1.5rem'}}>🎭 {t.party} ({event.participants.length})</h2>
-                            <div>
-                                {event.participants.length === 0 ? (
-                                    <p style={{fontStyle: 'italic', fontSize: '0.9rem'}}>{t.noAdventurers}</p>
-                                ) : (
-                                    event.participants.map(name => (
-                                        <span 
-                                            key={name} 
-                                            className={`participant-tag ${name === currentUser ? 'active' : ''}`}
-                                        >
-                                            {name}
-                                        </span>
-                                    ))
-                                )}
-                            </div>
-
-                            <div className="share-box">
-                                <strong>📨 {t.inviteParty}</strong>
-                                <span className="share-url">{window.location.href}</span>
-                                <button className="btn btn-secondary" onClick={copyLink}>
-                                    {copied ? `✓ ${t.copied}` : `📋 ${t.copyLink}`}
-                                </button>
-                            </div>
-
-                            <div className="legend">
-                                {viewMode === 'group' ? (
-                                    <>
-                                        <div className="legend-item">
-                                            <div className="legend-color" style={{background: 'var(--available)'}}></div>
-                                            <span>{t.all}</span>
-                                        </div>
-                                        <div className="legend-item">
-                                            <div className="legend-color" style={{background: '#7bc47a'}}></div>
-                                            <span>{t.most}</span>
-                                        </div>
-                                        <div className="legend-item">
-                                            <div className="legend-color" style={{background: '#a8d5a2'}}></div>
-                                            <span>{t.some}</span>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div className="legend-item">
-                                        <div className="legend-color" style={{background: 'var(--available)'}}></div>
-                                        <span>{t.available}</span>
-                                    </div>
-                                )}
-                                <div className="legend-item">
-                                    <span>📜</span>
-                                    <span>{t.hasNote}</span>
-                                </div>
-                            </div>
+                            <div>{event.participants.length === 0 ? <p style={{fontStyle: 'italic', fontSize: '0.9rem'}}>{t.noAdventurers}</p> : event.participants.map(name => <span key={name} className={`participant-tag ${name === currentUser ? 'active' : ''}`}>{event.participantImages?.[name] && <img src={event.participantImages[name]} alt="" />}{name}</span>)}</div>
+                            <div className="share-box"><strong>📨 {t.inviteParty}</strong><span className="share-url">{window.location.href}</span><button className="btn btn-secondary" onClick={copyLink}>{copied ? `✓ ${t.copied}` : `📋 ${t.copyLink}`}</button></div>
+                            <div className="legend">{viewMode === 'group' ? <><div className="legend-item"><div className="legend-color" style={{background: 'var(--available)'}}></div><span>{t.all}</span></div><div className="legend-item"><div className="legend-color" style={{background: '#7bc47a'}}></div><span>{t.most}</span></div><div className="legend-item"><div className="legend-color" style={{background: '#a8d5a2'}}></div><span>{t.some}</span></div></> : <div className="legend-item"><div className="legend-color" style={{background: 'var(--available)'}}></div><span>{t.available}</span></div>}<div className="legend-item"><span>📜</span><span>{t.hasNote}</span></div></div>
                         </aside>
-
                         <main className="panel">
                             <h2>📅 {event.name}</h2>
                             {event.description && <p style={{marginBottom: '1rem', fontStyle: 'italic'}}>{event.description}</p>}
-                            
-                            <div className="schedule-grid" ref={gridRef}>
-                                {/* Month headers row */}
-                                <div 
-                                    className="grid-container"
-                                    style={{
-                                        gridTemplateColumns: `60px repeat(${event.dates.length}, 1fr)`,
-                                        marginBottom: '2px'
-                                    }}
-                                >
+                            <div className="schedule-grid">
+                                <div className="grid-container" style={{ gridTemplateColumns: `60px repeat(${event.dates.length}, 1fr)`, marginBottom: '2px' }}>
                                     <div style={{background: 'transparent'}}></div>
-                                    {monthGroups.map((group, i) => (
-                                        <div 
-                                            key={group.key}
-                                            className="month-header"
-                                            style={{ gridColumn: `span ${group.count}` }}
-                                        >
-                                            {group.name}
-                                        </div>
-                                    ))}
+                                    {monthGroups.map(g => <div key={g.key} className="month-header" style={{ gridColumn: `span ${g.count}` }}>{g.name}</div>)}
                                 </div>
-
-                                {/* Main grid */}
-                                <div 
-                                    className="grid-container"
-                                    style={{
-                                        gridTemplateColumns: `60px repeat(${event.dates.length}, 1fr)`,
-                                        gridTemplateRows: `auto repeat(${hours.length}, 1fr)`
-                                    }}
-                                >
-                                    {/* Date headers */}
+                                <div className="grid-container" style={{ gridTemplateColumns: `60px repeat(${event.dates.length}, 1fr)`, gridTemplateRows: `auto repeat(${hours.length}, 1fr)` }}>
                                     <div style={{background: 'transparent'}}></div>
-                                    {event.dates.map(date => {
-                                        const { dayName, dayNum } = formatDateForDisplay(date);
-                                        return (
-                                            <div key={date} className="grid-header">
-                                                <span className="day-name">{dayName}</span>
-                                                <span className="day-number">{dayNum}</span>
-                                            </div>
-                                        );
-                                    })}
-                                    
-                                    {/* Time slots */}
-                                    {hours.map(hour => {
-                                        const { hour: hourStr, ampm } = formatHour(hour);
-                                        return (
-                                            <React.Fragment key={hour}>
-                                                <div className="time-label">
-                                                    <span className="hour">{hourStr}</span>
-                                                    {ampm && <span className="ampm">{ampm}</span>}
-                                                </div>
-                                                {event.dates.map(date => {
-                                                    const available = getSlotAvailability(date, hour);
-                                                    return (
-                                                        <div
-                                                            key={`${date}-${hour}`}
-                                                            className={`time-slot ${getSlotClass(date, hour)} ${hasNote(date, hour) ? 'has-note' : ''}`}
-                                                            onMouseDown={(e) => handleMouseDown(date, hour, e)}
-                                                            onMouseEnter={() => handleMouseEnter(date, hour)}
-                                                            onContextMenu={(e) => openNoteModal(date, hour, e)}
-                                                            onMouseOver={(e) => !isDragging && handleSlotHover(e, date, hour)}
-                                                            onMouseLeave={() => !isDragging && setTooltip(null)}
-                                                        >
-                                                            {viewMode === 'group' && available.length > 0 && (
-                                                                <span className="availability-count">
-                                                                    {available.length}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })}
-                                            </React.Fragment>
-                                        );
-                                    })}
+                                    {event.dates.map(date => { const { dayName, dayNum } = formatDateForDisplay(date); return <div key={date} className="grid-header"><span className="day-name">{dayName}</span><span className="day-number">{dayNum}</span></div>; })}
+                                    {hours.map(hour => { const { hour: hourStr, ampm } = formatHour(hour); return (
+                                        <React.Fragment key={hour}>
+                                            <div className="time-label"><span className="hour">{hourStr}</span>{ampm && <span className="ampm">{ampm}</span>}</div>
+                                            {event.dates.map(date => <div key={`${date}-${hour}`} className={`time-slot ${getSlotClass(date, hour)} ${hasNote(date, hour) ? 'has-note' : ''}`} onMouseDown={(e) => handleMouseDown(date, hour, e)} onMouseEnter={() => handleMouseEnter(date, hour)} onContextMenu={(e) => openNoteModal(date, hour, e)} onMouseOver={(e) => !isDragging && handleSlotHover(e, date, hour)} onMouseLeave={() => !isDragging && setTooltip(null)}>{viewMode === 'group' && getSlotAvailability(date, hour).length > 0 && <span className="availability-count">{getSlotAvailability(date, hour).length}</span>}</div>)}
+                                        </React.Fragment>
+                                    ); })}
                                 </div>
                             </div>
                         </main>
                     </div>
 
-                    {tooltip && !isDragging && (
-                        <div className="tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
-                            <h4>{formatTooltipDate(tooltip.date, tooltip.hour)}</h4>
-                            {tooltip.available.length === 0 ? (
-                                <p style={{fontStyle: 'italic'}}>{t.noOneAvailable}</p>
-                            ) : (
-                                tooltip.available.map((a, i) => (
-                                    <div key={i} className="tooltip-entry">
-                                        <div className="tooltip-name">{a.name}</div>
-                                        {a.note && <div className="tooltip-note">"{a.note}"</div>}
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    )}
+                    {tooltip && !isDragging && <div className="tooltip" style={{ left: tooltip.x, top: tooltip.y }}><h4>{formatTooltipDate(tooltip.date, tooltip.hour)}</h4>{tooltip.available.length === 0 ? <p style={{fontStyle: 'italic'}}>{t.noOneAvailable}</p> : tooltip.available.map((a, i) => <div key={i} className="tooltip-entry"><div className="tooltip-name">{a.name}</div>{a.note && <div className="tooltip-note">"{a.note}"</div>}</div>)}</div>}
 
                     {nameModal && (
                         <div className="modal-overlay" onClick={() => setNameModal(false)}>
                             <div className="modal" onClick={e => e.stopPropagation()}>
                                 <h3>🎭 {t.enterName}</h3>
-                                <p style={{marginBottom: '1rem', color: 'var(--ink-light)'}}>
-                                    {t.howShouldPartyKnow}
-                                </p>
-                                <div className="form-group">
-                                    <input
-                                        type="text"
-                                        value={tempName}
-                                        onChange={(e) => setTempName(e.target.value)}
-                                        placeholder={t.yourName}
-                                        autoFocus
-                                        onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
-                                    />
-                                </div>
+                                {user && adventurers.length > 0 && (
+                                    <>
+                                        <p style={{marginBottom: '0.5rem', fontWeight: '600'}}>{t.selectAdventurer}</p>
+                                        {adventurers.map(adv => <div key={adv.id} className="adventurer-card" style={{ cursor: 'pointer', border: selectedAdventurer?.id === adv.id ? '2px solid var(--gold)' : undefined }} onClick={() => { setSelectedAdventurer(adv); setTempName(''); }}>{adv.image ? <img src={adv.image} alt="" /> : <div className="no-image">⚔️</div>}<div className="info"><div className="name">{adv.name}</div></div></div>)}
+                                        <p style={{marginTop: '1rem', marginBottom: '0.5rem', color: 'var(--ink-light)', textAlign: 'center'}}>— {t.orEnterName} —</p>
+                                    </>
+                                )}
+                                <p style={{marginBottom: '0.5rem', color: 'var(--ink-light)'}}>{t.howShouldPartyKnow}</p>
+                                <div className="form-group"><input type="text" value={tempName} onChange={(e) => { setTempName(e.target.value); setSelectedAdventurer(null); }} placeholder={t.yourName} onKeyDown={(e) => e.key === 'Enter' && handleJoin()} /></div>
                                 <div className="modal-buttons">
-                                    <button className="btn btn-secondary" onClick={() => setNameModal(false)}>
-                                        {t.cancel}
-                                    </button>
-                                    <button className="btn btn-primary" onClick={handleJoin} disabled={!tempName.trim()}>
-                                        {t.joinQuest}
-                                    </button>
+                                    <button className="btn btn-secondary" onClick={() => setNameModal(false)}>{t.cancel}</button>
+                                    <button className="btn btn-primary" onClick={handleJoin} disabled={!tempName.trim() && !selectedAdventurer}>{selectedAdventurer ? t.useAdventurer : t.joinQuest}</button>
                                 </div>
                             </div>
                         </div>
@@ -1555,26 +1717,11 @@
                         <div className="modal-overlay" onClick={() => setNoteModal(null)}>
                             <div className="modal" onClick={e => e.stopPropagation()}>
                                 <h3>📜 {t.addNote}</h3>
-                                <p style={{marginBottom: '1rem', color: 'var(--ink-light)'}}>
-                                    {formatTooltipDate(noteModal.date, noteModal.hour)}
-                                </p>
-                                <div className="form-group">
-                                    <label>{t.yourNote}</label>
-                                    <textarea
-                                        value={tempNote}
-                                        onChange={(e) => setTempNote(e.target.value)}
-                                        rows={3}
-                                        placeholder={t.notePlaceholder}
-                                        autoFocus
-                                    />
-                                </div>
+                                <p style={{marginBottom: '1rem', color: 'var(--ink-light)'}}>{formatTooltipDate(noteModal.date, noteModal.hour)}</p>
+                                <div className="form-group"><label>{t.yourNote}</label><textarea value={tempNote} onChange={(e) => setTempNote(e.target.value)} rows={3} placeholder={t.notePlaceholder} autoFocus /></div>
                                 <div className="modal-buttons">
-                                    <button className="btn btn-secondary" onClick={() => setNoteModal(null)}>
-                                        {t.cancel}
-                                    </button>
-                                    <button className="btn btn-primary" onClick={saveNote}>
-                                        {t.saveNote}
-                                    </button>
+                                    <button className="btn btn-secondary" onClick={() => setNoteModal(null)}>{t.cancel}</button>
+                                    <button className="btn btn-primary" onClick={saveNote}>{t.saveNote}</button>
                                 </div>
                             </div>
                         </div>
