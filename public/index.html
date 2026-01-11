@@ -240,8 +240,13 @@
         }
 
         .participant-tag:hover { background: var(--ink-light); }
-        .participant-tag img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; }
+        .participant-tag img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
         .participant-tag.active { background: var(--gold); color: var(--ink); }
+
+        .event-list-item.completed { opacity: 0.6; filter: grayscale(50%); }
+        .completed-tag { background: #888 !important; color: white !important; }
+        .completed-banner { background: #666; color: white; padding: 0.5rem 1rem; text-align: center; font-size: 0.9rem; margin-bottom: 1rem; border-radius: 3px; }
+        .panel.completed-panel { opacity: 0.85; filter: grayscale(30%); }
 
         .schedule-grid { overflow-x: auto; user-select: none; }
         .grid-container { display: grid; gap: 2px; min-width: fit-content; }
@@ -704,6 +709,12 @@
                 maxTags: "Max 3 tags",
                 filterByTag: "Filter by tag",
                 allTags: "All",
+                markComplete: "Mark as Completed",
+                markActive: "Reactivate",
+                completed: "Completed",
+                completedQuestBoard: "This quest board has been completed",
+                lastVisited: "Last Visited",
+                continueQuest: "Continue Quest",
             },
             sr: {
                 questBoard: "Tabla Zadataka",
@@ -829,6 +840,12 @@
                 maxTags: "Maks 3 oznake",
                 filterByTag: "Filtriraj po oznaci",
                 allTags: "Sve",
+                markComplete: "Označi kao završeno",
+                markActive: "Reaktiviraj",
+                completed: "Završeno",
+                completedQuestBoard: "Ova tabla je završena",
+                lastVisited: "Poslednje posećeno",
+                continueQuest: "Nastavi avanturu",
             }
         };
 
@@ -940,9 +957,29 @@
             const { user, navigate } = useAuth();
             const [showLogin, setShowLogin] = useState(false);
             const [showRegister, setShowRegister] = useState(false);
+            const [lastVisited, setLastVisited] = useState(null);
+
+            useEffect(() => {
+                const saved = localStorage.getItem('quest-board-last-visited');
+                if (saved) {
+                    try { setLastVisited(JSON.parse(saved)); } catch {}
+                }
+            }, []);
 
             return (
                 <div className="center-panel">
+                    {lastVisited && (
+                        <div className="panel" style={{ marginBottom: '1rem', cursor: 'pointer' }} onClick={() => navigate(`/event/${lastVisited.id}`)}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                {lastVisited.image && <div style={{ width: '60px', height: '60px', borderRadius: '5px', backgroundImage: `url(${lastVisited.image})`, backgroundSize: 'cover', backgroundPosition: 'center', flexShrink: 0 }} />}
+                                <div style={{ flex: 1 }}>
+                                    <p style={{ fontSize: '0.8rem', color: 'var(--ink-light)', margin: 0 }}>🕐 {t.lastVisited}</p>
+                                    <h3 style={{ margin: '0.3rem 0', fontFamily: 'Cinzel' }}>{lastVisited.name}</h3>
+                                </div>
+                                <button className="btn btn-primary">→ {t.continueQuest}</button>
+                            </div>
+                        </div>
+                    )}
                     <div className="panel">
                         <h2>🏰 {t.welcome}</h2>
                         <p style={{ marginBottom: '1.5rem', color: 'var(--ink-light)' }}>{t.whatToDo}</p>
@@ -1317,11 +1354,6 @@
                                         </div>
                                     )}
                                 </div>
-                                {selectedTags.length > 0 && (
-                                    <div className="tags-display">
-                                        {selectedTags.map(tag => <span key={tag} className="tag tag-removable" onClick={() => toggleTagFilter(tag)}>{tag}</span>)}
-                                    </div>
-                                )}
                             </div>
                         )}
 
@@ -1336,15 +1368,14 @@
                                         return 0;
                                     }) : [];
                                     return (
-                                        <div key={ev.id} className={`event-list-item ${ev.image ? 'event-card-with-image' : ''}`} style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer', position: 'relative', overflow: 'hidden' }} onClick={() => navigate(`/event/${ev.id}`)}>
+                                        <div key={ev.id} className={`event-list-item ${ev.image ? 'event-card-with-image' : ''} ${ev.completed ? 'completed' : ''}`} style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer', position: 'relative', overflow: 'hidden' }} onClick={() => navigate(`/event/${ev.id}`)}>
                                             {ev.image && <div className="event-card-image" style={{ backgroundImage: `url(${ev.image})` }} />}
                                             <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
                                                 {/* Tags at top */}
-                                                {ev.tags && ev.tags.length > 0 && (
-                                                    <div className="tag-row">
-                                                        {ev.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}
-                                                    </div>
-                                                )}
+                                                <div className="tag-row">
+                                                    {ev.completed && <span className="tag completed-tag">{t.completed}</span>}
+                                                    {ev.tags && ev.tags.length > 0 && ev.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}
+                                                </div>
                                                 <h4>{ev.name}</h4>
                                                 <p>{ev.dates.length} dates • {getMonthYearFromDates(ev.dates)} {ev.description ? `• ${ev.description}` : ''}</p>
                                                 {/* Adventurers at bottom */}
@@ -1378,15 +1409,14 @@
                                         return 0;
                                     }) : [];
                                     return (
-                                        <div key={ev.id} className={`event-list-item ${ev.image ? 'event-card-with-image' : ''}`} style={{ cursor: 'pointer', position: 'relative', overflow: 'hidden' }} onClick={() => navigate(`/event/${ev.id}`)}>
+                                        <div key={ev.id} className={`event-list-item ${ev.image ? 'event-card-with-image' : ''} ${ev.completed ? 'completed' : ''}`} style={{ cursor: 'pointer', position: 'relative', overflow: 'hidden' }} onClick={() => navigate(`/event/${ev.id}`)}>
                                             {ev.image && <div className="event-card-image" style={{ backgroundImage: `url(${ev.image})` }} />}
                                             <div style={{ position: 'relative', zIndex: 1 }}>
                                                 {/* Tags at top */}
-                                                {ev.tags && ev.tags.length > 0 && (
-                                                    <div className="tag-row">
-                                                        {ev.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}
-                                                    </div>
-                                                )}
+                                                <div className="tag-row">
+                                                    {ev.completed && <span className="tag completed-tag">{t.completed}</span>}
+                                                    {ev.tags && ev.tags.length > 0 && ev.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}
+                                                </div>
                                                 <h4>{ev.name}</h4>
                                                 <p>{ev.dates.length} dates • {getMonthYearFromDates(ev.dates)} {ev.description ? `• ${ev.description}` : ''}</p>
                                                 {/* Adventurers at bottom */}
@@ -1556,6 +1586,7 @@
             const [image, setImage] = useState(event.image || '');
             const [tags, setTags] = useState([...(event.tags || [])]);
             const [tagInput, setTagInput] = useState('');
+            const [completed, setCompleted] = useState(event.completed || false);
             const [selectedDates, setSelectedDates] = useState([...(event.dates || [])]);
             const [startHour, setStartHour] = useState(event.startHour || 10);
             const [endHour, setEndHour] = useState(event.endHour || 22);
@@ -1612,7 +1643,8 @@
                             startHour,
                             endHour,
                             image: image.trim() || null,
-                            tags
+                            tags,
+                            completed
                         }) 
                     });
                     onSave();
@@ -1683,6 +1715,12 @@
                                     {Array.from({length: 24}, (_, i) => <option key={i} value={i}>{formatHourOption(i)}</option>)}
                                 </select>
                             </div>
+                        </div>
+                        <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <button type="button" className={`btn btn-small ${completed ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setCompleted(!completed)}>
+                                {completed ? `✓ ${t.completed}` : `☐ ${t.markComplete}`}
+                            </button>
+                            <span style={{ fontSize: '0.8rem', color: 'var(--ink-light)' }}>{completed ? t.completedQuestBoard : ''}</span>
                         </div>
                         <div className="modal-buttons-spread">
                             <button className="btn btn-danger btn-small" onClick={onDelete}>🗑️ {t.deleteQuestBoard}</button>
@@ -1838,6 +1876,8 @@
                 try {
                     const data = await api(`/api/events/${eventId}`);
                     setEvent(data);
+                    // Save as last visited
+                    localStorage.setItem('quest-board-last-visited', JSON.stringify({ id: eventId, name: data.name, image: data.image }));
                     const savedUser = localStorage.getItem(`quest-board-user-${eventId}`);
                     const savedImage = localStorage.getItem(`quest-board-user-image-${eventId}`);
                     if (savedUser && data.participants.includes(savedUser)) { setCurrentUser(savedUser); setCurrentUserImage(savedImage || ''); setUserSlots(data.availability[savedUser] || {}); }
@@ -2002,14 +2042,14 @@
                             <div className="share-box"><strong>📨 {t.inviteParty}</strong><span className="share-url">{window.location.href}</span><button className="btn btn-secondary" onClick={copyLink}>{copied ? `✓ ${t.copied}` : `📋 ${t.copyLink}`}</button></div>
                             <div className="legend">{viewMode === 'group' ? <><div className="legend-item"><div className="legend-color" style={{background: 'var(--available)'}}></div><span>{t.all}</span></div><div className="legend-item"><div className="legend-color" style={{background: '#7bc47a'}}></div><span>{t.most}</span></div><div className="legend-item"><div className="legend-color" style={{background: '#a8d5a2'}}></div><span>{t.some}</span></div></> : <div className="legend-item"><div className="legend-color" style={{background: 'var(--available)'}}></div><span>{t.available}</span></div>}<div className="legend-item"><span>📜</span><span>{t.hasNote}</span></div></div>
                         </aside>
-                        <main className="panel" style={{ position: 'relative', overflow: 'hidden' }}>
+                        <main className={`panel ${event.completed ? 'completed-panel' : ''}`} style={{ position: 'relative', overflow: 'hidden' }}>
                             {event.image && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100px', backgroundImage: `url(${event.image})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.6, maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%)', pointerEvents: 'none' }} />}
                             <div style={{ position: 'relative', zIndex: 1 }}>
-                                {event.tags && event.tags.length > 0 && (
-                                    <div style={{ marginBottom: '0.5rem' }}>
-                                        {event.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}
-                                    </div>
-                                )}
+                                {event.completed && <div className="completed-banner">✓ {t.completedQuestBoard}</div>}
+                                <div style={{ marginBottom: '0.5rem' }}>
+                                    {event.completed && <span className="tag completed-tag">{t.completed}</span>}
+                                    {event.tags && event.tags.length > 0 && event.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}
+                                </div>
                                 <h2>
                                     <span>📅 {event.name}</span>
                                     {isOwner && <button className="edit-event-btn" onClick={() => setEditEventModal(true)} title={t.editEvent}>✏️</button>}
@@ -2124,7 +2164,7 @@
                     )}
 
                     {/* Edit Event Modal */}
-                    {editEventModal && <EditEventModal t={t} lang={lang} timeFormat={timeFormat} event={event} onClose={() => setEditEventModal(false)} onSave={async () => { await fetchEvent(); setEditEventModal(false); }} />}
+                    {editEventModal && <EditEventModal t={t} lang={lang} timeFormat={timeFormat} event={event} onClose={() => setEditEventModal(false)} onSave={async () => { await fetchEvent(); setEditEventModal(false); }} onDelete={() => navigate('/profile')} />}
 
                     {/* View Adventurer Modal */}
                     {viewAdventurerModal && (
@@ -2154,12 +2194,13 @@
             );
         }
 
-        function EditEventModal({ t, lang, timeFormat, event, onClose, onSave }) {
+        function EditEventModal({ t, lang, timeFormat, event, onClose, onSave, onDelete }) {
             const [name, setName] = useState(event.name);
             const [description, setDescription] = useState(event.description || '');
             const [image, setImage] = useState(event.image || '');
             const [tags, setTags] = useState([...(event.tags || [])]);
             const [tagInput, setTagInput] = useState('');
+            const [completed, setCompleted] = useState(event.completed || false);
             const [selectedDates, setSelectedDates] = useState([...event.dates]);
             const [startHour, setStartHour] = useState(event.startHour);
             const [endHour, setEndHour] = useState(event.endHour);
@@ -2167,11 +2208,12 @@
             const [loading, setLoading] = useState(false);
             const [error, setError] = useState('');
             const [warning, setWarning] = useState('');
+            const [confirmDelete, setConfirmDelete] = useState(false);
 
             const today = new Date(); today.setHours(0, 0, 0, 0);
 
             const datesWithAvailability = new Set();
-            Object.values(event.availability).forEach(slots => {
+            Object.values(event.availability || {}).forEach(slots => {
                 Object.keys(slots).forEach(key => {
                     if (slots[key]?.available) {
                         const date = key.split('-').slice(0, 3).join('-');
@@ -2224,9 +2266,18 @@
                 if (!name.trim() || selectedDates.length === 0) return;
                 setLoading(true); setError('');
                 try {
-                    await api(`/api/events/${event.id}`, { method: 'PUT', body: JSON.stringify({ name: name.trim(), description: description.trim(), dates: selectedDates, startHour, endHour, image: image.trim() || null, tags }) });
+                    await api(`/api/events/${event.id}`, { method: 'PUT', body: JSON.stringify({ name: name.trim(), description: description.trim(), dates: selectedDates, startHour, endHour, image: image.trim() || null, tags, completed }) });
                     onSave();
                 } catch (err) { setError(err.message); } 
+                finally { setLoading(false); }
+            };
+
+            const handleDelete = async () => {
+                setLoading(true);
+                try {
+                    await api(`/api/events/${event.id}`, { method: 'DELETE' });
+                    if (onDelete) onDelete();
+                } catch (err) { setError(err.message); }
                 finally { setLoading(false); }
             };
 
@@ -2280,9 +2331,26 @@
                             <div className="form-group"><label>{t.startTime}</label><select value={startHour} onChange={(e) => setStartHour(Number(e.target.value))}>{Array.from({length: 24}, (_, i) => <option key={i} value={i}>{formatHourOption(i)}</option>)}</select></div>
                             <div className="form-group"><label>{t.endTime}</label><select value={endHour} onChange={(e) => setEndHour(Number(e.target.value))}>{Array.from({length: 24}, (_, i) => <option key={i} value={i}>{formatHourOption(i)}</option>)}</select></div>
                         </div>
-                        <div className="modal-buttons">
-                            <button className="btn btn-secondary" onClick={onClose}>{t.cancel}</button>
-                            <button className="btn btn-primary" onClick={handleSave} disabled={loading || !name.trim() || selectedDates.length === 0}>{loading ? '...' : t.update}</button>
+                        <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <button type="button" className={`btn btn-small ${completed ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setCompleted(!completed)}>
+                                {completed ? `✓ ${t.completed}` : `☐ ${t.markComplete}`}
+                            </button>
+                            <span style={{ fontSize: '0.8rem', color: 'var(--ink-light)' }}>{completed ? t.completedQuestBoard : ''}</span>
+                        </div>
+                        <div className="modal-buttons-spread">
+                            {!confirmDelete ? (
+                                <button className="btn btn-danger btn-small" onClick={() => setConfirmDelete(true)}>🗑️ {t.deleteQuestBoard}</button>
+                            ) : (
+                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '0.85rem', color: 'var(--unavailable)' }}>{t.deleteQuestBoardWarning}</span>
+                                    <button className="btn btn-danger btn-small" onClick={handleDelete}>{t.yes}</button>
+                                    <button className="btn btn-secondary btn-small" onClick={() => setConfirmDelete(false)}>{t.no}</button>
+                                </div>
+                            )}
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button className="btn btn-secondary" onClick={onClose}>{t.cancel}</button>
+                                <button className="btn btn-primary" onClick={handleSave} disabled={loading || !name.trim() || selectedDates.length === 0}>{loading ? '...' : t.update}</button>
+                            </div>
                         </div>
                     </div>
                 </div>
