@@ -531,10 +531,19 @@
         .tag-removable:hover { opacity: 0.7; }
         .tag-removable::after { content: ' ×'; }
 
-        .tag-filter { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--ink-light); }
+        .tag-filter { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--ink-light); align-items: center; }
         .tag-filter-btn { background: var(--parchment-light); border: 1px solid var(--ink-light); padding: 0.3rem 0.6rem; border-radius: 3px; font-size: 0.75rem; font-family: 'Cinzel', serif; cursor: pointer; transition: all 0.2s; }
         .tag-filter-btn:hover { border-color: var(--gold); }
         .tag-filter-btn.active { background: var(--gold); border-color: var(--gold); }
+        .tag-filter-dropdown { position: relative; }
+        .tag-filter-toggle { background: var(--parchment-light); border: 1px solid var(--ink-light); padding: 0.4rem 0.8rem; border-radius: 3px; font-size: 0.85rem; font-family: 'Cinzel', serif; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+        .tag-filter-toggle:hover { border-color: var(--gold); }
+        .tag-filter-menu { position: absolute; top: 100%; left: 0; background: var(--parchment); border: 1px solid var(--ink-light); border-radius: 3px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 100; min-width: 200px; max-height: 300px; overflow-y: auto; margin-top: 0.3rem; }
+        .tag-filter-item { padding: 0.5rem 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; border-bottom: 1px solid var(--parchment-light); }
+        .tag-filter-item:last-child { border-bottom: none; }
+        .tag-filter-item:hover { background: var(--parchment-light); }
+        .tag-filter-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--gold); }
+        .tag-filter-count { background: var(--gold); color: var(--ink); font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 10px; margin-left: auto; }
 
         .password-section { background: var(--parchment-light); border: 1px solid var(--ink-light); border-radius: 4px; padding: 1rem; margin-top: 1rem; }
         .danger-section { border-color: var(--unavailable); }
@@ -557,7 +566,8 @@
         .quest-board-list { margin-top: 0.5rem; }
         .quest-board-list-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: white; border-radius: 3px; margin-bottom: 0.3rem; cursor: pointer; transition: all 0.2s; }
         .quest-board-list-item:hover { background: var(--parchment-dark); }
-        .quest-board-list-item .name { flex: 1; font-size: 0.9rem; }
+        .quest-board-list-item > div:first-child { flex: 1; }
+        .quest-board-list-item .name { font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -1068,7 +1078,8 @@
             const [confirmDelete, setConfirmDelete] = useState(null);
             const [eventEditModal, setEventEditModal] = useState(null);
             const [confirmDeleteEvent, setConfirmDeleteEvent] = useState(null);
-            const [tagFilter, setTagFilter] = useState(null);
+            const [selectedTags, setSelectedTags] = useState([]);
+            const [showTagFilter, setShowTagFilter] = useState(false);
 
             useEffect(() => { if (!user) { navigate('/'); return; } loadData(); }, [user]);
 
@@ -1087,10 +1098,15 @@
                 return [...allTags].sort();
             };
 
-            // Filter events by tag
+            // Toggle tag in filter
+            const toggleTagFilter = (tag) => {
+                setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
+            };
+
+            // Filter events by selected tags (show if ANY selected tag matches)
             const filterEventsByTag = (eventList) => {
-                if (!tagFilter) return eventList;
-                return eventList.filter(ev => (ev.tags || []).includes(tagFilter));
+                if (selectedTags.length === 0) return eventList;
+                return eventList.filter(ev => (ev.tags || []).some(tag => selectedTags.includes(tag)));
             };
 
             const saveName = async () => {
@@ -1276,13 +1292,36 @@
                             </div>
                         </div>
 
-                        {/* Tag Filter */}
+                        {/* Tag Filter Dropdown */}
                         {getAllTags().length > 0 && (
                             <div className="tag-filter">
-                                <button className={`tag-filter-btn ${!tagFilter ? 'active' : ''}`} onClick={() => setTagFilter(null)}>{t.allTags}</button>
-                                {getAllTags().map(tag => (
-                                    <button key={tag} className={`tag-filter-btn ${tagFilter === tag ? 'active' : ''}`} onClick={() => setTagFilter(tagFilter === tag ? null : tag)}>{tag}</button>
-                                ))}
+                                <div className="tag-filter-dropdown">
+                                    <button className="tag-filter-toggle" onClick={() => setShowTagFilter(!showTagFilter)}>
+                                        🏷️ {t.filterByTag} {selectedTags.length > 0 && `(${selectedTags.length})`} ▼
+                                    </button>
+                                    {showTagFilter && (
+                                        <div className="tag-filter-menu">
+                                            <div className="tag-filter-item" onClick={() => setSelectedTags([])}>
+                                                <input type="checkbox" checked={selectedTags.length === 0} readOnly />
+                                                <span>{t.allTags}</span>
+                                            </div>
+                                            {getAllTags().map(tag => (
+                                                <div key={tag} className="tag-filter-item" onClick={() => toggleTagFilter(tag)}>
+                                                    <input type="checkbox" checked={selectedTags.includes(tag)} readOnly />
+                                                    <span>{tag}</span>
+                                                    <span className="tag-filter-count">
+                                                        {[...events.created, ...events.participated].filter(ev => (ev.tags || []).includes(tag)).length}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                {selectedTags.length > 0 && (
+                                    <div className="tags-display">
+                                        {selectedTags.map(tag => <span key={tag} className="tag tag-removable" onClick={() => toggleTagFilter(tag)}>{tag}</span>)}
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -1370,7 +1409,7 @@
                         )}
 
                         {filterEventsByTag(events.created).length === 0 && filterEventsByTag(events.participated).length === 0 && (
-                            <p style={{ fontStyle: 'italic', color: 'var(--ink-light)' }}>{tagFilter ? `${t.noQuestBoards} (${tagFilter})` : t.noQuestBoards}</p>
+                            <p style={{ fontStyle: 'italic', color: 'var(--ink-light)' }}>{selectedTags.length > 0 ? `${t.noQuestBoards} (${selectedTags.join(', ')})` : t.noQuestBoards}</p>
                         )}
                     </div>
 
@@ -1398,7 +1437,14 @@
                                         <div className="quest-board-list">
                                             {advViewModal.questBoards.map(qb => (
                                                 <div key={qb.id} className="quest-board-list-item" onClick={() => { setAdvViewModal(null); navigate(`/event/${qb.id}`); }}>
-                                                    <span className="name">{qb.name || qb.id}</span>
+                                                    <div style={{ flex: 1 }}>
+                                                        {qb.tags && qb.tags.length > 0 && (
+                                                            <div style={{ marginBottom: '0.3rem' }}>
+                                                                {qb.tags.map((tag, i) => <span key={i} className="tag" style={{ fontSize: '0.6rem', padding: '0.1rem 0.3rem' }}>{tag}</span>)}
+                                                            </div>
+                                                        )}
+                                                        <span className="name">{qb.name || qb.id}</span>
+                                                    </div>
                                                     <span>→</span>
                                                 </div>
                                             ))}
@@ -1956,26 +2002,34 @@
                             <div className="share-box"><strong>📨 {t.inviteParty}</strong><span className="share-url">{window.location.href}</span><button className="btn btn-secondary" onClick={copyLink}>{copied ? `✓ ${t.copied}` : `📋 ${t.copyLink}`}</button></div>
                             <div className="legend">{viewMode === 'group' ? <><div className="legend-item"><div className="legend-color" style={{background: 'var(--available)'}}></div><span>{t.all}</span></div><div className="legend-item"><div className="legend-color" style={{background: '#7bc47a'}}></div><span>{t.most}</span></div><div className="legend-item"><div className="legend-color" style={{background: '#a8d5a2'}}></div><span>{t.some}</span></div></> : <div className="legend-item"><div className="legend-color" style={{background: 'var(--available)'}}></div><span>{t.available}</span></div>}<div className="legend-item"><span>📜</span><span>{t.hasNote}</span></div></div>
                         </aside>
-                        <main className="panel">
-                            <h2>
-                                <span>📅 {event.name}</span>
-                                {isOwner && <button className="edit-event-btn" onClick={() => setEditEventModal(true)} title={t.editEvent}>✏️</button>}
-                            </h2>
-                            {event.description && <p style={{marginBottom: '1rem', fontStyle: 'italic'}}>{event.description}</p>}
-                            <div className="schedule-grid">
-                                <div className="grid-container" style={{ gridTemplateColumns: `60px repeat(${event.dates.length}, 1fr)`, marginBottom: '2px' }}>
-                                    <div style={{background: 'transparent'}}></div>
-                                    {monthGroups.map(g => <div key={g.key} className="month-header" style={{ gridColumn: `span ${g.count}` }}>{g.name}</div>)}
-                                </div>
-                                <div className="grid-container" style={{ gridTemplateColumns: `60px repeat(${event.dates.length}, 1fr)`, gridTemplateRows: `auto repeat(${hours.length}, 1fr)` }}>
-                                    <div style={{background: 'transparent'}}></div>
-                                    {event.dates.map(date => { const { dayName, dayNum } = formatDateForDisplay(date); return <div key={date} className="grid-header"><span className="day-name">{dayName}</span><span className="day-number">{dayNum}</span></div>; })}
-                                    {hours.map(hour => { const { hour: hourStr, ampm } = formatHour(hour); return (
-                                        <React.Fragment key={hour}>
-                                            <div className="time-label"><span className="hour">{hourStr}</span>{ampm && <span className="ampm">{ampm}</span>}</div>
-                                            {event.dates.map(date => <div key={`${date}-${hour}`} className={`time-slot ${getSlotClass(date, hour)} ${hasNote(date, hour) ? 'has-note' : ''}`} onMouseDown={(e) => handleMouseDown(date, hour, e)} onMouseEnter={() => handleMouseEnter(date, hour)} onContextMenu={(e) => openNoteModal(date, hour, e)} onMouseOver={(e) => !isDragging && handleSlotHover(e, date, hour)} onMouseLeave={() => !isDragging && setTooltip(null)}>{viewMode === 'group' && getSlotAvailability(date, hour).length > 0 && <span className="availability-count">{getSlotAvailability(date, hour).length}</span>}</div>)}
-                                        </React.Fragment>
-                                    ); })}
+                        <main className="panel" style={{ position: 'relative', overflow: 'hidden' }}>
+                            {event.image && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100px', backgroundImage: `url(${event.image})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.6, maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%)', pointerEvents: 'none' }} />}
+                            <div style={{ position: 'relative', zIndex: 1 }}>
+                                {event.tags && event.tags.length > 0 && (
+                                    <div style={{ marginBottom: '0.5rem' }}>
+                                        {event.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}
+                                    </div>
+                                )}
+                                <h2>
+                                    <span>📅 {event.name}</span>
+                                    {isOwner && <button className="edit-event-btn" onClick={() => setEditEventModal(true)} title={t.editEvent}>✏️</button>}
+                                </h2>
+                                {event.description && <p style={{marginBottom: '1rem', fontStyle: 'italic'}}>{event.description}</p>}
+                                <div className="schedule-grid">
+                                    <div className="grid-container" style={{ gridTemplateColumns: `60px repeat(${event.dates.length}, 1fr)`, marginBottom: '2px' }}>
+                                        <div style={{background: 'transparent'}}></div>
+                                        {monthGroups.map(g => <div key={g.key} className="month-header" style={{ gridColumn: `span ${g.count}` }}>{g.name}</div>)}
+                                    </div>
+                                    <div className="grid-container" style={{ gridTemplateColumns: `60px repeat(${event.dates.length}, 1fr)`, gridTemplateRows: `auto repeat(${hours.length}, 1fr)` }}>
+                                        <div style={{background: 'transparent'}}></div>
+                                        {event.dates.map(date => { const { dayName, dayNum } = formatDateForDisplay(date); return <div key={date} className="grid-header"><span className="day-name">{dayName}</span><span className="day-number">{dayNum}</span></div>; })}
+                                        {hours.map(hour => { const { hour: hourStr, ampm } = formatHour(hour); return (
+                                            <React.Fragment key={hour}>
+                                                <div className="time-label"><span className="hour">{hourStr}</span>{ampm && <span className="ampm">{ampm}</span>}</div>
+                                                {event.dates.map(date => <div key={`${date}-${hour}`} className={`time-slot ${getSlotClass(date, hour)} ${hasNote(date, hour) ? 'has-note' : ''}`} onMouseDown={(e) => handleMouseDown(date, hour, e)} onMouseEnter={() => handleMouseEnter(date, hour)} onContextMenu={(e) => openNoteModal(date, hour, e)} onMouseOver={(e) => !isDragging && handleSlotHover(e, date, hour)} onMouseLeave={() => !isDragging && setTooltip(null)}>{viewMode === 'group' && getSlotAvailability(date, hour).length > 0 && <span className="availability-count">{getSlotAvailability(date, hour).length}</span>}</div>)}
+                                            </React.Fragment>
+                                        ); })}
+                                    </div>
                                 </div>
                             </div>
                         </main>
@@ -2103,6 +2157,9 @@
         function EditEventModal({ t, lang, timeFormat, event, onClose, onSave }) {
             const [name, setName] = useState(event.name);
             const [description, setDescription] = useState(event.description || '');
+            const [image, setImage] = useState(event.image || '');
+            const [tags, setTags] = useState([...(event.tags || [])]);
+            const [tagInput, setTagInput] = useState('');
             const [selectedDates, setSelectedDates] = useState([...event.dates]);
             const [startHour, setStartHour] = useState(event.startHour);
             const [endHour, setEndHour] = useState(event.endHour);
@@ -2151,11 +2208,23 @@
                 setSelectedDates(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr].sort());
             };
 
+            const addTag = () => {
+                const tag = tagInput.trim();
+                if (tag && tags.length < 3 && !tags.includes(tag)) {
+                    setTags([...tags, tag]);
+                    setTagInput('');
+                }
+            };
+
+            const removeTag = (tagToRemove) => {
+                setTags(tags.filter(t => t !== tagToRemove));
+            };
+
             const handleSave = async () => {
                 if (!name.trim() || selectedDates.length === 0) return;
                 setLoading(true); setError('');
                 try {
-                    await api(`/api/events/${event.id}`, { method: 'PUT', body: JSON.stringify({ name: name.trim(), description: description.trim(), dates: selectedDates, startHour, endHour }) });
+                    await api(`/api/events/${event.id}`, { method: 'PUT', body: JSON.stringify({ name: name.trim(), description: description.trim(), dates: selectedDates, startHour, endHour, image: image.trim() || null, tags }) });
                     onSave();
                 } catch (err) { setError(err.message); } 
                 finally { setLoading(false); }
@@ -2166,12 +2235,29 @@
 
             return (
                 <div className="modal-overlay" onClick={onClose}>
-                    <div className="modal modal-wide" onClick={e => e.stopPropagation()}>
+                    <div className="modal modal-wide" onClick={e => e.stopPropagation()} style={{ maxHeight: '90vh', overflowY: 'auto' }}>
                         <h3>✏️ {t.editEvent}</h3>
                         {error && <div className="error-message">{error}</div>}
                         {warning && <div className="warning-message">{warning}</div>}
                         <div className="form-group"><label>{t.eventName} *</label><input type="text" value={name} onChange={(e) => setName(e.target.value)} /></div>
                         <div className="form-group"><label>{t.description}</label><textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} /></div>
+                        <div className="form-group">
+                            <label>{t.questBoardImage}</label>
+                            <input type="url" value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://..." />
+                            {image && <div style={{ marginTop: '0.5rem', height: '60px', backgroundImage: `url(${image})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: '3px', opacity: 0.75 }} />}
+                        </div>
+                        <div className="form-group">
+                            <label>{t.tags} ({tags.length}/3)</label>
+                            <div className="tag-input-row">
+                                <input type="text" value={tagInput} onChange={(e) => setTagInput(e.target.value)} placeholder={t.tagsPlaceholder} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }} disabled={tags.length >= 3} />
+                                <button type="button" className="btn btn-small btn-secondary" onClick={addTag} disabled={tags.length >= 3 || !tagInput.trim()}>{t.addTag}</button>
+                            </div>
+                            {tags.length > 0 && (
+                                <div className="tags-display">
+                                    {tags.map((tag, i) => <span key={i} className="tag tag-removable" onClick={() => removeTag(tag)}>{tag}</span>)}
+                                </div>
+                            )}
+                        </div>
                         <div className="form-group">
                             <label>{t.selectDates} ({selectedDates.length} {t.selected})</label>
                             <div className="month-nav">
