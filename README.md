@@ -15,33 +15,6 @@ Perfect for coordinating game sessions where players might have conditions like:
 - 📜 Add contextual notes to any time slot
 - 🎨 Fantasy tavern notice board aesthetic
 
-## Quick Deploy to Railway (Free)
-
-The easiest way to get this running:
-
-1. **Create a GitHub repository**
-   - Go to [github.com/new](https://github.com/new)
-   - Name it `quest-board`
-   - Upload all these files (or push via git)
-
-2. **Deploy on Railway**
-   - Go to [railway.app](https://railway.app) and sign in with GitHub
-   - Click "New Project" → "Deploy from GitHub repo"
-   - Select your `quest-board` repository
-   - Railway will automatically detect it's a Node.js app and deploy it
-   - Click "Generate Domain" in settings to get your public URL
-
-That's it! Share the URL with your friends.
-
-## Alternative: Deploy to Render (Also Free)
-
-1. Push code to GitHub
-2. Go to [render.com](https://render.com) and sign in
-3. New → Web Service → Connect your repo
-4. Settings:
-   - Build Command: `npm install`
-   - Start Command: `npm start`
-5. Deploy!
 
 ## Local Development
 
