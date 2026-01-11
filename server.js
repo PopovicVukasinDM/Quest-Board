@@ -250,7 +250,7 @@ app.get('/api/profile/events', authenticateToken, requireAuth, async (req, res) 
         // Get events user created
         const { data: created } = await supabase
             .from('events')
-            .select('id, name, description, dates, start_hour, end_hour, image, tags, created_at')
+            .select('id, name, description, dates, start_hour, end_hour, image, tags, completed, created_at')
             .eq('creator_id', req.user.id)
             .order('created_at', { ascending: false });
         
@@ -265,7 +265,7 @@ app.get('/api/profile/events', authenticateToken, requireAuth, async (req, res) 
             const eventIds = participatedAvail.map(a => a.event_id);
             const { data: participatedEvents } = await supabase
                 .from('events')
-                .select('id, name, description, dates, start_hour, end_hour, image, tags, created_at')
+                .select('id, name, description, dates, start_hour, end_hour, image, tags, completed, created_at')
                 .in('id', eventIds)
                 .neq('creator_id', req.user.id)
                 .order('created_at', { ascending: false });
@@ -309,6 +309,7 @@ app.get('/api/profile/events', authenticateToken, requireAuth, async (req, res) 
                 dates: e.dates,
                 image: e.image,
                 tags: e.tags || [],
+                completed: e.completed || false,
                 participants: participantsMap[e.id] || []
             })),
             participated: participated.map(e => ({ 
@@ -320,6 +321,7 @@ app.get('/api/profile/events', authenticateToken, requireAuth, async (req, res) 
                 dates: e.dates,
                 image: e.image,
                 tags: e.tags || [],
+                completed: e.completed || false,
                 participants: participantsMap[e.id] || []
             }))
         });
@@ -561,7 +563,8 @@ app.post('/api/events', authenticateToken, async (req, res) => {
             end_hour: endHour || 22,
             creator_id: creatorId,
             image: image || null,
-            tags: tags || []
+            tags: tags || [],
+            completed: false
         });
         
         if (error) throw error;
@@ -615,6 +618,7 @@ app.get('/api/events/:id', async (req, res) => {
             createdAt: event.created_at,
             image: event.image,
             tags: event.tags || [],
+            completed: event.completed || false,
             participants,
             participantImages,
             availability
@@ -628,7 +632,7 @@ app.get('/api/events/:id', async (req, res) => {
 // Update event (only creator can edit)
 app.put('/api/events/:id', authenticateToken, requireAuth, async (req, res) => {
     const { id } = req.params;
-    const { name, description, dates, startHour, endHour, image, tags } = req.body;
+    const { name, description, dates, startHour, endHour, image, tags, completed } = req.body;
     
     try {
         // Check if user is the creator
@@ -655,7 +659,8 @@ app.put('/api/events/:id', authenticateToken, requireAuth, async (req, res) => {
                 start_hour: startHour,
                 end_hour: endHour,
                 image: image || null,
-                tags: tags || []
+                tags: tags || [],
+                completed: completed || false
             })
             .eq('id', id);
         
