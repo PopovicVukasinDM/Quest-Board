@@ -514,7 +514,27 @@
         .event-list-item:hover { border-color: var(--gold); background: var(--parchment); }
         .event-list-item h4 { font-family: 'Cinzel', serif; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem; }
         .event-list-item p { font-size: 0.85rem; color: var(--ink-light); }
-        .event-list-item .participants-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+        .event-list-item .participants-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+
+        .event-card-with-image { position: relative; overflow: hidden; min-height: 100px; }
+        .event-card-with-image .event-card-content { padding-top: 60px; }
+        .event-card-image { position: absolute; top: 0; left: 0; right: 0; height: 80px; background-size: cover; background-position: center; opacity: 0.75; mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%); pointer-events: none; }
+        .event-card-content { position: relative; z-index: 1; }
+
+        .tag { display: inline-block; background: var(--gold); color: var(--ink); padding: 0.15rem 0.5rem; border-radius: 3px; font-size: 0.7rem; font-family: 'Cinzel', serif; margin-right: 0.3rem; margin-bottom: 0.3rem; }
+        .tag-row { display: flex; flex-wrap: wrap; margin-bottom: 0.5rem; }
+        .tag-input-row { display: flex; gap: 0.5rem; align-items: center; }
+        .tag-input-row input { flex: 1; }
+        .tag-input-row button { flex-shrink: 0; }
+        .tags-display { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.5rem; }
+        .tag-removable { cursor: pointer; }
+        .tag-removable:hover { opacity: 0.7; }
+        .tag-removable::after { content: ' ×'; }
+
+        .tag-filter { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--ink-light); }
+        .tag-filter-btn { background: var(--parchment-light); border: 1px solid var(--ink-light); padding: 0.3rem 0.6rem; border-radius: 3px; font-size: 0.75rem; font-family: 'Cinzel', serif; cursor: pointer; transition: all 0.2s; }
+        .tag-filter-btn:hover { border-color: var(--gold); }
+        .tag-filter-btn.active { background: var(--gold); border-color: var(--gold); }
 
         .password-section { background: var(--parchment-light); border: 1px solid var(--ink-light); border-radius: 4px; padding: 1rem; margin-top: 1rem; }
         .danger-section { border-color: var(--unavailable); }
@@ -667,6 +687,13 @@
                 deleteProfileWarning: "Are you sure? This will permanently delete your account, all adventurers, and all quest boards you created.",
                 deleteQuestBoard: "Delete Quest Board",
                 deleteQuestBoardWarning: "Are you sure you want to delete this quest board? This will remove all availability data.",
+                questBoardImage: "Quest Board Image (URL)",
+                tags: "Tags / Campaign",
+                tagsPlaceholder: "e.g., Adventures in Faerun",
+                addTag: "Add",
+                maxTags: "Max 3 tags",
+                filterByTag: "Filter by tag",
+                allTags: "All",
             },
             sr: {
                 questBoard: "Tabla Zadataka",
@@ -785,6 +812,13 @@
                 deleteProfileWarning: "Da li ste sigurni? Ovo će trajno obrisati vaš nalog, sve avanturiste i sve table koje ste kreirali.",
                 deleteQuestBoard: "Obriši Tablu",
                 deleteQuestBoardWarning: "Da li ste sigurni da želite da obrišete ovu tablu? Ovo će ukloniti sve podatke o dostupnosti.",
+                questBoardImage: "Slika Table (URL)",
+                tags: "Oznake / Kampanja",
+                tagsPlaceholder: "npr., Avanture u Faerun-u",
+                addTag: "Dodaj",
+                maxTags: "Maks 3 oznake",
+                filterByTag: "Filtriraj po oznaci",
+                allTags: "Sve",
             }
         };
 
@@ -1034,8 +1068,30 @@
             const [confirmDelete, setConfirmDelete] = useState(null);
             const [eventEditModal, setEventEditModal] = useState(null);
             const [confirmDeleteEvent, setConfirmDeleteEvent] = useState(null);
+            const [tagFilter, setTagFilter] = useState(null);
 
             useEffect(() => { if (!user) { navigate('/'); return; } loadData(); }, [user]);
+
+            const loadData = async () => {
+                try { const [advData, eventsData] = await Promise.all([api('/api/adventurers'), api('/api/profile/events')]); setAdventurers(advData); setEvents(eventsData); } 
+                catch (err) { console.error(err); } 
+                finally { setLoading(false); }
+            };
+
+            // Get all unique tags from all events
+            const getAllTags = () => {
+                const allTags = new Set();
+                [...events.created, ...events.participated].forEach(ev => {
+                    (ev.tags || []).forEach(tag => allTags.add(tag));
+                });
+                return [...allTags].sort();
+            };
+
+            // Filter events by tag
+            const filterEventsByTag = (eventList) => {
+                if (!tagFilter) return eventList;
+                return eventList.filter(ev => (ev.tags || []).includes(tagFilter));
+            };
 
             const loadData = async () => {
                 try { const [advData, eventsData] = await Promise.all([api('/api/adventurers'), api('/api/profile/events')]); setAdventurers(advData); setEvents(eventsData); } 
@@ -1226,10 +1282,20 @@
                             </div>
                         </div>
 
-                        {events.created.length > 0 && (
+                        {/* Tag Filter */}
+                        {getAllTags().length > 0 && (
+                            <div className="tag-filter">
+                                <button className={`tag-filter-btn ${!tagFilter ? 'active' : ''}`} onClick={() => setTagFilter(null)}>{t.allTags}</button>
+                                {getAllTags().map(tag => (
+                                    <button key={tag} className={`tag-filter-btn ${tagFilter === tag ? 'active' : ''}`} onClick={() => setTagFilter(tagFilter === tag ? null : tag)}>{tag}</button>
+                                ))}
+                            </div>
+                        )}
+
+                        {filterEventsByTag(events.created).length > 0 && (
                             <>
                                 <p style={{ fontSize: '0.85rem', color: 'var(--ink-light)', marginBottom: '0.5rem' }}>📜 {t.createdByMe}</p>
-                                {events.created.map(ev => {
+                                {filterEventsByTag(events.created).map(ev => {
                                     const myAdv = getMyAdventurerForEvent(ev.id);
                                     const sortedParticipants = ev.participants ? [...ev.participants].sort((a, b) => {
                                         if (myAdv && a.name === myAdv.name) return -1;
@@ -1237,8 +1303,18 @@
                                         return 0;
                                     }) : [];
                                     return (
-                                        <div key={ev.id} className="event-list-item" style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer' }} onClick={() => navigate(`/event/${ev.id}`)}>
-                                            <div style={{ flex: 1 }}>
+                                        <div key={ev.id} className={`event-list-item ${ev.image ? 'event-card-with-image' : ''}`} style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer', position: 'relative', overflow: 'hidden' }} onClick={() => navigate(`/event/${ev.id}`)}>
+                                            {ev.image && <div className="event-card-image" style={{ backgroundImage: `url(${ev.image})` }} />}
+                                            <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
+                                                {/* Tags at top */}
+                                                {ev.tags && ev.tags.length > 0 && (
+                                                    <div className="tag-row">
+                                                        {ev.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}
+                                                    </div>
+                                                )}
+                                                <h4>{ev.name}</h4>
+                                                <p>{ev.dates.length} dates • {getMonthYearFromDates(ev.dates)} {ev.description ? `• ${ev.description}` : ''}</p>
+                                                {/* Adventurers at bottom */}
                                                 {sortedParticipants.length > 0 && (
                                                     <div className="participants-row">
                                                         {sortedParticipants.slice(0, 6).map((p, i) => (
@@ -1250,20 +1326,18 @@
                                                         {sortedParticipants.length > 6 && <span style={{ fontSize: '0.75rem', color: 'var(--ink-light)' }}>+{sortedParticipants.length - 6}</span>}
                                                     </div>
                                                 )}
-                                                <h4>{ev.name}</h4>
-                                                <p>{ev.dates.length} dates • {getMonthYearFromDates(ev.dates)} {ev.description ? `• ${ev.description}` : ''}</p>
                                             </div>
-                                            <button className="btn btn-small btn-secondary" onClick={(e) => { e.stopPropagation(); setEventEditModal(ev); }} style={{ flexShrink: 0 }}>✏️</button>
+                                            <button className="btn btn-small btn-secondary" onClick={(e) => { e.stopPropagation(); setEventEditModal(ev); }} style={{ flexShrink: 0, position: 'relative', zIndex: 1 }}>✏️</button>
                                         </div>
                                     );
                                 })}
                             </>
                         )}
 
-                        {events.participated.length > 0 && (
+                        {filterEventsByTag(events.participated).length > 0 && (
                             <>
                                 <p style={{ fontSize: '0.85rem', color: 'var(--ink-light)', marginTop: '1rem', marginBottom: '0.5rem' }}>🎭 {t.participating}</p>
-                                {events.participated.map(ev => {
+                                {filterEventsByTag(events.participated).map(ev => {
                                     const myAdv = getMyAdventurerForEvent(ev.id);
                                     const sortedParticipants = ev.participants ? [...ev.participants].sort((a, b) => {
                                         if (myAdv && a.name === myAdv.name) return -1;
@@ -1271,28 +1345,38 @@
                                         return 0;
                                     }) : [];
                                     return (
-                                        <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}>
-                                            {sortedParticipants.length > 0 && (
-                                                <div className="participants-row">
-                                                    {sortedParticipants.slice(0, 6).map((p, i) => (
-                                                        <span key={i} className={`participant-tag ${myAdv && p.name === myAdv.name ? 'active' : ''}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
-                                                            {p.image && p.image.length > 0 ? <img src={p.image} alt="" style={{ width: '16px', height: '16px' }} /> : null}
-                                                            {p.name}
-                                                        </span>
-                                                    ))}
-                                                    {sortedParticipants.length > 6 && <span style={{ fontSize: '0.75rem', color: 'var(--ink-light)' }}>+{sortedParticipants.length - 6}</span>}
-                                                </div>
-                                            )}
-                                            <h4>{ev.name}</h4>
-                                            <p>{ev.dates.length} dates • {getMonthYearFromDates(ev.dates)} {ev.description ? `• ${ev.description}` : ''}</p>
-                                        </a>
+                                        <div key={ev.id} className={`event-list-item ${ev.image ? 'event-card-with-image' : ''}`} style={{ cursor: 'pointer', position: 'relative', overflow: 'hidden' }} onClick={() => navigate(`/event/${ev.id}`)}>
+                                            {ev.image && <div className="event-card-image" style={{ backgroundImage: `url(${ev.image})` }} />}
+                                            <div style={{ position: 'relative', zIndex: 1 }}>
+                                                {/* Tags at top */}
+                                                {ev.tags && ev.tags.length > 0 && (
+                                                    <div className="tag-row">
+                                                        {ev.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}
+                                                    </div>
+                                                )}
+                                                <h4>{ev.name}</h4>
+                                                <p>{ev.dates.length} dates • {getMonthYearFromDates(ev.dates)} {ev.description ? `• ${ev.description}` : ''}</p>
+                                                {/* Adventurers at bottom */}
+                                                {sortedParticipants.length > 0 && (
+                                                    <div className="participants-row">
+                                                        {sortedParticipants.slice(0, 6).map((p, i) => (
+                                                            <span key={i} className={`participant-tag ${myAdv && p.name === myAdv.name ? 'active' : ''}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
+                                                                {p.image && p.image.length > 0 ? <img src={p.image} alt="" style={{ width: '16px', height: '16px' }} /> : null}
+                                                                {p.name}
+                                                            </span>
+                                                        ))}
+                                                        {sortedParticipants.length > 6 && <span style={{ fontSize: '0.75rem', color: 'var(--ink-light)' }}>+{sortedParticipants.length - 6}</span>}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                     );
                                 })}
                             </>
                         )}
 
-                        {events.created.length === 0 && events.participated.length === 0 && (
-                            <p style={{ fontStyle: 'italic', color: 'var(--ink-light)' }}>{t.noQuestBoards}</p>
+                        {filterEventsByTag(events.created).length === 0 && filterEventsByTag(events.participated).length === 0 && (
+                            <p style={{ fontStyle: 'italic', color: 'var(--ink-light)' }}>{tagFilter ? `${t.noQuestBoards} (${tagFilter})` : t.noQuestBoards}</p>
                         )}
                     </div>
 
@@ -1429,6 +1513,9 @@
         function ProfileEventEditModal({ t, lang, event, onClose, onSave, onDelete }) {
             const [name, setName] = useState(event.name || '');
             const [description, setDescription] = useState(event.description || '');
+            const [image, setImage] = useState(event.image || '');
+            const [tags, setTags] = useState([...(event.tags || [])]);
+            const [tagInput, setTagInput] = useState('');
             const [selectedDates, setSelectedDates] = useState([...(event.dates || [])]);
             const [startHour, setStartHour] = useState(event.startHour || 10);
             const [endHour, setEndHour] = useState(event.endHour || 22);
@@ -1460,6 +1547,18 @@
                 setSelectedDates(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr].sort());
             };
 
+            const addTag = () => {
+                const tag = tagInput.trim();
+                if (tag && tags.length < 3 && !tags.includes(tag)) {
+                    setTags([...tags, tag]);
+                    setTagInput('');
+                }
+            };
+
+            const removeTag = (tagToRemove) => {
+                setTags(tags.filter(t => t !== tagToRemove));
+            };
+
             const handleSave = async () => {
                 if (!name.trim() || selectedDates.length === 0) return;
                 setLoading(true); setError('');
@@ -1471,7 +1570,9 @@
                             description: description.trim(),
                             dates: selectedDates,
                             startHour,
-                            endHour
+                            endHour,
+                            image: image.trim() || null,
+                            tags
                         }) 
                     });
                     onSave();
@@ -1484,7 +1585,7 @@
 
             return (
                 <div className="modal-overlay" onClick={onClose}>
-                    <div className="modal modal-wide" onClick={e => e.stopPropagation()}>
+                    <div className="modal modal-wide" onClick={e => e.stopPropagation()} style={{ maxHeight: '90vh', overflowY: 'auto' }}>
                         <h3>✏️ {t.editEvent}</h3>
                         {error && <div className="error-message">{error}</div>}
                         {warning && <div className="warning-message">{warning}</div>}
@@ -1495,6 +1596,23 @@
                         <div className="form-group">
                             <label>{t.description}</label>
                             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
+                        </div>
+                        <div className="form-group">
+                            <label>{t.questBoardImage}</label>
+                            <input type="url" value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://..." />
+                            {image && <div style={{ marginTop: '0.5rem', height: '60px', backgroundImage: `url(${image})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: '3px', opacity: 0.75 }} />}
+                        </div>
+                        <div className="form-group">
+                            <label>{t.tags} ({tags.length}/3)</label>
+                            <div className="tag-input-row">
+                                <input type="text" value={tagInput} onChange={(e) => setTagInput(e.target.value)} placeholder={t.tagsPlaceholder} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }} disabled={tags.length >= 3} />
+                                <button type="button" className="btn btn-small btn-secondary" onClick={addTag} disabled={tags.length >= 3 || !tagInput.trim()}>{t.addTag}</button>
+                            </div>
+                            {tags.length > 0 && (
+                                <div className="tags-display">
+                                    {tags.map((tag, i) => <span key={i} className="tag tag-removable" onClick={() => removeTag(tag)}>{tag}</span>)}
+                                </div>
+                            )}
                         </div>
                         <div className="form-group">
                             <label>{t.selectDates} ({selectedDates.length} {t.selected})</label>
@@ -1542,6 +1660,9 @@
             const { navigate } = useAuth();
             const [name, setName] = useState('');
             const [description, setDescription] = useState('');
+            const [image, setImage] = useState('');
+            const [tags, setTags] = useState([]);
+            const [tagInput, setTagInput] = useState('');
             const [selectedDates, setSelectedDates] = useState([]);
             const [startHour, setStartHour] = useState(10);
             const [endHour, setEndHour] = useState(22);
@@ -1574,11 +1695,23 @@
                 setSelectedDates(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr].sort());
             };
 
+            const addTag = () => {
+                const tag = tagInput.trim();
+                if (tag && tags.length < 3 && !tags.includes(tag)) {
+                    setTags([...tags, tag]);
+                    setTagInput('');
+                }
+            };
+
+            const removeTag = (tagToRemove) => {
+                setTags(tags.filter(t => t !== tagToRemove));
+            };
+
             const handleSubmit = async (e) => {
                 e.preventDefault();
                 if (!name.trim() || selectedDates.length === 0) { setError(lang === 'sr' ? 'Molimo unesite naziv i izaberite bar jedan datum' : 'Please enter a name and select at least one date'); return; }
                 setLoading(true); setError('');
-                try { const res = await api('/api/events', { method: 'POST', body: JSON.stringify({ name: name.trim(), description: description.trim(), dates: selectedDates, startHour, endHour }) }); navigate(res.url); } 
+                try { const res = await api('/api/events', { method: 'POST', body: JSON.stringify({ name: name.trim(), description: description.trim(), dates: selectedDates, startHour, endHour, image: image.trim() || null, tags }) }); navigate(res.url); } 
                 catch (err) { setError(err.message || 'Network error'); } 
                 finally { setLoading(false); }
             };
@@ -1594,6 +1727,23 @@
                         <form onSubmit={handleSubmit}>
                             <div className="form-group"><label>{t.eventName} *</label><input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder={t.eventNamePlaceholder} required /></div>
                             <div className="form-group"><label>{t.description}</label><textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t.descriptionPlaceholder} rows={2} /></div>
+                            <div className="form-group">
+                                <label>{t.questBoardImage}</label>
+                                <input type="url" value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://..." />
+                                {image && <div style={{ marginTop: '0.5rem', height: '60px', backgroundImage: `url(${image})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: '3px', opacity: 0.75 }} />}
+                            </div>
+                            <div className="form-group">
+                                <label>{t.tags} ({tags.length}/3)</label>
+                                <div className="tag-input-row">
+                                    <input type="text" value={tagInput} onChange={(e) => setTagInput(e.target.value)} placeholder={t.tagsPlaceholder} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }} disabled={tags.length >= 3} />
+                                    <button type="button" className="btn btn-small btn-secondary" onClick={addTag} disabled={tags.length >= 3 || !tagInput.trim()}>{t.addTag}</button>
+                                </div>
+                                {tags.length > 0 && (
+                                    <div className="tags-display">
+                                        {tags.map((tag, i) => <span key={i} className="tag tag-removable" onClick={() => removeTag(tag)}>{tag}</span>)}
+                                    </div>
+                                )}
+                            </div>
                             <div className="form-group">
                                 <label>{t.selectDates} * ({selectedDates.length} {t.selected})</label>
                                 <div className="month-nav">
