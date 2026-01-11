@@ -329,6 +329,7 @@ app.get('/api/adventurers', authenticateToken, requireAuth, async (req, res) => 
         // Get quest board counts for each adventurer
         const adventurerNames = data.map(a => a.name);
         let questBoardCounts = {};
+        let questBoardsMap = {};
         
         if (adventurerNames.length > 0) {
             const { data: availabilityData } = await supabase
@@ -340,9 +341,24 @@ app.get('/api/adventurers', authenticateToken, requireAuth, async (req, res) => 
                 availabilityData.forEach(a => {
                     if (!questBoardCounts[a.participant_name]) {
                         questBoardCounts[a.participant_name] = new Set();
+                        questBoardsMap[a.participant_name] = [];
                     }
                     questBoardCounts[a.participant_name].add(a.event_id);
+                    questBoardsMap[a.participant_name].push(a.event_id);
                 });
+            }
+        }
+        
+        // Get event names for quest boards
+        const allEventIds = [...new Set(Object.values(questBoardsMap).flat())];
+        let eventNames = {};
+        if (allEventIds.length > 0) {
+            const { data: events } = await supabase
+                .from('events')
+                .select('id, name')
+                .in('id', allEventIds);
+            if (events) {
+                events.forEach(e => eventNames[e.id] = e.name);
             }
         }
         
@@ -350,8 +366,14 @@ app.get('/api/adventurers', authenticateToken, requireAuth, async (req, res) => 
             id: a.id,
             name: a.name,
             image: a.image,
+            bio: a.bio,
+            level: a.level,
+            race: a.race,
+            class: a.class,
+            notes: a.notes,
             createdAt: a.created_at,
-            questBoardCount: questBoardCounts[a.name] ? questBoardCounts[a.name].size : 0
+            questBoardCount: questBoardCounts[a.name] ? questBoardCounts[a.name].size : 0,
+            questBoards: (questBoardsMap[a.name] || []).map(id => ({ id, name: eventNames[id] }))
         })));
     } catch (err) {
         console.error('Adventurers error:', err);
@@ -360,7 +382,7 @@ app.get('/api/adventurers', authenticateToken, requireAuth, async (req, res) => 
 });
 
 app.post('/api/adventurers', authenticateToken, requireAuth, async (req, res) => {
-    const { name, image } = req.body;
+    const { name, image, bio, level, race, class: charClass, notes } = req.body;
     
     if (!name) {
         return res.status(400).json({ error: 'Name required' });
@@ -369,13 +391,31 @@ app.post('/api/adventurers', authenticateToken, requireAuth, async (req, res) =>
     try {
         const { data, error } = await supabase
             .from('adventurers')
-            .insert({ user_id: req.user.id, name, image: image || null })
+            .insert({ 
+                user_id: req.user.id, 
+                name, 
+                image: image || null,
+                bio: bio || null,
+                level: level || null,
+                race: race || null,
+                class: charClass || null,
+                notes: notes || null
+            })
             .select()
             .single();
         
         if (error) throw error;
         
-        res.json({ id: data.id, name: data.name, image: data.image });
+        res.json({ 
+            id: data.id, 
+            name: data.name, 
+            image: data.image,
+            bio: data.bio,
+            level: data.level,
+            race: data.race,
+            class: data.class,
+            notes: data.notes
+        });
     } catch (err) {
         console.error('Create adventurer error:', err);
         res.status(500).json({ error: 'Failed to create adventurer' });
@@ -383,7 +423,7 @@ app.post('/api/adventurers', authenticateToken, requireAuth, async (req, res) =>
 });
 
 app.put('/api/adventurers/:id', authenticateToken, requireAuth, async (req, res) => {
-    const { name, image } = req.body;
+    const { name, image, bio, level, race, class: charClass, notes } = req.body;
     const { id } = req.params;
     
     try {
@@ -400,13 +440,63 @@ app.put('/api/adventurers/:id', authenticateToken, requireAuth, async (req, res)
         
         await supabase
             .from('adventurers')
-            .update({ name, image: image || null })
+            .update({ 
+                name, 
+                image: image || null,
+                bio: bio || null,
+                level: level || null,
+                race: race || null,
+                class: charClass || null,
+                notes: notes || null
+            })
             .eq('id', id);
         
         res.json({ success: true });
     } catch (err) {
         console.error('Update adventurer error:', err);
         res.status(500).json({ error: 'Update failed' });
+    }
+});
+
+// Get public adventurer info (for viewing other players' characters)
+app.get('/api/adventurers/public/:name', async (req, res) => {
+    const { name } = req.params;
+    
+    try {
+        const { data: availability } = await supabase
+            .from('availability')
+            .select('participant_name, participant_image, user_id')
+            .eq('participant_name', decodeURIComponent(name))
+            .limit(1);
+        
+        if (!availability || availability.length === 0) {
+            return res.status(404).json({ error: 'Adventurer not found' });
+        }
+        
+        const userId = availability[0].user_id;
+        
+        // If there's a user_id, try to get full adventurer details
+        if (userId) {
+            const { data: adventurer } = await supabase
+                .from('adventurers')
+                .select('name, image, bio, level, race, class, notes')
+                .eq('user_id', userId)
+                .eq('name', decodeURIComponent(name))
+                .single();
+            
+            if (adventurer) {
+                return res.json(adventurer);
+            }
+        }
+        
+        // Fallback to basic info from availability
+        res.json({
+            name: availability[0].participant_name,
+            image: availability[0].participant_image
+        });
+    } catch (err) {
+        console.error('Public adventurer error:', err);
+        res.status(500).json({ error: 'Failed to load adventurer' });
     }
 });
 
@@ -513,6 +603,45 @@ app.get('/api/events/:id', async (req, res) => {
     } catch (err) {
         console.error('Get event error:', err);
         res.status(500).json({ error: 'Failed to load event' });
+    }
+});
+
+// Update event (only creator can edit)
+app.put('/api/events/:id', authenticateToken, requireAuth, async (req, res) => {
+    const { id } = req.params;
+    const { name, description, dates, startHour, endHour } = req.body;
+    
+    try {
+        // Check if user is the creator
+        const { data: event } = await supabase
+            .from('events')
+            .select('creator_id')
+            .eq('id', id)
+            .single();
+        
+        if (!event) {
+            return res.status(404).json({ error: 'Event not found' });
+        }
+        
+        if (event.creator_id !== req.user.id) {
+            return res.status(403).json({ error: 'Only the creator can edit this event' });
+        }
+        
+        await supabase
+            .from('events')
+            .update({
+                name,
+                description: description || '',
+                dates,
+                start_hour: startHour,
+                end_hour: endHour
+            })
+            .eq('id', id);
+        
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Update event error:', err);
+        res.status(500).json({ error: 'Failed to update event' });
     }
 });
 
