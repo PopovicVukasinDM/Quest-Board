@@ -394,7 +394,7 @@ app.post('/api/events', authenticateToken, (req, res) => {
     
     db.run(`
         INSERT INTO events (id, name, description, dates, start_hour, end_hour, creator_id)
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     `, [eventId, name, description || '', JSON.stringify(dates), startHour || 9, endHour || 22, creatorId]);
     
     res.json({ 
