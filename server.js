@@ -364,16 +364,16 @@ app.get('/api/adventurers', authenticateToken, requireAuth, async (req, res) => 
             }
         }
         
-        // Get event names for quest boards
+        // Get event names and tags for quest boards
         const allEventIds = [...new Set(Object.values(questBoardsMap).flat())];
-        let eventNames = {};
+        let eventInfo = {};
         if (allEventIds.length > 0) {
             const { data: events } = await supabase
                 .from('events')
-                .select('id, name')
+                .select('id, name, tags')
                 .in('id', allEventIds);
             if (events) {
-                events.forEach(e => eventNames[e.id] = e.name);
+                events.forEach(e => eventInfo[e.id] = { name: e.name, tags: e.tags || [] });
             }
         }
         
@@ -388,7 +388,7 @@ app.get('/api/adventurers', authenticateToken, requireAuth, async (req, res) => 
             notes: a.notes,
             createdAt: a.created_at,
             questBoardCount: questBoardCounts[a.name] ? questBoardCounts[a.name].size : 0,
-            questBoards: (questBoardsMap[a.name] || []).map(id => ({ id, name: eventNames[id] }))
+            questBoards: (questBoardsMap[a.name] || []).map(id => ({ id, name: eventInfo[id]?.name, tags: eventInfo[id]?.tags || [] }))
         })));
     } catch (err) {
         console.error('Adventurers error:', err);
