@@ -51,24 +51,15 @@
             position: relative;
         }
 
-        .header-dragon {
+        .header::before {
+            content: '⚔️';
             position: absolute;
-            top: -20px;
+            top: -15px;
             left: 50%;
             transform: translateX(-50%);
-            width: 60px;
-            height: 40px;
+            font-size: 1.5rem;
             background: var(--parchment);
-            padding: 0 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .header-dragon svg {
-            width: 50px;
-            height: 35px;
-            fill: var(--ink);
+            padding: 0 1rem;
         }
 
         .header h1 {
@@ -121,7 +112,7 @@
         .top-controls { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
 
         .toggle-group { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
-        .toggle-group label { color: var(--ink-light); font-size: 0.8rem; }
+        .toggle-group label { color: var(--ink-light); font-size: 0.75rem; font-family: 'Cinzel', serif; }
 
         .toggle-btn {
             font-family: 'Cinzel', serif;
@@ -787,17 +778,6 @@
             }
         };
 
-        const DragonSVG = () => (
-            <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
-                <path d="M50 5 C30 5 15 20 15 35 C15 45 25 55 40 55 L45 55 C45 55 43 50 45 45 C47 40 55 38 55 38 C55 38 63 40 65 45 C67 50 65 55 65 55 L70 55 C85 55 95 45 95 35 C95 20 80 5 60 5 C55 5 52 8 50 10 C48 8 45 5 50 5" fill="currentColor"/>
-                <circle cx="30" cy="28" r="4" fill="var(--gold)"/>
-                <circle cx="70" cy="28" r="4" fill="var(--gold)"/>
-                <path d="M15 35 C10 30 5 32 2 28 M15 38 C8 36 3 40 0 38" stroke="currentColor" strokeWidth="2" fill="none"/>
-                <path d="M85 35 C90 30 95 32 98 28 M85 38 C92 36 97 40 100 38" stroke="currentColor" strokeWidth="2" fill="none"/>
-                <path d="M40 45 Q50 52 60 45" stroke="var(--gold)" strokeWidth="2" fill="none"/>
-            </svg>
-        );
-
         function getSlotKey(date, hour) { return `${date}-${hour}`; }
 
         async function api(endpoint, options = {}) {
@@ -864,13 +844,14 @@
                 <AuthContext.Provider value={{ user, setUser, login, logout, t, lang, timeFormat, navigate }}>
                     <div className="app-container">
                         <header className="header">
-                            <div className="header-dragon"><DragonSVG /></div>
                             <div className="header-left">
                                 <div className="toggle-group">
+                                    <label>{t.timeFormat}:</label>
                                     <button className={`toggle-btn ${timeFormat === '12' ? 'active' : ''}`} onClick={() => setTimeFormat('12')}>12h</button>
                                     <button className={`toggle-btn ${timeFormat === '24' ? 'active' : ''}`} onClick={() => setTimeFormat('24')}>24h</button>
                                 </div>
                                 <div className="toggle-group">
+                                    <label>{t.language}:</label>
                                     <button className={`toggle-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>
                                         <span className="flag flag-gb"></span> EN
                                     </button>
@@ -1619,7 +1600,7 @@
                                 <>
                                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
                                         <span className="participant-tag active">
-                                            {currentUserImage && <img src={currentUserImage} alt="" />}
+                                            {currentUserImage ? <img src={currentUserImage} alt="" /> : null}
                                             {currentUser}
                                         </span>
                                         <button className="switch-adventurer-btn" onClick={() => setSwitchModal(true)} title={t.switchAdventurer}>🔄</button>
@@ -1632,7 +1613,7 @@
                                 </>
                             )}
                             <h2 style={{marginTop: '1.5rem'}}>🎭 {t.party} ({event.participants.length})</h2>
-                            <div>{event.participants.length === 0 ? <p style={{fontStyle: 'italic', fontSize: '0.9rem'}}>{t.noAdventurers}</p> : event.participants.map(name => <span key={name} className={`participant-tag ${name === currentUser ? 'active' : ''}`} onClick={() => name !== currentUser && viewPublicAdventurer(name)}>{event.participantImages?.[name] && <img src={event.participantImages[name]} alt="" />}{name}</span>)}</div>
+                            <div>{event.participants.length === 0 ? <p style={{fontStyle: 'italic', fontSize: '0.9rem'}}>{t.noAdventurers}</p> : event.participants.map(name => <span key={name} className={`participant-tag ${name === currentUser ? 'active' : ''}`} onClick={() => name !== currentUser && viewPublicAdventurer(name)}>{event.participantImages?.[name] ? <img src={event.participantImages[name]} alt="" /> : null}{name}</span>)}</div>
                             <div className="share-box"><strong>📨 {t.inviteParty}</strong><span className="share-url">{window.location.href}</span><button className="btn btn-secondary" onClick={copyLink}>{copied ? `✓ ${t.copied}` : `📋 ${t.copyLink}`}</button></div>
                             <div className="legend">{viewMode === 'group' ? <><div className="legend-item"><div className="legend-color" style={{background: 'var(--available)'}}></div><span>{t.all}</span></div><div className="legend-item"><div className="legend-color" style={{background: '#7bc47a'}}></div><span>{t.most}</span></div><div className="legend-item"><div className="legend-color" style={{background: '#a8d5a2'}}></div><span>{t.some}</span></div></> : <div className="legend-item"><div className="legend-color" style={{background: 'var(--available)'}}></div><span>{t.available}</span></div>}<div className="legend-item"><span>📜</span><span>{t.hasNote}</span></div></div>
                         </aside>
@@ -1670,18 +1651,18 @@
                                 <>
                                     {tooltip.available.map((a, i) => (
                                         <div key={i} className="tooltip-entry">
-                                            {a.image && <img src={a.image} alt="" />}
+                                            {a.image ? <img src={a.image} alt="" /> : null}
                                             <div>
-                                                <div className="tooltip-name">✓ {a.name}</div>
+                                                <div className="tooltip-name">{a.name}</div>
                                                 {a.note && <div className="tooltip-note">"{a.note}"</div>}
                                             </div>
                                         </div>
                                     ))}
                                     {tooltip.notes.map((a, i) => (
                                         <div key={`note-${i}`} className="tooltip-entry" style={{ borderLeftColor: 'var(--partial)' }}>
-                                            {a.image && <img src={a.image} alt="" />}
+                                            {a.image ? <img src={a.image} alt="" /> : null}
                                             <div>
-                                                <div className="tooltip-name" style={{ opacity: 0.7 }}>{a.name}</div>
+                                                <div className="tooltip-name" style={{ opacity: 0.7 }}>⏳ {a.name}</div>
                                                 <div className="tooltip-note">"{a.note}"</div>
                                             </div>
                                         </div>
