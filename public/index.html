@@ -248,6 +248,42 @@
         .completed-banner { background: #666; color: white; padding: 0.5rem 1rem; text-align: center; font-size: 0.9rem; margin-bottom: 1rem; border-radius: 3px; }
         .panel.completed-panel { opacity: 0.85; filter: grayscale(30%); }
 
+        /* Comments */
+        .comments-section { margin-top: 2rem; padding-top: 1rem; border-top: 2px solid var(--parchment-dark); }
+        .comments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .comment { background: var(--parchment-light); padding: 0.75rem; border-radius: 5px; margin-bottom: 0.75rem; }
+        .comment-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .comment-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .comment-name { font-weight: bold; font-family: 'Cinzel', serif; font-size: 0.9rem; }
+        .comment-time { font-size: 0.75rem; color: var(--ink-light); margin-left: auto; }
+        .comment-edited { font-size: 0.7rem; color: var(--ink-light); font-style: italic; }
+        .comment-content { font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
+        .comment-content .mention { background: var(--gold); color: var(--ink); padding: 0.1rem 0.3rem; border-radius: 3px; font-weight: bold; }
+        .comment-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+        .comment-action { font-size: 0.75rem; color: var(--ink-light); cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 3px; }
+        .comment-action:hover { background: var(--parchment-dark); }
+        .comment-form { margin-top: 1rem; }
+        .comment-input-wrapper { position: relative; }
+        .comment-textarea { width: 100%; min-height: 80px; padding: 0.75rem; border: 1px solid var(--ink-light); border-radius: 5px; font-family: inherit; font-size: 0.9rem; resize: vertical; }
+        .comment-toolbar { display: flex; gap: 0.3rem; margin-bottom: 0.5rem; }
+        .comment-toolbar button { background: var(--parchment-light); border: 1px solid var(--ink-light); padding: 0.3rem 0.5rem; border-radius: 3px; cursor: pointer; font-size: 0.8rem; }
+        .comment-toolbar button:hover { background: var(--gold); }
+        .mention-dropdown { position: absolute; top: 100%; left: 0; background: var(--parchment); border: 1px solid var(--ink-light); border-radius: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-height: 200px; overflow-y: auto; z-index: 100; min-width: 200px; }
+        .mention-item { padding: 0.5rem 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+        .mention-item:hover { background: var(--parchment-light); }
+        .mention-item img { width: 24px; height: 24px; border-radius: 50%; }
+
+        /* Notifications */
+        .notification-badge { position: absolute; top: -5px; right: -5px; background: var(--unavailable); color: white; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 10px; min-width: 18px; text-align: center; }
+        .header-user { position: relative; }
+        .messages-section { margin-bottom: 2rem; }
+        .message-card { background: var(--parchment-light); padding: 1rem; border-radius: 5px; margin-bottom: 0.75rem; cursor: pointer; border-left: 3px solid transparent; }
+        .message-card.unread { border-left-color: var(--gold); background: rgba(218, 165, 32, 0.1); }
+        .message-card:hover { background: var(--parchment-dark); }
+        .message-from { font-weight: bold; font-size: 0.9rem; }
+        .message-preview { font-size: 0.85rem; color: var(--ink-light); margin-top: 0.3rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .message-time { font-size: 0.75rem; color: var(--ink-light); margin-top: 0.3rem; }
+
         .schedule-grid { overflow-x: auto; user-select: none; }
         .grid-container { display: grid; gap: 2px; min-width: fit-content; }
 
@@ -715,6 +751,21 @@
                 completedQuestBoard: "This quest board has been completed",
                 lastVisited: "Last Visited",
                 continueQuest: "Continue Quest",
+                comments: "Comments",
+                addComment: "Add Comment",
+                editComment: "Edit",
+                deleteComment: "Delete",
+                edited: "(edited)",
+                noComments: "No comments yet",
+                writeComment: "Write a comment...",
+                allowComments: "Allow comments",
+                notifyComments: "Enable comment notifications",
+                messages: "Messages",
+                noMessages: "No messages yet",
+                markAllRead: "Mark all as read",
+                mentionedYou: "mentioned you in",
+                unreadMessages: "unread messages",
+                newNotification: "New notification"
             },
             sr: {
                 questBoard: "Tabla Zadataka",
@@ -846,6 +897,21 @@
                 completedQuestBoard: "Ova tabla je završena",
                 lastVisited: "Poslednje posećeno",
                 continueQuest: "Nastavi avanturu",
+                comments: "Komentari",
+                addComment: "Dodaj komentar",
+                editComment: "Izmeni",
+                deleteComment: "Obriši",
+                edited: "(izmenjeno)",
+                noComments: "Nema komentara",
+                writeComment: "Napiši komentar...",
+                allowComments: "Dozvoli komentare",
+                notifyComments: "Omogući obaveštenja za komentare",
+                messages: "Poruke",
+                noMessages: "Nema poruka",
+                markAllRead: "Označi sve kao pročitano",
+                mentionedYou: "vas je pomenuo/la u",
+                unreadMessages: "nepročitanih poruka",
+                newNotification: "Novo obaveštenje"
             }
         };
 
@@ -871,10 +937,20 @@
             const [timeFormat, setTimeFormat] = useState(() => localStorage.getItem('quest-board-time') || '12');
             const [user, setUser] = useState(null);
             const [authLoading, setAuthLoading] = useState(true);
+            const [notificationCount, setNotificationCount] = useState(0);
             const t = translations[lang];
 
             useEffect(() => { localStorage.setItem('quest-board-lang', lang); }, [lang]);
             useEffect(() => { localStorage.setItem('quest-board-time', timeFormat); }, [timeFormat]);
+
+            // Fetch notification count
+            const fetchNotificationCount = async () => {
+                if (!user) { setNotificationCount(0); return; }
+                try {
+                    const data = await api('/api/notifications/count');
+                    setNotificationCount(data.count || 0);
+                } catch { setNotificationCount(0); }
+            };
 
             useEffect(() => {
                 async function checkAuth() {
@@ -890,6 +966,16 @@
                 }
                 checkAuth();
             }, []);
+
+            // Fetch notifications when user changes
+            useEffect(() => { if (user) fetchNotificationCount(); }, [user]);
+
+            // Poll for notifications every 30 seconds
+            useEffect(() => {
+                if (!user) return;
+                const interval = setInterval(fetchNotificationCount, 30000);
+                return () => clearInterval(interval);
+            }, [user]);
 
             useEffect(() => {
                 function handleRoute() {
@@ -912,7 +998,7 @@
             if (authLoading) return <div className="app-container"><div className="panel loading">🎲 {t.loadingDice}</div></div>;
 
             return (
-                <AuthContext.Provider value={{ user, setUser, login, logout, t, lang, timeFormat, navigate }}>
+                <AuthContext.Provider value={{ user, setUser, login, logout, t, lang, timeFormat, navigate, notificationCount, fetchNotificationCount }}>
                     <div className="app-container">
                         <header className="header">
                             <div className="header-left">
@@ -933,9 +1019,12 @@
                             </div>
                             {user && (
                                 <div className="header-right">
-                                    <div className="user-badge" onClick={() => navigate('/profile')}>
-                                        {user.profileImage ? <img src={user.profileImage} alt="" /> : <span>👤</span>}
-                                        {user.displayName}
+                                    <div className="header-user">
+                                        <div className="user-badge" onClick={() => navigate('/profile')}>
+                                            {user.profileImage ? <img src={user.profileImage} alt="" /> : <span>👤</span>}
+                                            {user.displayName}
+                                        </div>
+                                        {notificationCount > 0 && <span className="notification-badge">{notificationCount > 99 ? '99+' : notificationCount}</span>}
                                     </div>
                                     <button className="btn btn-small btn-secondary" onClick={logout}>{t.logout}</button>
                                 </div>
@@ -1094,7 +1183,7 @@
         }
 
         function ProfilePage({ t, lang }) {
-            const { user, setUser, logout, navigate } = useAuth();
+            const { user, setUser, logout, navigate, fetchNotificationCount, notificationCount } = useAuth();
             const [adventurers, setAdventurers] = useState([]);
             const [events, setEvents] = useState({ created: [], participated: [] });
             const [loading, setLoading] = useState(true);
@@ -1117,13 +1206,45 @@
             const [confirmDeleteEvent, setConfirmDeleteEvent] = useState(null);
             const [selectedTags, setSelectedTags] = useState([]);
             const [showTagFilter, setShowTagFilter] = useState(false);
+            const [notifications, setNotifications] = useState([]);
+            const [showMessages, setShowMessages] = useState(false);
 
-            useEffect(() => { if (!user) { navigate('/'); return; } loadData(); }, [user]);
+            useEffect(() => { if (!user) { navigate('/'); return; } loadData(); fetchNotifications(); }, [user]);
 
             const loadData = async () => {
                 try { const [advData, eventsData] = await Promise.all([api('/api/adventurers'), api('/api/profile/events')]); setAdventurers(advData); setEvents(eventsData); } 
                 catch (err) { console.error(err); } 
                 finally { setLoading(false); }
+            };
+
+            const fetchNotifications = async () => {
+                try {
+                    const data = await api('/api/notifications');
+                    setNotifications(data || []);
+                } catch {}
+            };
+
+            const markAllRead = async () => {
+                try {
+                    await api('/api/notifications/read-all', { method: 'PUT' });
+                    fetchNotifications();
+                    if (fetchNotificationCount) fetchNotificationCount();
+                } catch {}
+            };
+
+            const formatNotificationTime = (dateStr) => {
+                const date = new Date(dateStr);
+                const now = new Date();
+                const diff = now - date;
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+                const days = Math.floor(diff / 86400000);
+                
+                if (minutes < 1) return 'just now';
+                if (minutes < 60) return `${minutes}m ago`;
+                if (hours < 24) return `${hours}h ago`;
+                if (days < 7) return `${days}d ago`;
+                return date.toLocaleDateString();
             };
 
             // Get all unique tags from all events
@@ -1135,15 +1256,25 @@
                 return [...allTags].sort();
             };
 
+            // Check if any events are completed
+            const hasCompletedEvents = () => {
+                return [...events.created, ...events.participated].some(ev => ev.completed);
+            };
+
             // Toggle tag in filter
             const toggleTagFilter = (tag) => {
                 setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
             };
 
             // Filter events by selected tags (show if ANY selected tag matches)
+            // Special handling for "__completed" filter
             const filterEventsByTag = (eventList) => {
                 if (selectedTags.length === 0) return eventList;
-                return eventList.filter(ev => (ev.tags || []).some(tag => selectedTags.includes(tag)));
+                return eventList.filter(ev => {
+                    const hasMatchingTag = (ev.tags || []).some(tag => selectedTags.includes(tag));
+                    const matchesCompleted = selectedTags.includes('__completed') && ev.completed;
+                    return hasMatchingTag || matchesCompleted;
+                });
             };
 
             const saveName = async () => {
@@ -1321,6 +1452,42 @@
 
                         <hr className="divider" />
 
+                        {/* Messages Section */}
+                        <div className="section-header" style={{ cursor: 'pointer' }} onClick={() => setShowMessages(!showMessages)}>
+                            <h3>📨 {t.messages} {notificationCount > 0 && <span style={{ background: 'var(--unavailable)', color: 'white', padding: '0.1rem 0.5rem', borderRadius: '10px', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{notificationCount}</span>}</h3>
+                            <span>{showMessages ? '▲' : '▼'}</span>
+                        </div>
+                        {showMessages && (
+                            <div className="messages-section">
+                                {notifications.length > 0 && (
+                                    <button className="btn btn-small btn-secondary" onClick={markAllRead} style={{ marginBottom: '1rem' }}>
+                                        ✓ {t.markAllRead}
+                                    </button>
+                                )}
+                                {notifications.length === 0 ? (
+                                    <p style={{ fontStyle: 'italic', color: 'var(--ink-light)' }}>{t.noMessages}</p>
+                                ) : (
+                                    notifications.map(notif => (
+                                        <div 
+                                            key={notif.id} 
+                                            className={`message-card ${!notif.read ? 'unread' : ''}`}
+                                            onClick={() => navigate(`/event/${notif.event_id}`)}
+                                        >
+                                            <div className="message-from">
+                                                {notif.comments?.adventurer_name} {t.mentionedYou} <strong>{notif.events?.name}</strong>
+                                            </div>
+                                            <div className="message-preview">
+                                                {notif.comments?.content?.substring(0, 100)}{notif.comments?.content?.length > 100 ? '...' : ''}
+                                            </div>
+                                            <div className="message-time">{formatNotificationTime(notif.created_at)}</div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+
+                        <hr className="divider" />
+
                         <div className="section-header">
                             <h3>📅 {t.myQuestBoards}</h3>
                             <div className="section-actions">
@@ -1330,7 +1497,7 @@
                         </div>
 
                         {/* Tag Filter Dropdown */}
-                        {getAllTags().length > 0 && (
+                        {(getAllTags().length > 0 || hasCompletedEvents()) && (
                             <div className="tag-filter">
                                 <div className="tag-filter-dropdown">
                                     <button className="tag-filter-toggle" onClick={() => setShowTagFilter(!showTagFilter)}>
@@ -1342,6 +1509,15 @@
                                                 <input type="checkbox" checked={selectedTags.length === 0} readOnly />
                                                 <span>{t.allTags}</span>
                                             </div>
+                                            {hasCompletedEvents() && (
+                                                <div className="tag-filter-item" onClick={() => toggleTagFilter('__completed')}>
+                                                    <input type="checkbox" checked={selectedTags.includes('__completed')} readOnly />
+                                                    <span style={{ color: '#888' }}>✓ {t.completed}</span>
+                                                    <span className="tag-filter-count">
+                                                        {[...events.created, ...events.participated].filter(ev => ev.completed).length}
+                                                    </span>
+                                                </div>
+                                            )}
                                             {getAllTags().map(tag => (
                                                 <div key={tag} className="tag-filter-item" onClick={() => toggleTagFilter(tag)}>
                                                     <input type="checkbox" checked={selectedTags.includes(tag)} readOnly />
@@ -1587,6 +1763,8 @@
             const [tags, setTags] = useState([...(event.tags || [])]);
             const [tagInput, setTagInput] = useState('');
             const [completed, setCompleted] = useState(event.completed || false);
+            const [allowComments, setAllowComments] = useState(event.allowComments !== false);
+            const [notifyComments, setNotifyComments] = useState(event.notifyComments !== false);
             const [selectedDates, setSelectedDates] = useState([...(event.dates || [])]);
             const [startHour, setStartHour] = useState(event.startHour || 10);
             const [endHour, setEndHour] = useState(event.endHour || 22);
@@ -1644,7 +1822,9 @@
                             endHour,
                             image: image.trim() || null,
                             tags,
-                            completed
+                            completed,
+                            allowComments,
+                            notifyComments
                         }) 
                     });
                     onSave();
@@ -1721,6 +1901,18 @@
                                 {completed ? `✓ ${t.completed}` : `☐ ${t.markComplete}`}
                             </button>
                             <span style={{ fontSize: '0.8rem', color: 'var(--ink-light)' }}>{completed ? t.completedQuestBoard : ''}</span>
+                        </div>
+                        <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                <input type="checkbox" checked={allowComments} onChange={(e) => setAllowComments(e.target.checked)} />
+                                💬 {t.allowComments}
+                            </label>
+                            {allowComments && (
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', marginLeft: '1.5rem' }}>
+                                    <input type="checkbox" checked={notifyComments} onChange={(e) => setNotifyComments(e.target.checked)} />
+                                    🔔 {t.notifyComments}
+                                </label>
+                            )}
                         </div>
                         <div className="modal-buttons-spread">
                             <button className="btn btn-danger btn-small" onClick={onDelete}>🗑️ {t.deleteQuestBoard}</button>
@@ -1846,7 +2038,7 @@
         }
 
         function EventPage({ eventId, t, lang, timeFormat }) {
-            const { user, navigate } = useAuth();
+            const { user, navigate, fetchNotificationCount } = useAuth();
             const [event, setEvent] = useState(null);
             const [loading, setLoading] = useState(true);
             const [error, setError] = useState('');
@@ -1869,8 +2061,198 @@
             const [isDragging, setIsDragging] = useState(false);
             const [dragMode, setDragMode] = useState(null);
             const [draggedSlots, setDraggedSlots] = useState(new Set());
+            // Comments state
+            const [comments, setComments] = useState([]);
+            const [commentText, setCommentText] = useState('');
+            const [editingComment, setEditingComment] = useState(null);
+            const [showMentionDropdown, setShowMentionDropdown] = useState(false);
+            const [mentionSearch, setMentionSearch] = useState('');
+            const [mentionIndex, setMentionIndex] = useState(0);
+            const commentInputRef = useRef(null);
 
-            useEffect(() => { fetchEvent(); if (user) fetchAdventurers(); }, [eventId, user]);
+            useEffect(() => { fetchEvent(); fetchComments(); if (user) fetchAdventurers(); }, [eventId, user]);
+            useEffect(() => { if (user && event) markNotificationsRead(); }, [user, event]);
+
+            const fetchComments = async () => {
+                try {
+                    const data = await api(`/api/events/${eventId}/comments`);
+                    setComments(data || []);
+                } catch {}
+            };
+
+            const markNotificationsRead = async () => {
+                try {
+                    await api(`/api/notifications/read/${eventId}`, { method: 'PUT' });
+                    if (fetchNotificationCount) fetchNotificationCount();
+                } catch {}
+            };
+
+            // Comment functions
+            const extractMentions = (text) => {
+                const mentionRegex = /@(\w+(?:\s+\w+)*)/g;
+                const mentions = [];
+                let match;
+                while ((match = mentionRegex.exec(text)) !== null) {
+                    const name = match[1];
+                    if (event.participants.includes(name)) {
+                        mentions.push(name);
+                    }
+                }
+                return [...new Set(mentions)];
+            };
+
+            const formatCommentContent = (content) => {
+                // Replace @mentions with styled spans
+                let formatted = content.replace(/@(\w+(?:\s+\w+)*)/g, (match, name) => {
+                    if (event.participants.includes(name)) {
+                        return `<span class="mention">@${name}</span>`;
+                    }
+                    return match;
+                });
+                // Apply text formatting
+                formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
+                formatted = formatted.replace(/~~(.+?)~~/g, '<del>$1</del>');
+                formatted = formatted.replace(/__(.+?)__/g, '<u>$1</u>');
+                return formatted;
+            };
+
+            const addComment = async () => {
+                if (!commentText.trim() || !currentUser) return;
+                try {
+                    const mentions = extractMentions(commentText);
+                    await api(`/api/events/${eventId}/comments`, {
+                        method: 'POST',
+                        body: JSON.stringify({ adventurerName: currentUser, content: commentText, mentions })
+                    });
+                    setCommentText('');
+                    fetchComments();
+                } catch (err) { console.error('Failed to add comment:', err); }
+            };
+
+            const updateComment = async (commentId) => {
+                if (!editingComment || !editingComment.content.trim()) return;
+                try {
+                    const mentions = extractMentions(editingComment.content);
+                    await api(`/api/comments/${commentId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ content: editingComment.content, mentions })
+                    });
+                    setEditingComment(null);
+                    fetchComments();
+                } catch (err) { console.error('Failed to update comment:', err); }
+            };
+
+            const deleteComment = async (commentId) => {
+                if (!confirm(t.deleteComment + '?')) return;
+                try {
+                    await api(`/api/comments/${commentId}`, { method: 'DELETE' });
+                    fetchComments();
+                } catch (err) { console.error('Failed to delete comment:', err); }
+            };
+
+            const insertFormatting = (format) => {
+                const textarea = commentInputRef.current;
+                if (!textarea) return;
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const text = commentText;
+                const selectedText = text.substring(start, end);
+                let newText, newCursorPos;
+                
+                switch (format) {
+                    case 'bold':
+                        newText = text.substring(0, start) + `**${selectedText}**` + text.substring(end);
+                        newCursorPos = end + 4;
+                        break;
+                    case 'italic':
+                        newText = text.substring(0, start) + `*${selectedText}*` + text.substring(end);
+                        newCursorPos = end + 2;
+                        break;
+                    case 'strike':
+                        newText = text.substring(0, start) + `~~${selectedText}~~` + text.substring(end);
+                        newCursorPos = end + 4;
+                        break;
+                    case 'underline':
+                        newText = text.substring(0, start) + `__${selectedText}__` + text.substring(end);
+                        newCursorPos = end + 4;
+                        break;
+                    default:
+                        return;
+                }
+                setCommentText(newText);
+                setTimeout(() => {
+                    textarea.focus();
+                    textarea.setSelectionRange(newCursorPos, newCursorPos);
+                }, 0);
+            };
+
+            const handleCommentKeyDown = (e) => {
+                if (e.key === '@') {
+                    setShowMentionDropdown(true);
+                    setMentionSearch('');
+                    setMentionIndex(0);
+                }
+                if (showMentionDropdown) {
+                    if (e.key === 'Escape') {
+                        setShowMentionDropdown(false);
+                    } else if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        setMentionIndex(prev => Math.min(prev + 1, getFilteredParticipants().length - 1));
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        setMentionIndex(prev => Math.max(prev - 1, 0));
+                    } else if (e.key === 'Enter' && getFilteredParticipants().length > 0) {
+                        e.preventDefault();
+                        insertMention(getFilteredParticipants()[mentionIndex]);
+                    }
+                }
+            };
+
+            const handleCommentInput = (e) => {
+                const text = e.target.value;
+                setCommentText(text);
+                
+                // Check for @ mentions
+                const lastAtIndex = text.lastIndexOf('@');
+                if (lastAtIndex !== -1 && lastAtIndex > text.lastIndexOf(' ')) {
+                    const search = text.substring(lastAtIndex + 1);
+                    setMentionSearch(search);
+                    setShowMentionDropdown(true);
+                } else {
+                    setShowMentionDropdown(false);
+                }
+            };
+
+            const getFilteredParticipants = () => {
+                if (!event) return [];
+                return event.participants.filter(p => 
+                    p.toLowerCase().includes(mentionSearch.toLowerCase()) && p !== currentUser
+                );
+            };
+
+            const insertMention = (name) => {
+                const lastAtIndex = commentText.lastIndexOf('@');
+                const newText = commentText.substring(0, lastAtIndex) + `@${name} `;
+                setCommentText(newText);
+                setShowMentionDropdown(false);
+                if (commentInputRef.current) commentInputRef.current.focus();
+            };
+
+            const formatTime = (dateStr) => {
+                const date = new Date(dateStr);
+                const now = new Date();
+                const diff = now - date;
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+                const days = Math.floor(diff / 86400000);
+                
+                if (minutes < 1) return 'just now';
+                if (minutes < 60) return `${minutes}m ago`;
+                if (hours < 24) return `${hours}h ago`;
+                if (days < 7) return `${days}d ago`;
+                return date.toLocaleDateString();
+            };
 
             const fetchEvent = async () => {
                 try {
@@ -2073,6 +2455,100 @@
                                 </div>
                             </div>
                         </main>
+
+                        {/* Comments Section */}
+                        {event.allowComments && (
+                            <div className="panel comments-section" style={{ marginTop: '1rem' }}>
+                                <div className="comments-header">
+                                    <h3>💬 {t.comments} ({comments.length})</h3>
+                                </div>
+                                
+                                {/* Comment List */}
+                                {comments.length === 0 ? (
+                                    <p style={{ fontStyle: 'italic', color: 'var(--ink-light)' }}>{t.noComments}</p>
+                                ) : (
+                                    comments.map(comment => (
+                                        <div key={comment.id} className="comment">
+                                            <div className="comment-header">
+                                                {comment.adventurer_image ? (
+                                                    <img src={comment.adventurer_image} alt="" className="comment-avatar" />
+                                                ) : (
+                                                    <div className="comment-avatar" style={{ background: 'var(--ink-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>👤</div>
+                                                )}
+                                                <span className="comment-name">{comment.adventurer_name}</span>
+                                                <span className="comment-time">{formatTime(comment.created_at)}</span>
+                                                {comment.edited && <span className="comment-edited">{t.edited}</span>}
+                                            </div>
+                                            {editingComment && editingComment.id === comment.id ? (
+                                                <div>
+                                                    <textarea 
+                                                        className="comment-textarea" 
+                                                        value={editingComment.content} 
+                                                        onChange={(e) => setEditingComment({...editingComment, content: e.target.value})}
+                                                    />
+                                                    <div className="comment-actions">
+                                                        <span className="comment-action" onClick={() => updateComment(comment.id)}>✓ Save</span>
+                                                        <span className="comment-action" onClick={() => setEditingComment(null)}>✕ Cancel</span>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="comment-content" dangerouslySetInnerHTML={{ __html: formatCommentContent(comment.content) }} />
+                                                    {(comment.user_id === user?.id || event.creatorId === user?.id) && (
+                                                        <div className="comment-actions">
+                                                            {comment.user_id === user?.id && (
+                                                                <span className="comment-action" onClick={() => setEditingComment({ id: comment.id, content: comment.content })}>✏️ {t.editComment}</span>
+                                                            )}
+                                                            <span className="comment-action" onClick={() => deleteComment(comment.id)}>🗑️ {t.deleteComment}</span>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+                                    ))
+                                )}
+                                
+                                {/* Add Comment Form */}
+                                {currentUser && (
+                                    <div className="comment-form">
+                                        <div className="comment-toolbar">
+                                            <button type="button" onClick={() => insertFormatting('bold')} title="Bold"><strong>B</strong></button>
+                                            <button type="button" onClick={() => insertFormatting('italic')} title="Italic"><em>I</em></button>
+                                            <button type="button" onClick={() => insertFormatting('strike')} title="Strikethrough"><del>S</del></button>
+                                            <button type="button" onClick={() => insertFormatting('underline')} title="Underline"><u>U</u></button>
+                                        </div>
+                                        <div className="comment-input-wrapper">
+                                            <textarea 
+                                                ref={commentInputRef}
+                                                className="comment-textarea" 
+                                                value={commentText} 
+                                                onChange={handleCommentInput}
+                                                onKeyDown={handleCommentKeyDown}
+                                                placeholder={t.writeComment}
+                                            />
+                                            {showMentionDropdown && getFilteredParticipants().length > 0 && (
+                                                <div className="mention-dropdown">
+                                                    {getFilteredParticipants().map((p, i) => (
+                                                        <div 
+                                                            key={p} 
+                                                            className={`mention-item ${i === mentionIndex ? 'active' : ''}`}
+                                                            onClick={() => insertMention(p)}
+                                                            style={{ background: i === mentionIndex ? 'var(--parchment-light)' : 'transparent' }}
+                                                        >
+                                                            {event.participantImages?.[p] && <img src={event.participantImages[p]} alt="" />}
+                                                            <span>{p}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <button className="btn btn-primary" onClick={addComment} disabled={!commentText.trim()} style={{ marginTop: '0.5rem' }}>
+                                            {t.addComment}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {tooltip && !isDragging && (
@@ -2201,6 +2677,8 @@
             const [tags, setTags] = useState([...(event.tags || [])]);
             const [tagInput, setTagInput] = useState('');
             const [completed, setCompleted] = useState(event.completed || false);
+            const [allowComments, setAllowComments] = useState(event.allowComments !== false);
+            const [notifyComments, setNotifyComments] = useState(event.notifyComments !== false);
             const [selectedDates, setSelectedDates] = useState([...event.dates]);
             const [startHour, setStartHour] = useState(event.startHour);
             const [endHour, setEndHour] = useState(event.endHour);
@@ -2266,7 +2744,7 @@
                 if (!name.trim() || selectedDates.length === 0) return;
                 setLoading(true); setError('');
                 try {
-                    await api(`/api/events/${event.id}`, { method: 'PUT', body: JSON.stringify({ name: name.trim(), description: description.trim(), dates: selectedDates, startHour, endHour, image: image.trim() || null, tags, completed }) });
+                    await api(`/api/events/${event.id}`, { method: 'PUT', body: JSON.stringify({ name: name.trim(), description: description.trim(), dates: selectedDates, startHour, endHour, image: image.trim() || null, tags, completed, allowComments, notifyComments }) });
                     onSave();
                 } catch (err) { setError(err.message); } 
                 finally { setLoading(false); }
@@ -2336,6 +2814,18 @@
                                 {completed ? `✓ ${t.completed}` : `☐ ${t.markComplete}`}
                             </button>
                             <span style={{ fontSize: '0.8rem', color: 'var(--ink-light)' }}>{completed ? t.completedQuestBoard : ''}</span>
+                        </div>
+                        <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                <input type="checkbox" checked={allowComments} onChange={(e) => setAllowComments(e.target.checked)} />
+                                💬 {t.allowComments}
+                            </label>
+                            {allowComments && (
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', marginLeft: '1.5rem' }}>
+                                    <input type="checkbox" checked={notifyComments} onChange={(e) => setNotifyComments(e.target.checked)} />
+                                    🔔 {t.notifyComments}
+                                </label>
+                            )}
                         </div>
                         <div className="modal-buttons-spread">
                             {!confirmDelete ? (
