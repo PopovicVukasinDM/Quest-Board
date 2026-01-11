@@ -250,7 +250,7 @@ app.get('/api/profile/events', authenticateToken, requireAuth, async (req, res) 
         // Get events user created
         const { data: created } = await supabase
             .from('events')
-            .select('id, name, description, dates, start_hour, end_hour, created_at')
+            .select('id, name, description, dates, start_hour, end_hour, image, tags, created_at')
             .eq('creator_id', req.user.id)
             .order('created_at', { ascending: false });
         
@@ -265,7 +265,7 @@ app.get('/api/profile/events', authenticateToken, requireAuth, async (req, res) 
             const eventIds = participatedAvail.map(a => a.event_id);
             const { data: participatedEvents } = await supabase
                 .from('events')
-                .select('id, name, description, dates, start_hour, end_hour, created_at')
+                .select('id, name, description, dates, start_hour, end_hour, image, tags, created_at')
                 .in('id', eventIds)
                 .neq('creator_id', req.user.id)
                 .order('created_at', { ascending: false });
@@ -301,17 +301,25 @@ app.get('/api/profile/events', authenticateToken, requireAuth, async (req, res) 
         
         res.json({
             created: (created || []).map(e => ({ 
-                ...e,
+                id: e.id,
+                name: e.name,
+                description: e.description,
                 startHour: e.start_hour,
                 endHour: e.end_hour,
                 dates: e.dates,
+                image: e.image,
+                tags: e.tags || [],
                 participants: participantsMap[e.id] || []
             })),
             participated: participated.map(e => ({ 
-                ...e,
+                id: e.id,
+                name: e.name,
+                description: e.description,
                 startHour: e.start_hour,
                 endHour: e.end_hour,
                 dates: e.dates,
+                image: e.image,
+                tags: e.tags || [],
                 participants: participantsMap[e.id] || []
             }))
         });
@@ -534,7 +542,7 @@ app.delete('/api/adventurers/:id', authenticateToken, requireAuth, async (req, r
 // ============ EVENT ROUTES ============
 
 app.post('/api/events', authenticateToken, async (req, res) => {
-    const { name, description, dates, startHour, endHour } = req.body;
+    const { name, description, dates, startHour, endHour, image, tags } = req.body;
     
     if (!name || !dates || dates.length === 0) {
         return res.status(400).json({ error: 'Name and dates are required' });
@@ -551,7 +559,9 @@ app.post('/api/events', authenticateToken, async (req, res) => {
             dates: dates,
             start_hour: startHour || 9,
             end_hour: endHour || 22,
-            creator_id: creatorId
+            creator_id: creatorId,
+            image: image || null,
+            tags: tags || []
         });
         
         if (error) throw error;
@@ -603,6 +613,8 @@ app.get('/api/events/:id', async (req, res) => {
             endHour: event.end_hour,
             creatorId: event.creator_id,
             createdAt: event.created_at,
+            image: event.image,
+            tags: event.tags || [],
             participants,
             participantImages,
             availability
@@ -616,7 +628,7 @@ app.get('/api/events/:id', async (req, res) => {
 // Update event (only creator can edit)
 app.put('/api/events/:id', authenticateToken, requireAuth, async (req, res) => {
     const { id } = req.params;
-    const { name, description, dates, startHour, endHour } = req.body;
+    const { name, description, dates, startHour, endHour, image, tags } = req.body;
     
     try {
         // Check if user is the creator
@@ -641,7 +653,9 @@ app.put('/api/events/:id', authenticateToken, requireAuth, async (req, res) => {
                 description: description || '',
                 dates,
                 start_hour: startHour,
-                end_hour: endHour
+                end_hour: endHour,
+                image: image || null,
+                tags: tags || []
             })
             .eq('id', id);
         
