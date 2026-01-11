@@ -272,9 +272,41 @@ app.get('/api/profile/events', authenticateToken, requireAuth, async (req, res) 
             participated = participatedEvents || [];
         }
         
+        // Get all event IDs to fetch participants
+        const allEventIds = [...(created || []).map(e => e.id), ...participated.map(e => e.id)];
+        
+        // Fetch participants for all events
+        let participantsMap = {};
+        if (allEventIds.length > 0) {
+            const { data: allAvailability } = await supabase
+                .from('availability')
+                .select('event_id, participant_name, participant_image')
+                .in('event_id', allEventIds);
+            
+            if (allAvailability) {
+                allAvailability.forEach(a => {
+                    if (!participantsMap[a.event_id]) {
+                        participantsMap[a.event_id] = [];
+                    }
+                    participantsMap[a.event_id].push({
+                        name: a.participant_name,
+                        image: a.participant_image
+                    });
+                });
+            }
+        }
+        
         res.json({
-            created: (created || []).map(e => ({ ...e, dates: e.dates })),
-            participated: participated.map(e => ({ ...e, dates: e.dates }))
+            created: (created || []).map(e => ({ 
+                ...e, 
+                dates: e.dates,
+                participants: participantsMap[e.id] || []
+            })),
+            participated: participated.map(e => ({ 
+                ...e, 
+                dates: e.dates,
+                participants: participantsMap[e.id] || []
+            }))
         });
     } catch (err) {
         console.error('Profile events error:', err);
@@ -294,11 +326,32 @@ app.get('/api/adventurers', authenticateToken, requireAuth, async (req, res) => 
         
         if (error) throw error;
         
+        // Get quest board counts for each adventurer
+        const adventurerNames = data.map(a => a.name);
+        let questBoardCounts = {};
+        
+        if (adventurerNames.length > 0) {
+            const { data: availabilityData } = await supabase
+                .from('availability')
+                .select('participant_name, event_id')
+                .in('participant_name', adventurerNames);
+            
+            if (availabilityData) {
+                availabilityData.forEach(a => {
+                    if (!questBoardCounts[a.participant_name]) {
+                        questBoardCounts[a.participant_name] = new Set();
+                    }
+                    questBoardCounts[a.participant_name].add(a.event_id);
+                });
+            }
+        }
+        
         res.json(data.map(a => ({
             id: a.id,
             name: a.name,
             image: a.image,
-            createdAt: a.created_at
+            createdAt: a.created_at,
+            questBoardCount: questBoardCounts[a.name] ? questBoardCounts[a.name].size : 0
         })));
     } catch (err) {
         console.error('Adventurers error:', err);
@@ -505,6 +558,26 @@ app.post('/api/events/:id/availability', authenticateToken, async (req, res) => 
     } catch (err) {
         console.error('Save availability error:', err);
         res.status(500).json({ error: 'Failed to save availability' });
+    }
+});
+
+// Delete availability (for switching adventurers)
+app.delete('/api/events/:id/availability/:participantName', authenticateToken, async (req, res) => {
+    const { id, participantName } = req.params;
+    
+    try {
+        const { error } = await supabase
+            .from('availability')
+            .delete()
+            .eq('event_id', id)
+            .eq('participant_name', decodeURIComponent(participantName));
+        
+        if (error) throw error;
+        
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Delete availability error:', err);
+        res.status(500).json({ error: 'Failed to delete availability' });
     }
 });
 
