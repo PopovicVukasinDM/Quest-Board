@@ -517,9 +517,7 @@
         .event-list-item .participants-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
 
         .password-section { background: var(--parchment-light); border: 1px solid var(--ink-light); border-radius: 4px; padding: 1rem; margin-top: 1rem; }
-        .account-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
-        @media (max-width: 600px) { .account-sections { grid-template-columns: 1fr; } }
-        .danger-section { background: #fff5f5; border: 1px solid var(--unavailable); border-radius: 4px; padding: 1rem; }
+        .danger-section { border-color: var(--unavailable); }
         .danger-section .password-header h4 { color: var(--unavailable); }
         .password-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .password-header h4 { font-family: 'Cinzel', serif; font-size: 0.95rem; color: var(--ink); display: flex; align-items: center; gap: 0.5rem; }
@@ -1160,38 +1158,36 @@
                             </div>
                         </div>
 
-                        <div className="account-sections">
-                            <div className="password-section">
-                                <div className="password-header" onClick={() => setShowPasswordForm(!showPasswordForm)}>
-                                    <h4>🔒 {t.changePassword}</h4>
-                                    <span className={`toggle-arrow ${showPasswordForm ? 'open' : ''}`}>▼</span>
-                                </div>
-                                {showPasswordForm && (
-                                    <form onSubmit={handleChangePassword} className="password-form">
-                                        <div className="form-group"><label>{t.currentPassword}</label><input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required /></div>
-                                        <div className="form-group"><label>{t.newPassword}</label><input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required /></div>
-                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                            <button type="submit" className="btn btn-small btn-primary">{t.save}</button>
-                                            <button type="button" className="btn btn-small btn-secondary" onClick={() => { setShowPasswordForm(false); setCurrentPassword(''); setNewPassword(''); }}>{t.cancel}</button>
-                                        </div>
-                                    </form>
-                                )}
+                        <div className="password-section">
+                            <div className="password-header" onClick={() => setShowPasswordForm(!showPasswordForm)}>
+                                <h4>🔒 {t.changePassword}</h4>
+                                <span className={`toggle-arrow ${showPasswordForm ? 'open' : ''}`}>▼</span>
                             </div>
-                            <div className="password-section danger-section">
-                                <div className="password-header" onClick={() => setShowDeleteProfile(!showDeleteProfile)}>
-                                    <h4>🗑️ {t.deleteProfile}</h4>
-                                    <span className={`toggle-arrow ${showDeleteProfile ? 'open' : ''}`}>▼</span>
-                                </div>
-                                {showDeleteProfile && (
-                                    <div className="password-form">
-                                        <p style={{ fontSize: '0.9rem', color: 'var(--unavailable)', marginBottom: '1rem' }}>{t.deleteProfileWarning}</p>
-                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                            <button type="button" className="btn btn-small btn-danger" onClick={handleDeleteProfile}>{t.yes}</button>
-                                            <button type="button" className="btn btn-small btn-secondary" onClick={() => setShowDeleteProfile(false)}>{t.no}</button>
-                                        </div>
+                            {showPasswordForm && (
+                                <form onSubmit={handleChangePassword} className="password-form">
+                                    <div className="form-group"><label>{t.currentPassword}</label><input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required /></div>
+                                    <div className="form-group"><label>{t.newPassword}</label><input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required /></div>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button type="submit" className="btn btn-small btn-primary">{t.save}</button>
+                                        <button type="button" className="btn btn-small btn-secondary" onClick={() => { setShowPasswordForm(false); setCurrentPassword(''); setNewPassword(''); }}>{t.cancel}</button>
                                     </div>
-                                )}
+                                </form>
+                            )}
+                        </div>
+                        <div className="password-section danger-section">
+                            <div className="password-header" onClick={() => setShowDeleteProfile(!showDeleteProfile)}>
+                                <h4>🗑️ {t.deleteProfile}</h4>
+                                <span className={`toggle-arrow ${showDeleteProfile ? 'open' : ''}`}>▼</span>
                             </div>
+                            {showDeleteProfile && (
+                                <div className="password-form">
+                                    <p style={{ fontSize: '0.9rem', color: 'var(--unavailable)', marginBottom: '1rem' }}>{t.deleteProfileWarning}</p>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button type="button" className="btn btn-small btn-danger" onClick={handleDeleteProfile}>{t.yes}</button>
+                                        <button type="button" className="btn btn-small btn-secondary" onClick={() => setShowDeleteProfile(false)}>{t.no}</button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <hr className="divider" />
@@ -1433,11 +1429,39 @@
         function ProfileEventEditModal({ t, lang, event, onClose, onSave, onDelete }) {
             const [name, setName] = useState(event.name || '');
             const [description, setDescription] = useState(event.description || '');
+            const [selectedDates, setSelectedDates] = useState([...(event.dates || [])]);
+            const [startHour, setStartHour] = useState(event.startHour || 10);
+            const [endHour, setEndHour] = useState(event.endHour || 22);
+            const [currentMonth, setCurrentMonth] = useState(new Date());
             const [loading, setLoading] = useState(false);
             const [error, setError] = useState('');
+            const [warning, setWarning] = useState('');
+            const timeFormat = localStorage.getItem('quest-board-time') || '12';
+
+            const formatHourOption = (hour) => {
+                if (timeFormat === '24') return `${hour.toString().padStart(2, '0')}:00`;
+                if (hour === 0) return '12:00 AM';
+                if (hour === 12) return '12:00 PM';
+                if (hour < 12) return `${hour}:00 AM`;
+                return `${hour - 12}:00 PM`;
+            };
+
+            const getDaysInMonth = (date) => {
+                const year = date.getFullYear(), month = date.getMonth();
+                const firstDay = new Date(year, month, 1), lastDay = new Date(year, month + 1, 0);
+                const days = [];
+                for (let i = 0; i < firstDay.getDay(); i++) days.push(null);
+                for (let d = 1; d <= lastDay.getDate(); d++) days.push(new Date(year, month, d));
+                return days;
+            };
+
+            const toggleDate = (date) => {
+                const dateStr = date.toISOString().split('T')[0];
+                setSelectedDates(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr].sort());
+            };
 
             const handleSave = async () => {
-                if (!name.trim()) return;
+                if (!name.trim() || selectedDates.length === 0) return;
                 setLoading(true); setError('');
                 try {
                     await api(`/api/events/${event.id}`, { 
@@ -1445,9 +1469,9 @@
                         body: JSON.stringify({ 
                             name: name.trim(), 
                             description: description.trim(),
-                            dates: event.dates,
-                            startHour: event.startHour,
-                            endHour: event.endHour
+                            dates: selectedDates,
+                            startHour,
+                            endHour
                         }) 
                     });
                     onSave();
@@ -1455,11 +1479,15 @@
                 finally { setLoading(false); }
             };
 
+            const days = getDaysInMonth(currentMonth);
+            const monthName = t.months[currentMonth.getMonth()] + ' ' + currentMonth.getFullYear();
+
             return (
                 <div className="modal-overlay" onClick={onClose}>
                     <div className="modal modal-wide" onClick={e => e.stopPropagation()}>
-                        <h3>📅 {t.editEvent}</h3>
+                        <h3>✏️ {t.editEvent}</h3>
                         {error && <div className="error-message">{error}</div>}
+                        {warning && <div className="warning-message">{warning}</div>}
                         <div className="form-group">
                             <label>{t.eventName} *</label>
                             <input type="text" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
@@ -1468,24 +1496,41 @@
                             <label>{t.description}</label>
                             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
                         </div>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--ink-light)', marginBottom: '1rem' }}>
-                            📆 {event.dates?.length || 0} dates • {t.months ? (() => {
-                                const monthYears = new Set();
-                                (event.dates || []).forEach(d => {
-                                    const date = new Date(d + 'T12:00:00');
-                                    monthYears.add(`${t.months[date.getMonth()]} ${date.getFullYear()}`);
-                                });
-                                return [...monthYears].join(', ');
-                            })() : ''}
-                        </p>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--ink-light)', fontStyle: 'italic' }}>
-                            💡 To edit dates and times, use the ✏️ button on the quest board page itself.
-                        </p>
+                        <div className="form-group">
+                            <label>{t.selectDates} ({selectedDates.length} {t.selected})</label>
+                            <div className="month-nav">
+                                <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}>◀</button>
+                                <span>{monthName}</span>
+                                <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}>▶</button>
+                            </div>
+                            <div className="date-picker-grid">
+                                {t.daysShort.map((d, i) => <div key={i} className="date-picker-header">{d}</div>)}
+                                {days.map((date, i) => {
+                                    const dateStr = date ? date.toISOString().split('T')[0] : '';
+                                    const isSelected = selectedDates.includes(dateStr);
+                                    return <div key={i} className={`date-cell ${!date ? 'disabled' : ''} ${isSelected ? 'selected' : ''}`} onClick={() => date && toggleDate(date)}>{date ? date.getDate() : ''}</div>;
+                                })}
+                            </div>
+                        </div>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>{t.startTime}</label>
+                                <select value={startHour} onChange={(e) => setStartHour(Number(e.target.value))}>
+                                    {Array.from({length: 24}, (_, i) => <option key={i} value={i}>{formatHourOption(i)}</option>)}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>{t.endTime}</label>
+                                <select value={endHour} onChange={(e) => setEndHour(Number(e.target.value))}>
+                                    {Array.from({length: 24}, (_, i) => <option key={i} value={i}>{formatHourOption(i)}</option>)}
+                                </select>
+                            </div>
+                        </div>
                         <div className="modal-buttons-spread">
                             <button className="btn btn-danger btn-small" onClick={onDelete}>🗑️ {t.deleteQuestBoard}</button>
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
                                 <button className="btn btn-secondary" onClick={onClose}>{t.cancel}</button>
-                                <button className="btn btn-primary" onClick={handleSave} disabled={loading || !name.trim()}>{loading ? '...' : t.save}</button>
+                                <button className="btn btn-primary" onClick={handleSave} disabled={loading || !name.trim() || selectedDates.length === 0}>{loading ? '...' : t.update}</button>
                             </div>
                         </div>
                     </div>
