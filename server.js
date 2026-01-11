@@ -544,7 +544,7 @@ app.delete('/api/adventurers/:id', authenticateToken, requireAuth, async (req, r
 // ============ EVENT ROUTES ============
 
 app.post('/api/events', authenticateToken, async (req, res) => {
-    const { name, description, dates, startHour, endHour, image, tags } = req.body;
+    const { name, description, dates, startHour, endHour, image, tags, allowComments, notifyComments } = req.body;
     
     if (!name || !dates || dates.length === 0) {
         return res.status(400).json({ error: 'Name and dates are required' });
@@ -564,7 +564,9 @@ app.post('/api/events', authenticateToken, async (req, res) => {
             creator_id: creatorId,
             image: image || null,
             tags: tags || [],
-            completed: false
+            completed: false,
+            allow_comments: allowComments !== false,
+            notify_comments: notifyComments !== false
         });
         
         if (error) throw error;
