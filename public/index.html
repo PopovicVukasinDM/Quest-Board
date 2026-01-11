@@ -517,6 +517,10 @@
         .event-list-item .participants-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
 
         .password-section { background: var(--parchment-light); border: 1px solid var(--ink-light); border-radius: 4px; padding: 1rem; margin-top: 1rem; }
+        .account-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+        @media (max-width: 600px) { .account-sections { grid-template-columns: 1fr; } }
+        .danger-section { background: #fff5f5; border: 1px solid var(--unavailable); border-radius: 4px; padding: 1rem; }
+        .danger-section .password-header h4 { color: var(--unavailable); }
         .password-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .password-header h4 { font-family: 'Cinzel', serif; font-size: 0.95rem; color: var(--ink); display: flex; align-items: center; gap: 0.5rem; }
         .password-header .toggle-arrow { transition: transform 0.2s; }
@@ -661,6 +665,10 @@
                 warningRemoveDates: "Warning: Some dates have existing availability. Removing them will delete that data.",
                 warningChangeHours: "Warning: Changing hours may affect existing availability data.",
                 update: "Update",
+                deleteProfile: "Delete Profile",
+                deleteProfileWarning: "Are you sure? This will permanently delete your account, all adventurers, and all quest boards you created.",
+                deleteQuestBoard: "Delete Quest Board",
+                deleteQuestBoardWarning: "Are you sure you want to delete this quest board? This will remove all availability data.",
             },
             sr: {
                 questBoard: "Tabla Zadataka",
@@ -775,6 +783,10 @@
                 warningRemoveDates: "Upozorenje: Neki datumi imaju postojeću dostupnost. Uklanjanje će obrisati te podatke.",
                 warningChangeHours: "Upozorenje: Promena sati može uticati na postojeće podatke o dostupnosti.",
                 update: "Ažuriraj",
+                deleteProfile: "Obriši Profil",
+                deleteProfileWarning: "Da li ste sigurni? Ovo će trajno obrisati vaš nalog, sve avanturiste i sve table koje ste kreirali.",
+                deleteQuestBoard: "Obriši Tablu",
+                deleteQuestBoardWarning: "Da li ste sigurni da želite da obrišete ovu tablu? Ovo će ukloniti sve podatke o dostupnosti.",
             }
         };
 
@@ -1003,7 +1015,7 @@
         }
 
         function ProfilePage({ t, lang }) {
-            const { user, setUser, navigate } = useAuth();
+            const { user, setUser, logout, navigate } = useAuth();
             const [adventurers, setAdventurers] = useState([]);
             const [events, setEvents] = useState({ created: [], participated: [] });
             const [loading, setLoading] = useState(true);
@@ -1015,12 +1027,15 @@
             const [tempName, setTempName] = useState(user?.displayName || '');
             const [tempImage, setTempImage] = useState(user?.profileImage || '');
             const [showPasswordForm, setShowPasswordForm] = useState(false);
+            const [showDeleteProfile, setShowDeleteProfile] = useState(false);
             const [currentPassword, setCurrentPassword] = useState('');
             const [newPassword, setNewPassword] = useState('');
 
             const [advModal, setAdvModal] = useState(null);
             const [advViewModal, setAdvViewModal] = useState(null);
             const [confirmDelete, setConfirmDelete] = useState(null);
+            const [eventEditModal, setEventEditModal] = useState(null);
+            const [confirmDeleteEvent, setConfirmDeleteEvent] = useState(null);
 
             useEffect(() => { if (!user) { navigate('/'); return; } loadData(); }, [user]);
 
@@ -1051,6 +1066,22 @@
                 catch (err) { setError(err.message); }
             };
 
+            const handleDeleteProfile = async () => {
+                try {
+                    await api('/api/profile', { method: 'DELETE' });
+                    logout();
+                } catch (err) { setError(err.message); }
+            };
+
+            const handleDeleteEvent = async (eventId) => {
+                try {
+                    await api(`/api/events/${eventId}`, { method: 'DELETE' });
+                    setEvents({ ...events, created: events.created.filter(e => e.id !== eventId) });
+                    setConfirmDeleteEvent(null);
+                    setEventEditModal(null);
+                } catch (err) { setError(err.message); }
+            };
+
             const saveAdventurer = async (data) => {
                 try {
                     if (advModal.mode === 'create') { 
@@ -1074,6 +1105,16 @@
                 const savedImage = localStorage.getItem(`quest-board-user-image-${eventId}`);
                 if (savedName) return { name: savedName, image: savedImage };
                 return null;
+            };
+
+            const getMonthYearFromDates = (dates) => {
+                if (!dates || dates.length === 0) return '';
+                const monthYears = new Set();
+                dates.forEach(d => {
+                    const date = new Date(d + 'T12:00:00');
+                    monthYears.add(`${t.months[date.getMonth()]} ${date.getFullYear()}`);
+                });
+                return [...monthYears].join(', ');
             };
 
             if (!user) return null;
@@ -1119,21 +1160,38 @@
                             </div>
                         </div>
 
-                        <div className="password-section">
-                            <div className="password-header" onClick={() => setShowPasswordForm(!showPasswordForm)}>
-                                <h4>🔒 {t.changePassword}</h4>
-                                <span className={`toggle-arrow ${showPasswordForm ? 'open' : ''}`}>▼</span>
+                        <div className="account-sections">
+                            <div className="password-section">
+                                <div className="password-header" onClick={() => setShowPasswordForm(!showPasswordForm)}>
+                                    <h4>🔒 {t.changePassword}</h4>
+                                    <span className={`toggle-arrow ${showPasswordForm ? 'open' : ''}`}>▼</span>
+                                </div>
+                                {showPasswordForm && (
+                                    <form onSubmit={handleChangePassword} className="password-form">
+                                        <div className="form-group"><label>{t.currentPassword}</label><input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required /></div>
+                                        <div className="form-group"><label>{t.newPassword}</label><input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required /></div>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button type="submit" className="btn btn-small btn-primary">{t.save}</button>
+                                            <button type="button" className="btn btn-small btn-secondary" onClick={() => { setShowPasswordForm(false); setCurrentPassword(''); setNewPassword(''); }}>{t.cancel}</button>
+                                        </div>
+                                    </form>
+                                )}
                             </div>
-                            {showPasswordForm && (
-                                <form onSubmit={handleChangePassword} className="password-form">
-                                    <div className="form-group"><label>{t.currentPassword}</label><input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required /></div>
-                                    <div className="form-group"><label>{t.newPassword}</label><input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required /></div>
-                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                        <button type="submit" className="btn btn-small btn-primary">{t.save}</button>
-                                        <button type="button" className="btn btn-small btn-secondary" onClick={() => { setShowPasswordForm(false); setCurrentPassword(''); setNewPassword(''); }}>{t.cancel}</button>
+                            <div className="password-section danger-section">
+                                <div className="password-header" onClick={() => setShowDeleteProfile(!showDeleteProfile)}>
+                                    <h4>🗑️ {t.deleteProfile}</h4>
+                                    <span className={`toggle-arrow ${showDeleteProfile ? 'open' : ''}`}>▼</span>
+                                </div>
+                                {showDeleteProfile && (
+                                    <div className="password-form">
+                                        <p style={{ fontSize: '0.9rem', color: 'var(--unavailable)', marginBottom: '1rem' }}>{t.deleteProfileWarning}</p>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button type="button" className="btn btn-small btn-danger" onClick={handleDeleteProfile}>{t.yes}</button>
+                                            <button type="button" className="btn btn-small btn-secondary" onClick={() => setShowDeleteProfile(false)}>{t.no}</button>
+                                        </div>
                                     </div>
-                                </form>
-                            )}
+                                )}
+                            </div>
                         </div>
 
                         <hr className="divider" />
@@ -1183,21 +1241,24 @@
                                         return 0;
                                     }) : [];
                                     return (
-                                        <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}>
-                                            {sortedParticipants.length > 0 && (
-                                                <div className="participants-row">
-                                                    {sortedParticipants.slice(0, 6).map((p, i) => (
-                                                        <span key={i} className={`participant-tag ${myAdv && p.name === myAdv.name ? 'active' : ''}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
-                                                            {p.image ? <img src={p.image} alt="" style={{ width: '16px', height: '16px' }} /> : null}
-                                                            {p.name}
-                                                        </span>
-                                                    ))}
-                                                    {sortedParticipants.length > 6 && <span style={{ fontSize: '0.75rem', color: 'var(--ink-light)' }}>+{sortedParticipants.length - 6}</span>}
-                                                </div>
-                                            )}
-                                            <h4>{ev.name}</h4>
-                                            <p>{ev.dates.length} dates • {ev.description || '...'}</p>
-                                        </a>
+                                        <div key={ev.id} className="event-list-item" style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', cursor: 'pointer' }} onClick={() => navigate(`/event/${ev.id}`)}>
+                                            <div style={{ flex: 1 }}>
+                                                {sortedParticipants.length > 0 && (
+                                                    <div className="participants-row">
+                                                        {sortedParticipants.slice(0, 6).map((p, i) => (
+                                                            <span key={i} className={`participant-tag ${myAdv && p.name === myAdv.name ? 'active' : ''}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
+                                                                {p.image && p.image.length > 0 ? <img src={p.image} alt="" style={{ width: '16px', height: '16px' }} /> : null}
+                                                                {p.name}
+                                                            </span>
+                                                        ))}
+                                                        {sortedParticipants.length > 6 && <span style={{ fontSize: '0.75rem', color: 'var(--ink-light)' }}>+{sortedParticipants.length - 6}</span>}
+                                                    </div>
+                                                )}
+                                                <h4>{ev.name}</h4>
+                                                <p>{ev.dates.length} dates • {getMonthYearFromDates(ev.dates)} {ev.description ? `• ${ev.description}` : ''}</p>
+                                            </div>
+                                            <button className="btn btn-small btn-secondary" onClick={(e) => { e.stopPropagation(); setEventEditModal(ev); }} style={{ flexShrink: 0 }}>✏️</button>
+                                        </div>
                                     );
                                 })}
                             </>
@@ -1219,7 +1280,7 @@
                                                 <div className="participants-row">
                                                     {sortedParticipants.slice(0, 6).map((p, i) => (
                                                         <span key={i} className={`participant-tag ${myAdv && p.name === myAdv.name ? 'active' : ''}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
-                                                            {p.image ? <img src={p.image} alt="" style={{ width: '16px', height: '16px' }} /> : null}
+                                                            {p.image && p.image.length > 0 ? <img src={p.image} alt="" style={{ width: '16px', height: '16px' }} /> : null}
                                                             {p.name}
                                                         </span>
                                                     ))}
@@ -1227,7 +1288,7 @@
                                                 </div>
                                             )}
                                             <h4>{ev.name}</h4>
-                                            <p>{ev.dates.length} dates • {ev.description || '...'}</p>
+                                            <p>{ev.dates.length} dates • {getMonthYearFromDates(ev.dates)} {ev.description ? `• ${ev.description}` : ''}</p>
                                         </a>
                                     );
                                 })}
@@ -1295,6 +1356,32 @@
                             </div>
                         </div>
                     )}
+
+                    {/* Quest Board Edit Modal */}
+                    {eventEditModal && (
+                        <ProfileEventEditModal 
+                            t={t} 
+                            lang={lang}
+                            event={eventEditModal} 
+                            onClose={() => setEventEditModal(null)} 
+                            onSave={async () => { await loadData(); setEventEditModal(null); }}
+                            onDelete={() => setConfirmDeleteEvent(eventEditModal.id)}
+                        />
+                    )}
+
+                    {/* Confirm Delete Event Modal */}
+                    {confirmDeleteEvent && (
+                        <div className="modal-overlay" onClick={() => setConfirmDeleteEvent(null)}>
+                            <div className="modal confirm-dialog" onClick={e => e.stopPropagation()}>
+                                <h3>⚠️ {t.deleteQuestBoard}</h3>
+                                <p>{t.deleteQuestBoardWarning}</p>
+                                <div>
+                                    <button className="btn btn-secondary" onClick={() => setConfirmDeleteEvent(null)}>{t.no}</button>
+                                    <button className="btn btn-danger" onClick={() => handleDeleteEvent(confirmDeleteEvent)}>{t.yes}</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         }
@@ -1336,6 +1423,69 @@
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
                                 <button className="btn btn-secondary" onClick={onClose}>{t.cancel}</button>
                                 <button className="btn btn-primary" onClick={handleSave} disabled={!name.trim()}>{t.save}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function ProfileEventEditModal({ t, lang, event, onClose, onSave, onDelete }) {
+            const [name, setName] = useState(event.name || '');
+            const [description, setDescription] = useState(event.description || '');
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleSave = async () => {
+                if (!name.trim()) return;
+                setLoading(true); setError('');
+                try {
+                    await api(`/api/events/${event.id}`, { 
+                        method: 'PUT', 
+                        body: JSON.stringify({ 
+                            name: name.trim(), 
+                            description: description.trim(),
+                            dates: event.dates,
+                            startHour: event.startHour,
+                            endHour: event.endHour
+                        }) 
+                    });
+                    onSave();
+                } catch (err) { setError(err.message); } 
+                finally { setLoading(false); }
+            };
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal modal-wide" onClick={e => e.stopPropagation()}>
+                        <h3>📅 {t.editEvent}</h3>
+                        {error && <div className="error-message">{error}</div>}
+                        <div className="form-group">
+                            <label>{t.eventName} *</label>
+                            <input type="text" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
+                        </div>
+                        <div className="form-group">
+                            <label>{t.description}</label>
+                            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
+                        </div>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--ink-light)', marginBottom: '1rem' }}>
+                            📆 {event.dates?.length || 0} dates • {t.months ? (() => {
+                                const monthYears = new Set();
+                                (event.dates || []).forEach(d => {
+                                    const date = new Date(d + 'T12:00:00');
+                                    monthYears.add(`${t.months[date.getMonth()]} ${date.getFullYear()}`);
+                                });
+                                return [...monthYears].join(', ');
+                            })() : ''}
+                        </p>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--ink-light)', fontStyle: 'italic' }}>
+                            💡 To edit dates and times, use the ✏️ button on the quest board page itself.
+                        </p>
+                        <div className="modal-buttons-spread">
+                            <button className="btn btn-danger btn-small" onClick={onDelete}>🗑️ {t.deleteQuestBoard}</button>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button className="btn btn-secondary" onClick={onClose}>{t.cancel}</button>
+                                <button className="btn btn-primary" onClick={handleSave} disabled={loading || !name.trim()}>{loading ? '...' : t.save}</button>
                             </div>
                         </div>
                     </div>
@@ -1600,7 +1750,7 @@
                                 <>
                                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
                                         <span className="participant-tag active">
-                                            {currentUserImage ? <img src={currentUserImage} alt="" /> : null}
+                                            {currentUserImage && currentUserImage.length > 0 ? <img src={currentUserImage} alt="" /> : null}
                                             {currentUser}
                                         </span>
                                         <button className="switch-adventurer-btn" onClick={() => setSwitchModal(true)} title={t.switchAdventurer}>🔄</button>
@@ -1613,7 +1763,7 @@
                                 </>
                             )}
                             <h2 style={{marginTop: '1.5rem'}}>🎭 {t.party} ({event.participants.length})</h2>
-                            <div>{event.participants.length === 0 ? <p style={{fontStyle: 'italic', fontSize: '0.9rem'}}>{t.noAdventurers}</p> : event.participants.map(name => <span key={name} className={`participant-tag ${name === currentUser ? 'active' : ''}`} onClick={() => name !== currentUser && viewPublicAdventurer(name)}>{event.participantImages?.[name] ? <img src={event.participantImages[name]} alt="" /> : null}{name}</span>)}</div>
+                            <div>{event.participants.length === 0 ? <p style={{fontStyle: 'italic', fontSize: '0.9rem'}}>{t.noAdventurers}</p> : event.participants.map(name => <span key={name} className={`participant-tag ${name === currentUser ? 'active' : ''}`} onClick={() => name !== currentUser && viewPublicAdventurer(name)}>{event.participantImages?.[name] && event.participantImages[name].length > 0 ? <img src={event.participantImages[name]} alt="" /> : null}{name}</span>)}</div>
                             <div className="share-box"><strong>📨 {t.inviteParty}</strong><span className="share-url">{window.location.href}</span><button className="btn btn-secondary" onClick={copyLink}>{copied ? `✓ ${t.copied}` : `📋 ${t.copyLink}`}</button></div>
                             <div className="legend">{viewMode === 'group' ? <><div className="legend-item"><div className="legend-color" style={{background: 'var(--available)'}}></div><span>{t.all}</span></div><div className="legend-item"><div className="legend-color" style={{background: '#7bc47a'}}></div><span>{t.most}</span></div><div className="legend-item"><div className="legend-color" style={{background: '#a8d5a2'}}></div><span>{t.some}</span></div></> : <div className="legend-item"><div className="legend-color" style={{background: 'var(--available)'}}></div><span>{t.available}</span></div>}<div className="legend-item"><span>📜</span><span>{t.hasNote}</span></div></div>
                         </aside>
@@ -1651,7 +1801,7 @@
                                 <>
                                     {tooltip.available.map((a, i) => (
                                         <div key={i} className="tooltip-entry">
-                                            {a.image ? <img src={a.image} alt="" /> : null}
+                                            {a.image && a.image.length > 0 ? <img src={a.image} alt="" /> : null}
                                             <div>
                                                 <div className="tooltip-name">{a.name}</div>
                                                 {a.note && <div className="tooltip-note">"{a.note}"</div>}
@@ -1660,7 +1810,7 @@
                                     ))}
                                     {tooltip.notes.map((a, i) => (
                                         <div key={`note-${i}`} className="tooltip-entry" style={{ borderLeftColor: 'var(--partial)' }}>
-                                            {a.image ? <img src={a.image} alt="" /> : null}
+                                            {a.image && a.image.length > 0 ? <img src={a.image} alt="" /> : null}
                                             <div>
                                                 <div className="tooltip-name" style={{ opacity: 0.7 }}>⏳ {a.name}</div>
                                                 <div className="tooltip-note">"{a.note}"</div>
