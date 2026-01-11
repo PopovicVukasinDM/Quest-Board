@@ -118,7 +118,9 @@
         .toggle-btn:last-of-type { border-radius: 0 3px 3px 0; }
         .toggle-btn.active { background: var(--ink); color: var(--parchment); }
         .toggle-btn:hover:not(.active) { background: var(--parchment-dark); }
-        .toggle-btn .flag { font-size: 1rem; }
+        .toggle-btn .flag { width: 18px; height: 14px; display: inline-block; background-size: cover; background-position: center; border-radius: 2px; }
+        .flag-gb { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3CclipPath id='a'%3E%3Cpath d='M0 0v30h60V0z'/%3E%3C/clipPath%3E%3CclipPath id='b'%3E%3Cpath d='M30 15h30v15zv15H0zH0V0zV0h30z'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23a)'%3E%3Cpath d='M0 0v30h60V0z' fill='%23012169'/%3E%3Cpath d='M0 0l60 30m0-30L0 30' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M0 0l60 30m0-30L0 30' clip-path='url(%23b)' stroke='%23C8102E' stroke-width='4'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23C8102E' stroke-width='6'/%3E%3C/g%3E%3C/svg%3E"); }
+        .flag-rs { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 450 300'%3E%3Crect width='450' height='100' fill='%23C6363C'/%3E%3Crect y='100' width='450' height='100' fill='%230C4076'/%3E%3Crect y='200' width='450' height='100' fill='%23fff'/%3E%3C/svg%3E"); }
 
         .main-content { display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; }
 
@@ -324,7 +326,17 @@
 
         .modal h3 { font-family: 'Cinzel', serif; margin-bottom: 1rem; color: var(--ink); }
         .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
-        .modal-buttons-spread { display: flex; justify-content: space-between; margin-top: 1.5rem; }
+        .modal-buttons-spread {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            gap: 1rem;
+        }
+
+        .modal-buttons-spread .btn-danger {
+            margin-right: auto;
+        }
 
         .view-toggle { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
         .view-toggle .btn { flex: 1; font-size: 0.75rem; padding: 0.5rem 0.3rem; }
@@ -605,18 +617,18 @@
 
         .switch-adventurer-btn {
             background: none;
-            border: 1px dashed var(--ink-light);
-            border-radius: 3px;
-            padding: 0.3rem 0.6rem;
-            font-size: 0.75rem;
+            border: none;
+            padding: 0.2rem 0.4rem;
+            font-size: 0.7rem;
             cursor: pointer;
             color: var(--ink-light);
-            margin-left: 0.5rem;
+            margin-left: 0.3rem;
             transition: all 0.2s;
+            opacity: 0.6;
         }
 
         .switch-adventurer-btn:hover {
-            border-color: var(--gold);
+            opacity: 1;
             color: var(--ink);
         }
     </style>
@@ -925,10 +937,10 @@
                                 <div className="toggle-group">
                                     <label>{t.language}:</label>
                                     <button className={`toggle-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>
-                                        <span className="flag">🇬🇧</span> EN
+                                        <span className="flag flag-gb"></span> EN
                                     </button>
                                     <button className={`toggle-btn ${lang === 'sr' ? 'active' : ''}`} onClick={() => setLang('sr')}>
-                                        <span className="flag">🇷🇸</span> SR
+                                        <span className="flag flag-rs"></span> SR
                                     </button>
                                 </div>
                             </div>
@@ -936,7 +948,7 @@
                         {route.page === 'home' && <LandingPage t={t} />}
                         {route.page === 'create' && <CreateEventPage t={t} lang={lang} timeFormat={timeFormat} />}
                         {route.page === 'join' && <JoinEventPage t={t} />}
-                        {route.page === 'profile' && <ProfilePage t={t} />}
+                        {route.page === 'profile' && <ProfilePage t={t} lang={lang} />}
                         {route.page === 'event' && <EventPage eventId={route.params.eventId} t={t} lang={lang} timeFormat={timeFormat} />}
                     </div>
                 </AuthContext.Provider>
@@ -1063,7 +1075,7 @@
             );
         }
 
-        function ProfilePage({ t }) {
+        function ProfilePage({ t, lang }) {
             const { user, setUser, navigate } = useAuth();
             const [adventurers, setAdventurers] = useState([]);
             const [events, setEvents] = useState({ created: [], participated: [] });
@@ -1213,7 +1225,12 @@
                             adventurers.map(adv => (
                                 <div key={adv.id} className="adventurer-card" onClick={() => openAdvModal(adv)}>
                                     {adv.image ? <img src={adv.image} alt="" /> : <div className="no-image">⚔️</div>}
-                                    <div className="info"><div className="name">{adv.name}</div></div>
+                                    <div className="info">
+                                        <div className="name">{adv.name}</div>
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--ink-light)' }}>
+                                            📅 {adv.questBoardCount || 0} {lang === 'sr' ? 'tabli' : 'quest boards'}
+                                        </div>
+                                    </div>
                                     <div className="actions">
                                         <button className="btn btn-small btn-secondary" onClick={(e) => { e.stopPropagation(); openAdvModal(adv); }}>✏️</button>
                                     </div>
@@ -1235,12 +1252,31 @@
                         {events.created.length > 0 && (
                             <>
                                 <p style={{ fontSize: '0.85rem', color: 'var(--ink-light)', marginBottom: '0.5rem' }}>📜 {t.createdByMe}</p>
-                                {events.created.map(ev => (
-                                    <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}>
-                                        <h4>{ev.name}</h4>
-                                        <p>{ev.dates.length} dates • {ev.description || '...'}</p>
-                                    </a>
-                                ))}
+                                {events.created.map(ev => {
+                                    const myAdv = getMyAdventurerForEvent(ev.id);
+                                    const sortedParticipants = ev.participants ? [...ev.participants].sort((a, b) => {
+                                        if (myAdv && a.name === myAdv.name) return -1;
+                                        if (myAdv && b.name === myAdv.name) return 1;
+                                        return 0;
+                                    }) : [];
+                                    return (
+                                        <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}>
+                                            {sortedParticipants.length > 0 && (
+                                                <div className="participants-row" style={{ marginBottom: '0.5rem' }}>
+                                                    {sortedParticipants.slice(0, 8).map((p, i) => (
+                                                        <span key={i} className={`participant-tag ${myAdv && p.name === myAdv.name ? 'active' : ''}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
+                                                            {p.image ? <img src={p.image} alt="" style={{ width: '16px', height: '16px' }} /> : null}
+                                                            {p.name}
+                                                        </span>
+                                                    ))}
+                                                    {sortedParticipants.length > 8 && <span style={{ fontSize: '0.75rem', color: 'var(--ink-light)' }}>+{sortedParticipants.length - 8}</span>}
+                                                </div>
+                                            )}
+                                            <h4>{ev.name}</h4>
+                                            <p>{ev.dates.length} dates • {ev.description || '...'}</p>
+                                        </a>
+                                    );
+                                })}
                             </>
                         )}
 
@@ -1249,18 +1285,26 @@
                                 <p style={{ fontSize: '0.85rem', color: 'var(--ink-light)', marginTop: '1rem', marginBottom: '0.5rem' }}>🎭 {t.participating}</p>
                                 {events.participated.map(ev => {
                                     const myAdv = getMyAdventurerForEvent(ev.id);
+                                    const sortedParticipants = ev.participants ? [...ev.participants].sort((a, b) => {
+                                        if (myAdv && a.name === myAdv.name) return -1;
+                                        if (myAdv && b.name === myAdv.name) return 1;
+                                        return 0;
+                                    }) : [];
                                     return (
                                         <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}>
-                                            <h4>{ev.name}</h4>
-                                            <p>{ev.dates.length} dates • {ev.description || '...'}</p>
-                                            {myAdv && (
-                                                <div className="participants-row">
-                                                    <span className="my-adventurer">
-                                                        {myAdv.image ? <img src={myAdv.image} alt="" /> : null}
-                                                        {t.joinedAs}: {myAdv.name}
-                                                    </span>
+                                            {sortedParticipants.length > 0 && (
+                                                <div className="participants-row" style={{ marginBottom: '0.5rem' }}>
+                                                    {sortedParticipants.slice(0, 8).map((p, i) => (
+                                                        <span key={i} className={`participant-tag ${myAdv && p.name === myAdv.name ? 'active' : ''}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
+                                                            {p.image ? <img src={p.image} alt="" style={{ width: '16px', height: '16px' }} /> : null}
+                                                            {p.name}
+                                                        </span>
+                                                    ))}
+                                                    {sortedParticipants.length > 8 && <span style={{ fontSize: '0.75rem', color: 'var(--ink-light)' }}>+{sortedParticipants.length - 8}</span>}
                                                 </div>
                                             )}
+                                            <h4>{ev.name}</h4>
+                                            <p>{ev.dates.length} dates • {ev.description || '...'}</p>
                                         </a>
                                     );
                                 })}
@@ -1447,26 +1491,42 @@
                 setNameModal(false); setTempName(''); setSelectedAdventurer(null); setViewMode('edit');
             };
 
-            const handleSwitchAdventurer = () => {
+            const handleSwitchAdventurer = async () => {
                 let name, image;
                 if (selectedAdventurer) { name = selectedAdventurer.name; image = selectedAdventurer.image || ''; } 
                 else { name = tempName.trim(); image = ''; }
                 if (!name) return;
                 
-                // Save current slots under new name
+                // Save current slots
                 const currentSlots = { ...userSlots };
-                setCurrentUser(name); setCurrentUserImage(image);
+                const oldUser = currentUser;
+                
+                // Delete old adventurer's availability
+                if (oldUser && oldUser !== name) {
+                    try {
+                        await api(`/api/events/${eventId}/availability/${encodeURIComponent(oldUser)}`, { method: 'DELETE' });
+                    } catch (err) {
+                        console.error('Failed to remove old availability:', err);
+                    }
+                }
+                
+                // Set new user
+                setCurrentUser(name); 
+                setCurrentUserImage(image);
                 localStorage.setItem(`quest-board-user-${eventId}`, name);
                 localStorage.setItem(`quest-board-user-image-${eventId}`, image);
                 
-                // Check if new adventurer already has availability
+                // Check if new adventurer already has availability in this event
                 if (event.availability[name]) {
                     setUserSlots(event.availability[name]);
                 } else {
                     // Transfer current slots to new adventurer
                     setUserSlots(currentSlots);
-                    saveAvailability(currentSlots, name, image);
+                    await saveAvailability(currentSlots, name, image);
                 }
+                
+                // Refresh event data
+                await fetchEvent();
                 
                 setSwitchModal(false); setTempName(''); setSelectedAdventurer(null);
             };
@@ -1548,7 +1608,7 @@
                                             {currentUserImage && <img src={currentUserImage} alt="" />}
                                             {currentUser}
                                         </span>
-                                        <button className="switch-adventurer-btn" onClick={() => setSwitchModal(true)}>🔄 {t.switchAdventurer}</button>
+                                        <button className="switch-adventurer-btn" onClick={() => setSwitchModal(true)} title={t.switchAdventurer}>🔄</button>
                                     </div>
                                     <div className="view-toggle">
                                         <button className={`btn ${viewMode === 'group' ? 'active' : 'btn-secondary'}`} onClick={() => setViewMode('group')}>👥 {t.group}</button>
