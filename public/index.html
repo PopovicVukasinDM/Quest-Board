@@ -109,12 +109,16 @@
             background: var(--parchment-light);
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
         }
 
         .toggle-btn:first-of-type { border-radius: 3px 0 0 3px; }
         .toggle-btn:last-of-type { border-radius: 0 3px 3px 0; }
         .toggle-btn.active { background: var(--ink); color: var(--parchment); }
         .toggle-btn:hover:not(.active) { background: var(--parchment-dark); }
+        .toggle-btn .flag { font-size: 1rem; }
 
         .main-content { display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; }
 
@@ -143,7 +147,7 @@
         }
 
         .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; font-weight: 600; margin-bottom: 0.3rem; color: var(--ink); }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.3rem; color: var(--ink); font-family: 'Cinzel', serif; font-size: 0.9rem; }
 
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
@@ -185,6 +189,7 @@
         .btn-success { background: var(--available); color: white; border-color: var(--available); }
         .btn-success:hover:not(:disabled) { background: var(--available-light); }
         .btn-danger { background: var(--unavailable); color: white; border-color: var(--unavailable); }
+        .btn-danger:hover:not(:disabled) { opacity: 0.9; }
         .btn-block { width: 100%; }
         .btn-small { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
 
@@ -319,6 +324,7 @@
 
         .modal h3 { font-family: 'Cinzel', serif; margin-bottom: 1rem; color: var(--ink); }
         .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .modal-buttons-spread { display: flex; justify-content: space-between; margin-top: 1.5rem; }
 
         .view-toggle { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
         .view-toggle .btn { flex: 1; font-size: 0.75rem; padding: 0.5rem 0.3rem; }
@@ -472,7 +478,7 @@
         .edit-btn.delete { background: var(--unavailable); color: white; }
         .edit-btn:hover { transform: scale(1.1); }
 
-        .profile-info h2 { border: none; padding: 0; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+        .profile-info h2 { font-family: 'Cinzel', serif; border: none; padding: 0; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
         .profile-info p { color: var(--ink-light); font-size: 0.9rem; }
 
         .name-edit-icon {
@@ -509,8 +515,11 @@
             border-radius: 4px;
             padding: 1rem;
             margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
+        .adventurer-card:hover { border-color: var(--gold); }
         .adventurer-card img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--ink); }
         .adventurer-card .no-image { width: 50px; height: 50px; border-radius: 50%; background: var(--ink); color: var(--parchment); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid var(--ink); }
         .adventurer-card .info { flex: 1; }
@@ -532,6 +541,11 @@
         .event-list-item:hover { border-color: var(--gold); background: var(--parchment); }
         .event-list-item h4 { font-family: 'Cinzel', serif; margin-bottom: 0.3rem; }
         .event-list-item p { font-size: 0.85rem; color: var(--ink-light); }
+        .event-list-item .participants-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+        .event-list-item .mini-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ink); }
+        .event-list-item .mini-avatar-placeholder { width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: var(--parchment); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; border: 1px solid var(--ink); }
+        .event-list-item .my-adventurer { background: var(--gold); padding: 0.2rem 0.5rem; border-radius: 3px; font-size: 0.75rem; display: flex; align-items: center; gap: 0.3rem; }
+        .event-list-item .my-adventurer img { width: 18px; height: 18px; border-radius: 50%; }
 
         .image-upload { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
         .image-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--ink); }
@@ -539,9 +553,72 @@
 
         .divider { border: none; border-top: 1px solid var(--ink-light); margin: 1.5rem 0; }
 
-        .password-section { margin-top: 1rem; }
-        .password-toggle { background: none; border: none; color: var(--ink-light); cursor: pointer; font-size: 0.9rem; text-decoration: underline; }
-        .password-toggle:hover { color: var(--ink); }
+        /* Password section - styled box */
+        .password-section {
+            background: var(--parchment-light);
+            border: 1px solid var(--ink-light);
+            border-radius: 4px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .password-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .password-header h4 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .password-header .toggle-arrow {
+            transition: transform 0.2s;
+        }
+
+        .password-header .toggle-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .password-form {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--ink-light);
+        }
+
+        .confirm-dialog {
+            text-align: center;
+        }
+
+        .confirm-dialog p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .confirm-dialog .btn { margin: 0 0.5rem; }
+
+        .switch-adventurer-btn {
+            background: none;
+            border: 1px dashed var(--ink-light);
+            border-radius: 3px;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            color: var(--ink-light);
+            margin-left: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .switch-adventurer-btn:hover {
+            border-color: var(--gold);
+            color: var(--ink);
+        }
     </style>
 </head>
 <body>
@@ -650,6 +727,12 @@
                 profileImage: "Profile Image (URL)",
                 save: "Save",
                 noQuestBoards: "No quest boards yet",
+                deleteAdventurer: "Delete Adventurer",
+                confirmDelete: "Are you sure you want to delete this adventurer?",
+                yes: "Yes",
+                no: "No",
+                switchAdventurer: "Switch",
+                joinedAs: "Joined as",
             },
             sr: {
                 questBoard: "Tabla Zadataka",
@@ -747,6 +830,12 @@
                 profileImage: "Slika profila (URL)",
                 save: "Sačuvaj",
                 noQuestBoards: "Nema tabli",
+                deleteAdventurer: "Obriši Avanturistu",
+                confirmDelete: "Da li ste sigurni da želite da obrišete ovog avanturistu?",
+                yes: "Da",
+                no: "Ne",
+                switchAdventurer: "Promeni",
+                joinedAs: "Kao",
             }
         };
 
@@ -757,6 +846,11 @@
             const headers = { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) };
             const res = await fetch(endpoint, { ...options, headers });
             const data = await res.json();
+            if (res.status === 401 && token && !endpoint.includes('/auth/')) {
+                localStorage.removeItem('quest-board-token');
+                window.location.href = '/';
+                throw new Error('Session expired - please log in again');
+            }
             if (!res.ok) throw new Error(data.error || 'Request failed');
             return data;
         }
@@ -776,8 +870,11 @@
                 async function checkAuth() {
                     const token = localStorage.getItem('quest-board-token');
                     if (token) {
-                        try { const data = await api('/api/auth/me'); setUser(data.user); } 
-                        catch { localStorage.removeItem('quest-board-token'); }
+                        try { 
+                            const data = await api('/api/auth/me'); 
+                            if (data.user) setUser(data.user);
+                            else localStorage.removeItem('quest-board-token');
+                        } catch { localStorage.removeItem('quest-board-token'); }
                     }
                     setAuthLoading(false);
                 }
@@ -827,8 +924,12 @@
                                 </div>
                                 <div className="toggle-group">
                                     <label>{t.language}:</label>
-                                    <button className={`toggle-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>EN</button>
-                                    <button className={`toggle-btn ${lang === 'sr' ? 'active' : ''}`} onClick={() => setLang('sr')}>SR</button>
+                                    <button className={`toggle-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>
+                                        <span className="flag">🇬🇧</span> EN
+                                    </button>
+                                    <button className={`toggle-btn ${lang === 'sr' ? 'active' : ''}`} onClick={() => setLang('sr')}>
+                                        <span className="flag">🇷🇸</span> SR
+                                    </button>
                                 </div>
                             </div>
                         </header>
@@ -970,7 +1071,6 @@
             const [message, setMessage] = useState('');
             const [error, setError] = useState('');
 
-            // Inline editing states
             const [editingName, setEditingName] = useState(false);
             const [editingImage, setEditingImage] = useState(false);
             const [tempName, setTempName] = useState(user?.displayName || '');
@@ -979,10 +1079,10 @@
             const [currentPassword, setCurrentPassword] = useState('');
             const [newPassword, setNewPassword] = useState('');
 
-            // Adventurer modal
             const [advModal, setAdvModal] = useState(null);
             const [advName, setAdvName] = useState('');
             const [advImage, setAdvImage] = useState('');
+            const [confirmDelete, setConfirmDelete] = useState(null);
 
             useEffect(() => { if (!user) { navigate('/'); return; } loadData(); }, [user]);
 
@@ -1027,8 +1127,16 @@
             };
 
             const deleteAdventurer = async (id) => {
-                try { await api(`/api/adventurers/${id}`, { method: 'DELETE' }); setAdventurers(adventurers.filter(a => a.id !== id)); } 
+                try { await api(`/api/adventurers/${id}`, { method: 'DELETE' }); setAdventurers(adventurers.filter(a => a.id !== id)); setConfirmDelete(null); setAdvModal(null); } 
                 catch (err) { setError(err.message); }
+            };
+
+            // Get my adventurer for an event
+            const getMyAdventurerForEvent = (eventId) => {
+                const savedName = localStorage.getItem(`quest-board-user-${eventId}`);
+                const savedImage = localStorage.getItem(`quest-board-user-image-${eventId}`);
+                if (savedName) return { name: savedName, image: savedImage };
+                return null;
             };
 
             if (!user) return null;
@@ -1074,12 +1182,14 @@
                             </div>
                         </div>
 
+                        {/* Password Section - Styled Box */}
                         <div className="password-section">
-                            {!showPasswordForm ? (
-                                <button className="password-toggle" onClick={() => setShowPasswordForm(true)}>🔒 {t.changePassword}</button>
-                            ) : (
-                                <form onSubmit={handleChangePassword} style={{ background: 'rgba(0,0,0,0.05)', padding: '1rem', borderRadius: '4px' }}>
-                                    <h4 style={{ fontFamily: 'Cinzel', marginBottom: '0.5rem' }}>🔒 {t.changePassword}</h4>
+                            <div className="password-header" onClick={() => setShowPasswordForm(!showPasswordForm)}>
+                                <h4>🔒 {t.changePassword}</h4>
+                                <span className={`toggle-arrow ${showPasswordForm ? 'open' : ''}`}>▼</span>
+                            </div>
+                            {showPasswordForm && (
+                                <form onSubmit={handleChangePassword} className="password-form">
                                     <div className="form-group"><label>{t.currentPassword}</label><input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required /></div>
                                     <div className="form-group"><label>{t.newPassword}</label><input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required /></div>
                                     <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -1101,12 +1211,11 @@
                             <p style={{ fontStyle: 'italic', color: 'var(--ink-light)', marginBottom: '1rem' }}>{t.noAdventurersSaved}</p>
                         ) : (
                             adventurers.map(adv => (
-                                <div key={adv.id} className="adventurer-card">
+                                <div key={adv.id} className="adventurer-card" onClick={() => openAdvModal(adv)}>
                                     {adv.image ? <img src={adv.image} alt="" /> : <div className="no-image">⚔️</div>}
                                     <div className="info"><div className="name">{adv.name}</div></div>
                                     <div className="actions">
-                                        <button className="btn btn-small btn-secondary" onClick={() => openAdvModal(adv)}>✏️</button>
-                                        <button className="btn btn-small btn-danger" onClick={() => deleteAdventurer(adv.id)}>🗑️</button>
+                                        <button className="btn btn-small btn-secondary" onClick={(e) => { e.stopPropagation(); openAdvModal(adv); }}>✏️</button>
                                     </div>
                                 </div>
                             ))
@@ -1127,7 +1236,10 @@
                             <>
                                 <p style={{ fontSize: '0.85rem', color: 'var(--ink-light)', marginBottom: '0.5rem' }}>📜 {t.createdByMe}</p>
                                 {events.created.map(ev => (
-                                    <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}><h4>{ev.name}</h4><p>{ev.dates.length} dates • {ev.description || '...'}</p></a>
+                                    <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}>
+                                        <h4>{ev.name}</h4>
+                                        <p>{ev.dates.length} dates • {ev.description || '...'}</p>
+                                    </a>
                                 ))}
                             </>
                         )}
@@ -1135,9 +1247,23 @@
                         {events.participated.length > 0 && (
                             <>
                                 <p style={{ fontSize: '0.85rem', color: 'var(--ink-light)', marginTop: '1rem', marginBottom: '0.5rem' }}>🎭 {t.participating}</p>
-                                {events.participated.map(ev => (
-                                    <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}><h4>{ev.name}</h4><p>{ev.dates.length} dates • {ev.description || '...'}</p></a>
-                                ))}
+                                {events.participated.map(ev => {
+                                    const myAdv = getMyAdventurerForEvent(ev.id);
+                                    return (
+                                        <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}>
+                                            <h4>{ev.name}</h4>
+                                            <p>{ev.dates.length} dates • {ev.description || '...'}</p>
+                                            {myAdv && (
+                                                <div className="participants-row">
+                                                    <span className="my-adventurer">
+                                                        {myAdv.image ? <img src={myAdv.image} alt="" /> : null}
+                                                        {t.joinedAs}: {myAdv.name}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </a>
+                                    );
+                                })}
                             </>
                         )}
 
@@ -1146,6 +1272,7 @@
                         )}
                     </div>
 
+                    {/* Edit Adventurer Modal */}
                     {advModal && (
                         <div className="modal-overlay" onClick={() => setAdvModal(null)}>
                             <div className="modal" onClick={e => e.stopPropagation()}>
@@ -1156,9 +1283,28 @@
                                     <input type="url" value={advImage} onChange={e => setAdvImage(e.target.value)} placeholder="https://..." />
                                     <div className="image-upload" style={{ marginTop: '0.5rem' }}>{advImage ? <img src={advImage} alt="Preview" className="image-preview" onError={e => e.target.style.display = 'none'} /> : <div className="image-preview-placeholder">⚔️</div>}</div>
                                 </div>
-                                <div className="modal-buttons">
-                                    <button className="btn btn-secondary" onClick={() => setAdvModal(null)}>{t.cancel}</button>
-                                    <button className="btn btn-primary" onClick={saveAdventurer} disabled={!advName.trim()}>{t.save}</button>
+                                <div className="modal-buttons-spread">
+                                    {advModal.mode === 'edit' ? (
+                                        <button className="btn btn-danger btn-small" onClick={() => setConfirmDelete(advModal.id)}>🗑️ {t.deleteAdventurer}</button>
+                                    ) : <div></div>}
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button className="btn btn-secondary" onClick={() => setAdvModal(null)}>{t.cancel}</button>
+                                        <button className="btn btn-primary" onClick={saveAdventurer} disabled={!advName.trim()}>{t.save}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Confirm Delete Modal */}
+                    {confirmDelete && (
+                        <div className="modal-overlay" onClick={() => setConfirmDelete(null)}>
+                            <div className="modal confirm-dialog" onClick={e => e.stopPropagation()}>
+                                <h3>⚠️ {t.deleteAdventurer}</h3>
+                                <p>{t.confirmDelete}</p>
+                                <div>
+                                    <button className="btn btn-secondary" onClick={() => setConfirmDelete(null)}>{t.no}</button>
+                                    <button className="btn btn-danger" onClick={() => deleteAdventurer(confirmDelete)}>{t.yes}</button>
                                 </div>
                             </div>
                         </div>
@@ -1259,6 +1405,7 @@
             const [noteModal, setNoteModal] = useState(null);
             const [tempNote, setTempNote] = useState('');
             const [nameModal, setNameModal] = useState(false);
+            const [switchModal, setSwitchModal] = useState(false);
             const [tempName, setTempName] = useState('');
             const [showSaved, setShowSaved] = useState(false);
             const [copied, setCopied] = useState(false);
@@ -1282,9 +1429,9 @@
 
             const fetchAdventurers = async () => { try { const data = await api('/api/adventurers'); setAdventurers(data); } catch {} };
 
-            const saveAvailability = async (slots) => {
-                if (!currentUser) return;
-                try { await api(`/api/events/${eventId}/availability`, { method: 'POST', body: JSON.stringify({ participantName: currentUser, participantImage: currentUserImage || null, slots }) }); await fetchEvent(); setShowSaved(true); setTimeout(() => setShowSaved(false), 2000); } 
+            const saveAvailability = async (slots, name = currentUser, image = currentUserImage) => {
+                if (!name) return;
+                try { await api(`/api/events/${eventId}/availability`, { method: 'POST', body: JSON.stringify({ participantName: name, participantImage: image || null, slots }) }); await fetchEvent(); setShowSaved(true); setTimeout(() => setShowSaved(false), 2000); } 
                 catch (err) { console.error('Failed to save:', err); }
             };
 
@@ -1298,6 +1445,30 @@
                 localStorage.setItem(`quest-board-user-image-${eventId}`, image);
                 if (event.availability[name]) setUserSlots(event.availability[name]); else setUserSlots({});
                 setNameModal(false); setTempName(''); setSelectedAdventurer(null); setViewMode('edit');
+            };
+
+            const handleSwitchAdventurer = () => {
+                let name, image;
+                if (selectedAdventurer) { name = selectedAdventurer.name; image = selectedAdventurer.image || ''; } 
+                else { name = tempName.trim(); image = ''; }
+                if (!name) return;
+                
+                // Save current slots under new name
+                const currentSlots = { ...userSlots };
+                setCurrentUser(name); setCurrentUserImage(image);
+                localStorage.setItem(`quest-board-user-${eventId}`, name);
+                localStorage.setItem(`quest-board-user-image-${eventId}`, image);
+                
+                // Check if new adventurer already has availability
+                if (event.availability[name]) {
+                    setUserSlots(event.availability[name]);
+                } else {
+                    // Transfer current slots to new adventurer
+                    setUserSlots(currentSlots);
+                    saveAvailability(currentSlots, name, image);
+                }
+                
+                setSwitchModal(false); setTempName(''); setSelectedAdventurer(null);
             };
 
             const handleMouseDown = (date, hour, e) => {
@@ -1338,7 +1509,6 @@
             const handleSlotHover = (e, date, hour) => { const rect = e.target.getBoundingClientRect(); setTooltip({ x: Math.min(rect.right + 10, window.innerWidth - 300), y: Math.min(rect.top, window.innerHeight - 200), date, hour, available: getSlotAvailability(date, hour) }); };
             const copyLink = () => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); };
 
-            // Updated formatHour - no :00 in 24h mode
             const formatHour = (hour) => { 
                 if (timeFormat === '24') return { hour: hour.toString().padStart(2, '0'), ampm: '' }; 
                 if (hour === 0) return { hour: '12', ampm: 'AM' }; 
@@ -1373,7 +1543,13 @@
                                 <><p style={{marginBottom: '1rem', fontStyle: 'italic'}}>{t.joinPrompt}</p><button className="btn btn-primary btn-block" onClick={() => setNameModal(true)}>🎭 {t.joinQuest}</button></>
                             ) : (
                                 <>
-                                    <div className="participant-tag active" style={{marginBottom: '1rem'}}>{currentUserImage && <img src={currentUserImage} alt="" />}{currentUser}</div>
+                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+                                        <span className="participant-tag active">
+                                            {currentUserImage && <img src={currentUserImage} alt="" />}
+                                            {currentUser}
+                                        </span>
+                                        <button className="switch-adventurer-btn" onClick={() => setSwitchModal(true)}>🔄 {t.switchAdventurer}</button>
+                                    </div>
                                     <div className="view-toggle">
                                         <button className={`btn ${viewMode === 'group' ? 'active' : 'btn-secondary'}`} onClick={() => setViewMode('group')}>👥 {t.group}</button>
                                         <button className={`btn ${viewMode === 'edit' ? 'active' : 'btn-secondary'}`} onClick={() => setViewMode('edit')}>✏️ {t.edit}</button>
@@ -1408,7 +1584,6 @@
                         </main>
                     </div>
 
-                    {/* Updated tooltip with images */}
                     {tooltip && !isDragging && (
                         <div className="tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
                             <h4>{formatTooltipDate(tooltip.date, tooltip.hour)}</h4>
@@ -1428,6 +1603,7 @@
                         </div>
                     )}
 
+                    {/* Join Modal */}
                     {nameModal && (
                         <div className="modal-overlay" onClick={() => setNameModal(false)}>
                             <div className="modal" onClick={e => e.stopPropagation()}>
@@ -1444,6 +1620,27 @@
                                 <div className="modal-buttons">
                                     <button className="btn btn-secondary" onClick={() => setNameModal(false)}>{t.cancel}</button>
                                     <button className="btn btn-primary" onClick={handleJoin} disabled={!tempName.trim() && !selectedAdventurer}>{selectedAdventurer ? t.useAdventurer : t.joinQuest}</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Switch Adventurer Modal */}
+                    {switchModal && (
+                        <div className="modal-overlay" onClick={() => setSwitchModal(false)}>
+                            <div className="modal" onClick={e => e.stopPropagation()}>
+                                <h3>🔄 {t.switchAdventurer}</h3>
+                                {user && adventurers.length > 0 && (
+                                    <>
+                                        <p style={{marginBottom: '0.5rem', fontWeight: '600'}}>{t.selectAdventurer}</p>
+                                        {adventurers.map(adv => <div key={adv.id} className="adventurer-card" style={{ cursor: 'pointer', border: selectedAdventurer?.id === adv.id ? '2px solid var(--gold)' : undefined }} onClick={() => { setSelectedAdventurer(adv); setTempName(''); }}>{adv.image ? <img src={adv.image} alt="" /> : <div className="no-image">⚔️</div>}<div className="info"><div className="name">{adv.name}</div></div></div>)}
+                                        <p style={{marginTop: '1rem', marginBottom: '0.5rem', color: 'var(--ink-light)', textAlign: 'center'}}>— {t.orEnterName} —</p>
+                                    </>
+                                )}
+                                <div className="form-group"><input type="text" value={tempName} onChange={(e) => { setTempName(e.target.value); setSelectedAdventurer(null); }} placeholder={t.yourName} onKeyDown={(e) => e.key === 'Enter' && handleSwitchAdventurer()} /></div>
+                                <div className="modal-buttons">
+                                    <button className="btn btn-secondary" onClick={() => setSwitchModal(false)}>{t.cancel}</button>
+                                    <button className="btn btn-primary" onClick={handleSwitchAdventurer} disabled={!tempName.trim() && !selectedAdventurer}>{t.switchAdventurer}</button>
                                 </div>
                             </div>
                         </div>
