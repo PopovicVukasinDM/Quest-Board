@@ -24,38 +24,26 @@
             --shadow: rgba(44, 24, 16, 0.3);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Crimson Text', Georgia, serif;
-            background: 
-                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"),
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"),
                 linear-gradient(135deg, #1a0f0a 0%, #2d1f15 50%, #1a0f0a 100%);
             min-height: 100vh;
             color: var(--ink);
         }
 
-        .app-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1.5rem;
-        }
+        .app-container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
 
         .header {
             text-align: center;
             margin-bottom: 2rem;
             padding: 2rem;
-            background: 
-                linear-gradient(to bottom, rgba(244, 228, 188, 0.95), rgba(232, 212, 168, 0.95));
+            background: linear-gradient(to bottom, rgba(244, 228, 188, 0.95), rgba(232, 212, 168, 0.95));
             border: 3px solid var(--ink);
             border-radius: 4px;
-            box-shadow: 
-                0 4px 20px var(--shadow),
-                inset 0 0 60px rgba(44, 24, 16, 0.1);
+            box-shadow: 0 4px 20px var(--shadow), inset 0 0 60px rgba(44, 24, 16, 0.1);
             position: relative;
         }
 
@@ -80,16 +68,8 @@
             margin-bottom: 0.5rem;
         }
 
-        .header h1 a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            font-style: italic;
-            color: var(--ink-light);
-        }
+        .header h1 a { color: inherit; text-decoration: none; }
+        .header p { font-size: 1.1rem; font-style: italic; color: var(--ink-light); }
 
         .header-right {
             position: absolute;
@@ -113,35 +93,13 @@
             transition: background 0.2s;
         }
 
-        .user-badge:hover {
-            background: var(--ink-light);
-        }
+        .user-badge:hover { background: var(--ink-light); }
+        .user-badge img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
 
-        .user-badge img {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
+        .top-controls { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
 
-        .top-controls {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .toggle-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .toggle-group label {
-            color: var(--ink-light);
-        }
+        .toggle-group { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
+        .toggle-group label { color: var(--ink-light); }
 
         .toggle-btn {
             font-family: 'Cinzel', serif;
@@ -153,40 +111,21 @@
             transition: all 0.2s;
         }
 
-        .toggle-btn:first-of-type {
-            border-radius: 3px 0 0 3px;
-        }
+        .toggle-btn:first-of-type { border-radius: 3px 0 0 3px; }
+        .toggle-btn:last-of-type { border-radius: 0 3px 3px 0; }
+        .toggle-btn.active { background: var(--ink); color: var(--parchment); }
+        .toggle-btn:hover:not(.active) { background: var(--parchment-dark); }
 
-        .toggle-btn:last-of-type {
-            border-radius: 0 3px 3px 0;
-        }
-
-        .toggle-btn.active {
-            background: var(--ink);
-            color: var(--parchment);
-        }
-
-        .toggle-btn:hover:not(.active) {
-            background: var(--parchment-dark);
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 1.5rem;
-        }
+        .main-content { display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; }
 
         @media (max-width: 900px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
+            .main-content { grid-template-columns: 1fr; }
             .header h1 { font-size: 1.8rem; }
             .header-right { position: static; margin-top: 1rem; justify-content: center; }
         }
 
         .panel {
-            background: 
-                linear-gradient(to bottom, rgba(244, 228, 188, 0.97), rgba(232, 212, 168, 0.97));
+            background: linear-gradient(to bottom, rgba(244, 228, 188, 0.97), rgba(232, 212, 168, 0.97));
             border: 2px solid var(--ink);
             border-radius: 4px;
             padding: 1.5rem;
@@ -203,16 +142,8 @@
             margin-bottom: 1rem;
         }
 
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-            color: var(--ink);
-        }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.3rem; color: var(--ink); }
 
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
@@ -231,11 +162,7 @@
             box-shadow: 0 0 5px var(--gold-light);
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
         .btn {
             font-family: 'Cinzel', serif;
@@ -250,55 +177,16 @@
             letter-spacing: 0.05em;
         }
 
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-primary {
-            background: var(--gold);
-            color: var(--ink);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: var(--gold-light);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px var(--shadow);
-        }
-
-        .btn-secondary {
-            background: var(--parchment);
-            color: var(--ink);
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background: var(--parchment-dark);
-        }
-
-        .btn-success {
-            background: var(--available);
-            color: white;
-            border-color: var(--available);
-        }
-
-        .btn-success:hover:not(:disabled) {
-            background: var(--available-light);
-        }
-
-        .btn-danger {
-            background: var(--unavailable);
-            color: white;
-            border-color: var(--unavailable);
-        }
-
-        .btn-block {
-            width: 100%;
-        }
-
-        .btn-small {
-            font-size: 0.75rem;
-            padding: 0.4rem 0.8rem;
-        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: var(--gold); color: var(--ink); }
+        .btn-primary:hover:not(:disabled) { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 4px 10px var(--shadow); }
+        .btn-secondary { background: var(--parchment); color: var(--ink); }
+        .btn-secondary:hover:not(:disabled) { background: var(--parchment-dark); }
+        .btn-success { background: var(--available); color: white; border-color: var(--available); }
+        .btn-success:hover:not(:disabled) { background: var(--available-light); }
+        .btn-danger { background: var(--unavailable); color: white; border-color: var(--unavailable); }
+        .btn-block { width: 100%; }
+        .btn-small { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
 
         .participant-tag {
             display: inline-flex;
@@ -312,28 +200,11 @@
             font-size: 0.9rem;
         }
 
-        .participant-tag img {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
+        .participant-tag img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; }
+        .participant-tag.active { background: var(--gold); color: var(--ink); }
 
-        .participant-tag.active {
-            background: var(--gold);
-            color: var(--ink);
-        }
-
-        .schedule-grid {
-            overflow-x: auto;
-            user-select: none;
-        }
-
-        .grid-container {
-            display: grid;
-            gap: 2px;
-            min-width: fit-content;
-        }
+        .schedule-grid { overflow-x: auto; user-select: none; }
+        .grid-container { display: grid; gap: 2px; min-width: fit-content; }
 
         .month-header {
             font-family: 'Cinzel', serif;
@@ -358,19 +229,8 @@
             min-width: 70px;
         }
 
-        .grid-header .day-name {
-            font-family: 'Crimson Text', serif;
-            font-size: 0.75rem;
-            font-weight: 400;
-            opacity: 0.85;
-            text-transform: capitalize;
-        }
-
-        .grid-header .day-number {
-            font-family: 'Cinzel', serif;
-            font-size: 0.95rem;
-            font-weight: 600;
-        }
+        .grid-header .day-name { font-family: 'Crimson Text', serif; font-size: 0.75rem; font-weight: 400; opacity: 0.85; text-transform: capitalize; }
+        .grid-header .day-number { font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 600; }
 
         .time-label {
             font-family: 'Cinzel', serif;
@@ -384,15 +244,8 @@
             min-width: 60px;
         }
 
-        .time-label .hour {
-            font-size: 1rem;
-        }
-
-        .time-label .ampm {
-            font-size: 0.65rem;
-            margin-left: 1px;
-            opacity: 0.8;
-        }
+        .time-label .hour { font-size: 1rem; }
+        .time-label .ampm { font-size: 0.65rem; margin-left: 1px; opacity: 0.8; }
 
         .time-slot {
             min-width: 70px;
@@ -406,12 +259,7 @@
             justify-content: center;
         }
 
-        .time-slot:hover {
-            transform: scale(1.03);
-            z-index: 10;
-            box-shadow: 0 2px 10px var(--shadow);
-        }
-
+        .time-slot:hover { transform: scale(1.03); z-index: 10; box-shadow: 0 2px 10px var(--shadow); }
         .time-slot.empty { background: rgba(255, 255, 255, 0.5); }
         .time-slot.level-1 { background: #a8d5a2; }
         .time-slot.level-2 { background: #7bc47a; }
@@ -420,45 +268,13 @@
         .time-slot.level-5 { background: var(--available); }
         .time-slot.available { background: var(--available); }
         .time-slot.dragging { background: var(--available-light); }
+        .time-slot.has-note::after { content: '📜'; position: absolute; top: 1px; right: 1px; font-size: 0.6rem; }
 
-        .time-slot.has-note::after {
-            content: '📜';
-            position: absolute;
-            top: 1px;
-            right: 1px;
-            font-size: 0.6rem;
-        }
+        .availability-count { font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.85rem; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
 
-        .availability-count {
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .legend {
-            display: flex;
-            gap: 0.8rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--ink-light);
-            font-size: 0.85rem;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .legend-color {
-            width: 18px;
-            height: 18px;
-            border: 1px solid var(--ink);
-            border-radius: 2px;
-        }
+        .legend { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--ink-light); font-size: 0.85rem; }
+        .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+        .legend-color { width: 18px; height: 18px; border: 1px solid var(--ink); border-radius: 2px; }
 
         .tooltip {
             position: fixed;
@@ -472,34 +288,15 @@
             pointer-events: none;
         }
 
-        .tooltip h4 {
-            font-family: 'Cinzel', serif;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            color: var(--gold);
-        }
-
-        .tooltip-entry {
-            margin: 0.5rem 0;
-            padding-left: 0.5rem;
-            border-left: 2px solid var(--gold);
-        }
-
+        .tooltip h4 { font-family: 'Cinzel', serif; font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--gold); }
+        .tooltip-entry { margin: 0.5rem 0; padding-left: 0.5rem; border-left: 2px solid var(--gold); display: flex; align-items: center; gap: 0.5rem; }
+        .tooltip-entry img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
         .tooltip-name { font-weight: 600; }
-
-        .tooltip-note {
-            font-style: italic;
-            font-size: 0.9rem;
-            color: var(--parchment-dark);
-            margin-top: 0.2rem;
-        }
+        .tooltip-note { font-style: italic; font-size: 0.9rem; color: var(--parchment-dark); margin-top: 0.2rem; }
 
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.7);
             display: flex;
             align-items: center;
@@ -520,97 +317,25 @@
             overflow-y: auto;
         }
 
-        .modal h3 {
-            font-family: 'Cinzel', serif;
-            margin-bottom: 1rem;
-            color: var(--ink);
-        }
+        .modal h3 { font-family: 'Cinzel', serif; margin-bottom: 1rem; color: var(--ink); }
+        .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
 
-        .modal-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
+        .view-toggle { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .view-toggle .btn { flex: 1; font-size: 0.75rem; padding: 0.5rem 0.3rem; }
+        .view-toggle .btn.active { background: var(--ink); color: var(--parchment); }
 
-        .view-toggle {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
+        .instructions { background: rgba(201, 162, 39, 0.2); border: 1px solid var(--gold); border-radius: 4px; padding: 0.8rem; margin-bottom: 1rem; font-size: 0.85rem; }
+        .instructions strong { display: block; margin-bottom: 0.4rem; }
+        .instructions ul { margin: 0; padding-left: 1.2rem; }
+        .instructions li { margin: 0.3rem 0; }
 
-        .view-toggle .btn {
-            flex: 1;
-            font-size: 0.75rem;
-            padding: 0.5rem 0.3rem;
-        }
+        .share-box { background: var(--parchment-light); border: 2px dashed var(--gold); border-radius: 4px; padding: 1rem; margin: 1rem 0; text-align: center; }
+        .share-url { font-family: monospace; font-size: 0.85rem; background: white; padding: 0.5rem; border-radius: 3px; word-break: break-all; margin: 0.5rem 0; display: block; }
 
-        .view-toggle .btn.active {
-            background: var(--ink);
-            color: var(--parchment);
-        }
+        .center-panel { max-width: 600px; margin: 0 auto; }
 
-        .instructions {
-            background: rgba(201, 162, 39, 0.2);
-            border: 1px solid var(--gold);
-            border-radius: 4px;
-            padding: 0.8rem;
-            margin-bottom: 1rem;
-            font-size: 0.85rem;
-        }
-
-        .instructions strong {
-            display: block;
-            margin-bottom: 0.4rem;
-        }
-
-        .instructions ul {
-            margin: 0;
-            padding-left: 1.2rem;
-        }
-
-        .instructions li {
-            margin: 0.3rem 0;
-        }
-
-        .share-box {
-            background: var(--parchment-light);
-            border: 2px dashed var(--gold);
-            border-radius: 4px;
-            padding: 1rem;
-            margin: 1rem 0;
-            text-align: center;
-        }
-
-        .share-url {
-            font-family: monospace;
-            font-size: 0.85rem;
-            background: white;
-            padding: 0.5rem;
-            border-radius: 3px;
-            word-break: break-all;
-            margin: 0.5rem 0;
-            display: block;
-        }
-
-        .center-panel {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .date-picker-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            margin: 1rem 0;
-        }
-
-        .date-picker-header {
-            font-family: 'Cinzel', serif;
-            font-size: 0.7rem;
-            text-align: center;
-            padding: 0.3rem;
-            color: var(--ink-light);
-        }
+        .date-picker-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 1rem 0; }
+        .date-picker-header { font-family: 'Cinzel', serif; font-size: 0.7rem; text-align: center; padding: 0.3rem; color: var(--ink-light); }
 
         .date-cell {
             aspect-ratio: 1;
@@ -628,50 +353,13 @@
         .date-cell.selected { background: var(--available); color: white; }
         .date-cell.disabled { opacity: 0.3; cursor: not-allowed; }
 
-        .month-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
+        .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .month-nav button { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.3rem 0.6rem; }
+        .month-nav span { font-family: 'Cinzel', serif; font-weight: 600; }
 
-        .month-nav button {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0.3rem 0.6rem;
-        }
-
-        .month-nav span {
-            font-family: 'Cinzel', serif;
-            font-weight: 600;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 3rem;
-            font-style: italic;
-            color: var(--ink-light);
-        }
-
-        .error-message {
-            background: #ffebee;
-            border: 1px solid var(--unavailable);
-            color: var(--unavailable);
-            padding: 1rem;
-            border-radius: 4px;
-            margin: 1rem 0;
-        }
-
-        .success-message {
-            background: #e8f5e9;
-            border: 1px solid var(--available);
-            color: var(--available);
-            padding: 1rem;
-            border-radius: 4px;
-            margin: 1rem 0;
-        }
+        .loading { text-align: center; padding: 3rem; font-style: italic; color: var(--ink-light); }
+        .error-message { background: #ffebee; border: 1px solid var(--unavailable); color: var(--unavailable); padding: 1rem; border-radius: 4px; margin: 1rem 0; }
+        .success-message { background: #e8f5e9; border: 1px solid var(--available); color: var(--available); padding: 1rem; border-radius: 4px; margin: 1rem 0; }
 
         .saved-indicator {
             position: fixed;
@@ -693,12 +381,7 @@
             100% { opacity: 0; transform: translateY(-10px); }
         }
 
-        .landing-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
+        .landing-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
 
         .landing-card {
             background: var(--parchment-light);
@@ -710,28 +393,12 @@
             transition: all 0.2s;
         }
 
-        .landing-card:hover {
-            border-color: var(--gold);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px var(--shadow);
-        }
+        .landing-card:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 6px 20px var(--shadow); }
+        .landing-card .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .landing-card h3 { font-family: 'Cinzel', serif; font-size: 1rem; margin-bottom: 0.5rem; }
+        .landing-card p { font-size: 0.85rem; color: var(--ink-light); }
 
-        .landing-card .icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .landing-card h3 {
-            font-family: 'Cinzel', serif;
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .landing-card p {
-            font-size: 0.85rem;
-            color: var(--ink-light);
-        }
-
+        /* Profile styles */
         .profile-header {
             display: flex;
             align-items: center;
@@ -740,6 +407,8 @@
             padding-bottom: 1.5rem;
             border-bottom: 2px solid var(--gold);
         }
+
+        .profile-image-container { position: relative; }
 
         .profile-image {
             width: 100px;
@@ -762,16 +431,74 @@
             font-size: 2.5rem;
         }
 
-        .profile-info h2 {
-            border: none;
-            padding: 0;
-            margin: 0;
+        .edit-icon {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--ink);
+            color: var(--parchment);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            border: 2px solid var(--parchment);
+            transition: all 0.2s;
         }
 
-        .profile-info p {
-            color: var(--ink-light);
+        .edit-icon:hover { background: var(--ink-light); }
+
+        .inline-edit { display: flex; align-items: center; gap: 0.5rem; }
+        .inline-edit-input { font-family: 'Cinzel', serif; font-size: 1.5rem; padding: 0.3rem 0.5rem; border: 1px solid var(--gold); border-radius: 3px; }
+
+        .edit-actions { display: flex; gap: 0.3rem; }
+        .edit-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 0.9rem;
+            transition: all 0.2s;
         }
+        .edit-btn.confirm { background: var(--available); color: white; }
+        .edit-btn.cancel { background: #999; color: white; }
+        .edit-btn.delete { background: var(--unavailable); color: white; }
+        .edit-btn:hover { transform: scale(1.1); }
+
+        .profile-info h2 { border: none; padding: 0; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+        .profile-info p { color: var(--ink-light); font-size: 0.9rem; }
+
+        .name-edit-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .name-edit-icon:hover { opacity: 1; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--ink);
+        }
+
+        .section-actions { display: flex; gap: 0.5rem; }
 
         .adventurer-card {
             display: flex;
@@ -784,40 +511,11 @@
             margin-bottom: 0.5rem;
         }
 
-        .adventurer-card img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--ink);
-        }
-
-        .adventurer-card .no-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--ink);
-            color: var(--parchment);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            border: 2px solid var(--ink);
-        }
-
-        .adventurer-card .info {
-            flex: 1;
-        }
-
-        .adventurer-card .name {
-            font-family: 'Cinzel', serif;
-            font-weight: 600;
-        }
-
-        .adventurer-card .actions {
-            display: flex;
-            gap: 0.5rem;
-        }
+        .adventurer-card img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--ink); }
+        .adventurer-card .no-image { width: 50px; height: 50px; border-radius: 50%; background: var(--ink); color: var(--parchment); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid var(--ink); }
+        .adventurer-card .info { flex: 1; }
+        .adventurer-card .name { font-family: 'Cinzel', serif; font-weight: 600; }
+        .adventurer-card .actions { display: flex; gap: 0.5rem; }
 
         .event-list-item {
             display: block;
@@ -831,82 +529,26 @@
             transition: all 0.2s;
         }
 
-        .event-list-item:hover {
-            border-color: var(--gold);
-            background: var(--parchment);
-        }
+        .event-list-item:hover { border-color: var(--gold); background: var(--parchment); }
+        .event-list-item h4 { font-family: 'Cinzel', serif; margin-bottom: 0.3rem; }
+        .event-list-item p { font-size: 0.85rem; color: var(--ink-light); }
 
-        .event-list-item h4 {
-            font-family: 'Cinzel', serif;
-            margin-bottom: 0.3rem;
-        }
+        .image-upload { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .image-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--ink); }
+        .image-preview-placeholder { width: 80px; height: 80px; border-radius: 50%; border: 2px dashed var(--ink-light); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--ink-light); }
 
-        .event-list-item p {
-            font-size: 0.85rem;
-            color: var(--ink-light);
-        }
+        .divider { border: none; border-top: 1px solid var(--ink-light); margin: 1.5rem 0; }
 
-        .tabs {
-            display: flex;
-            border-bottom: 2px solid var(--ink-light);
-            margin-bottom: 1rem;
-        }
-
-        .tab {
-            padding: 0.7rem 1.2rem;
-            font-family: 'Cinzel', serif;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: none;
-            background: none;
-            color: var(--ink-light);
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
-            transition: all 0.2s;
-        }
-
-        .tab:hover {
-            color: var(--ink);
-        }
-
-        .tab.active {
-            color: var(--ink);
-            border-bottom-color: var(--gold);
-        }
-
-        .image-upload {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .image-preview {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--ink);
-        }
-
-        .image-preview-placeholder {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 2px dashed var(--ink-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: var(--ink-light);
-        }
+        .password-section { margin-top: 1rem; }
+        .password-toggle { background: none; border: none; color: var(--ink-light); cursor: pointer; font-size: 0.9rem; text-decoration: underline; }
+        .password-toggle:hover { color: var(--ink); }
     </style>
 </head>
 <body>
     <div id="root"></div>
     
     <script type="text/babel">
-        const { useState, useEffect, useCallback, useRef, createContext, useContext } = React;
+        const { useState, useEffect, useRef, createContext, useContext } = React;
 
         const AuthContext = createContext(null);
         function useAuth() { return useContext(AuthContext); }
@@ -991,14 +633,12 @@
                 changePassword: "Change Password",
                 currentPassword: "Current Password",
                 newPassword: "New Password",
-                updateProfile: "Update Profile",
                 passwordChanged: "Password changed successfully!",
                 profileUpdated: "Profile updated!",
                 createAdventurer: "Create Adventurer",
                 editAdventurer: "Edit Adventurer",
                 adventurerName: "Adventurer Name",
                 adventurerImage: "Adventurer Image (URL)",
-                deleteAdventurer: "Delete",
                 noAdventurersSaved: "No adventurers saved yet",
                 selectAdventurer: "Select an Adventurer",
                 orEnterName: "Or enter a name manually",
@@ -1009,6 +649,7 @@
                 go: "Go",
                 profileImage: "Profile Image (URL)",
                 save: "Save",
+                noQuestBoards: "No quest boards yet",
             },
             sr: {
                 questBoard: "Tabla Zadataka",
@@ -1089,14 +730,12 @@
                 changePassword: "Promeni lozinku",
                 currentPassword: "Trenutna lozinka",
                 newPassword: "Nova lozinka",
-                updateProfile: "Ažuriraj profil",
                 passwordChanged: "Lozinka promenjena!",
                 profileUpdated: "Profil ažuriran!",
                 createAdventurer: "Kreiraj Avanturistu",
                 editAdventurer: "Izmeni Avanturistu",
                 adventurerName: "Ime Avanturiste",
                 adventurerImage: "Slika Avanturiste (URL)",
-                deleteAdventurer: "Obriši",
                 noAdventurersSaved: "Nema sačuvanih avanturista",
                 selectAdventurer: "Izaberi Avanturistu",
                 orEnterName: "Ili unesi ime ručno",
@@ -1107,6 +746,7 @@
                 go: "Idi",
                 profileImage: "Slika profila (URL)",
                 save: "Sačuvaj",
+                noQuestBoards: "Nema tabli",
             }
         };
 
@@ -1165,7 +805,7 @@
             if (authLoading) return <div className="app-container"><div className="panel loading">🎲 {t.loadingDice}</div></div>;
 
             return (
-                <AuthContext.Provider value={{ user, setUser, login, logout, t, lang, timeFormat }}>
+                <AuthContext.Provider value={{ user, setUser, login, logout, t, lang, timeFormat, navigate }}>
                     <div className="app-container">
                         <header className="header">
                             {user && (
@@ -1192,18 +832,18 @@
                                 </div>
                             </div>
                         </header>
-                        {route.page === 'home' && <LandingPage navigate={navigate} t={t} />}
-                        {route.page === 'create' && <CreateEventPage navigate={navigate} t={t} lang={lang} timeFormat={timeFormat} />}
-                        {route.page === 'join' && <JoinEventPage navigate={navigate} t={t} />}
-                        {route.page === 'profile' && <ProfilePage navigate={navigate} t={t} />}
+                        {route.page === 'home' && <LandingPage t={t} />}
+                        {route.page === 'create' && <CreateEventPage t={t} lang={lang} timeFormat={timeFormat} />}
+                        {route.page === 'join' && <JoinEventPage t={t} />}
+                        {route.page === 'profile' && <ProfilePage t={t} />}
                         {route.page === 'event' && <EventPage eventId={route.params.eventId} t={t} lang={lang} timeFormat={timeFormat} />}
                     </div>
                 </AuthContext.Provider>
             );
         }
 
-        function LandingPage({ navigate, t }) {
-            const { user } = useAuth();
+        function LandingPage({ t }) {
+            const { user, navigate } = useAuth();
             const [showLogin, setShowLogin] = useState(false);
             const [showRegister, setShowRegister] = useState(false);
 
@@ -1213,13 +853,11 @@
                         <h2>🏰 {t.welcome}</h2>
                         <p style={{ marginBottom: '1.5rem', color: 'var(--ink-light)' }}>{t.whatToDo}</p>
                         <div className="landing-options">
-                            {!user ? (
+                            {!user && (
                                 <>
                                     <div className="landing-card" onClick={() => setShowLogin(true)}><div className="icon">🔑</div><h3>{t.login}</h3><p>{t.loginDesc}</p></div>
                                     <div className="landing-card" onClick={() => setShowRegister(true)}><div className="icon">📝</div><h3>{t.register}</h3><p>{t.registerDesc}</p></div>
                                 </>
-                            ) : (
-                                <div className="landing-card" onClick={() => navigate('/profile')}><div className="icon">👤</div><h3>{t.myProfile}</h3><p>{t.loginDesc}</p></div>
                             )}
                             <div className="landing-card" onClick={() => navigate('/create')}><div className="icon">⚔️</div><h3>{t.createEvent}</h3><p>{t.createEventDesc}</p></div>
                             <div className="landing-card" onClick={() => navigate('/join')}><div className="icon">🎭</div><h3>{t.joinEvent}</h3><p>{t.joinEventDesc}</p></div>
@@ -1299,7 +937,8 @@
             );
         }
 
-        function JoinEventPage({ navigate, t }) {
+        function JoinEventPage({ t }) {
+            const { navigate } = useAuth();
             const [link, setLink] = useState('');
             const [error, setError] = useState('');
 
@@ -1323,18 +962,24 @@
             );
         }
 
-        function ProfilePage({ navigate, t }) {
-            const { user, setUser } = useAuth();
-            const [activeTab, setActiveTab] = useState('profile');
+        function ProfilePage({ t }) {
+            const { user, setUser, navigate } = useAuth();
             const [adventurers, setAdventurers] = useState([]);
             const [events, setEvents] = useState({ created: [], participated: [] });
             const [loading, setLoading] = useState(true);
-            const [displayName, setDisplayName] = useState(user?.displayName || '');
-            const [profileImage, setProfileImage] = useState(user?.profileImage || '');
-            const [currentPassword, setCurrentPassword] = useState('');
-            const [newPassword, setNewPassword] = useState('');
             const [message, setMessage] = useState('');
             const [error, setError] = useState('');
+
+            // Inline editing states
+            const [editingName, setEditingName] = useState(false);
+            const [editingImage, setEditingImage] = useState(false);
+            const [tempName, setTempName] = useState(user?.displayName || '');
+            const [tempImage, setTempImage] = useState(user?.profileImage || '');
+            const [showPasswordForm, setShowPasswordForm] = useState(false);
+            const [currentPassword, setCurrentPassword] = useState('');
+            const [newPassword, setNewPassword] = useState('');
+
+            // Adventurer modal
             const [advModal, setAdvModal] = useState(null);
             const [advName, setAdvName] = useState('');
             const [advImage, setAdvImage] = useState('');
@@ -1347,15 +992,24 @@
                 finally { setLoading(false); }
             };
 
-            const handleUpdateProfile = async (e) => {
-                e.preventDefault(); setError(''); setMessage('');
-                try { await api('/api/profile', { method: 'PUT', body: JSON.stringify({ displayName, profileImage }) }); setUser({ ...user, displayName, profileImage }); setMessage(t.profileUpdated); } 
+            const saveName = async () => {
+                try { await api('/api/profile', { method: 'PUT', body: JSON.stringify({ displayName: tempName, profileImage: user.profileImage }) }); setUser({ ...user, displayName: tempName }); setEditingName(false); setMessage(t.profileUpdated); setTimeout(() => setMessage(''), 3000); } 
+                catch (err) { setError(err.message); }
+            };
+
+            const saveImage = async () => {
+                try { await api('/api/profile', { method: 'PUT', body: JSON.stringify({ displayName: user.displayName, profileImage: tempImage || null }) }); setUser({ ...user, profileImage: tempImage || null }); setEditingImage(false); setMessage(t.profileUpdated); setTimeout(() => setMessage(''), 3000); } 
+                catch (err) { setError(err.message); }
+            };
+
+            const deleteImage = async () => {
+                try { await api('/api/profile', { method: 'PUT', body: JSON.stringify({ displayName: user.displayName, profileImage: null }) }); setUser({ ...user, profileImage: null }); setTempImage(''); setEditingImage(false); setMessage(t.profileUpdated); setTimeout(() => setMessage(''), 3000); } 
                 catch (err) { setError(err.message); }
             };
 
             const handleChangePassword = async (e) => {
                 e.preventDefault(); setError(''); setMessage('');
-                try { await api('/api/profile/password', { method: 'PUT', body: JSON.stringify({ currentPassword, newPassword }) }); setCurrentPassword(''); setNewPassword(''); setMessage(t.passwordChanged); } 
+                try { await api('/api/profile/password', { method: 'PUT', body: JSON.stringify({ currentPassword, newPassword }) }); setCurrentPassword(''); setNewPassword(''); setShowPasswordForm(false); setMessage(t.passwordChanged); setTimeout(() => setMessage(''), 3000); } 
                 catch (err) { setError(err.message); }
             };
 
@@ -1382,65 +1036,113 @@
             return (
                 <div className="center-panel">
                     <div className="panel">
-                        <div className="profile-header">
-                            {profileImage ? <img src={profileImage} alt="" className="profile-image" /> : <div className="profile-image-placeholder">👤</div>}
-                            <div className="profile-info"><h2>{user.displayName}</h2><p>@{user.username}</p></div>
-                        </div>
-                        <div className="tabs">
-                            <button className={`tab ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}>{t.myProfile}</button>
-                            <button className={`tab ${activeTab === 'adventurers' ? 'active' : ''}`} onClick={() => setActiveTab('adventurers')}>{t.myAdventurers}</button>
-                            <button className={`tab ${activeTab === 'events' ? 'active' : ''}`} onClick={() => setActiveTab('events')}>{t.myQuestBoards}</button>
-                        </div>
                         {error && <div className="error-message">{error}</div>}
                         {message && <div className="success-message">{message}</div>}
 
-                        {activeTab === 'profile' && (
-                            <>
-                                <form onSubmit={handleUpdateProfile}>
-                                    <div className="form-group"><label>{t.displayName}</label><input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} /></div>
-                                    <div className="form-group">
-                                        <label>{t.profileImage}</label>
-                                        <input type="url" value={profileImage} onChange={e => setProfileImage(e.target.value)} placeholder="https://..." />
-                                        {profileImage && <div className="image-upload" style={{ marginTop: '0.5rem' }}><img src={profileImage} alt="Preview" className="image-preview" onError={e => e.target.style.display = 'none'} /></div>}
-                                    </div>
-                                    <button type="submit" className="btn btn-primary">{t.updateProfile}</button>
-                                </form>
-                                <h3 style={{ marginTop: '2rem', fontFamily: 'Cinzel', borderTop: '1px solid var(--ink-light)', paddingTop: '1rem' }}>🔒 {t.changePassword}</h3>
-                                <form onSubmit={handleChangePassword}>
-                                    <div className="form-group"><label>{t.currentPassword}</label><input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required /></div>
-                                    <div className="form-group"><label>{t.newPassword}</label><input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required /></div>
-                                    <button type="submit" className="btn btn-secondary">{t.changePassword}</button>
-                                </form>
-                            </>
-                        )}
-
-                        {activeTab === 'adventurers' && (
-                            <>
-                                <button className="btn btn-primary btn-block" onClick={() => openAdvModal()} style={{ marginBottom: '1rem' }}>➕ {t.createAdventurer}</button>
-                                {adventurers.length === 0 ? <p style={{ fontStyle: 'italic', color: 'var(--ink-light)' }}>{t.noAdventurersSaved}</p> : adventurers.map(adv => (
-                                    <div key={adv.id} className="adventurer-card">
-                                        {adv.image ? <img src={adv.image} alt="" /> : <div className="no-image">⚔️</div>}
-                                        <div className="info"><div className="name">{adv.name}</div></div>
-                                        <div className="actions">
-                                            <button className="btn btn-small btn-secondary" onClick={() => openAdvModal(adv)}>✏️</button>
-                                            <button className="btn btn-small btn-danger" onClick={() => deleteAdventurer(adv.id)}>🗑️</button>
+                        <div className="profile-header">
+                            <div className="profile-image-container">
+                                {editingImage ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                                        {tempImage ? <img src={tempImage} alt="" className="profile-image" onError={e => e.target.style.display = 'none'} /> : <div className="profile-image-placeholder">👤</div>}
+                                        <input type="url" value={tempImage} onChange={e => setTempImage(e.target.value)} placeholder="https://..." style={{ width: '150px', fontSize: '0.8rem', padding: '0.3rem' }} />
+                                        <div className="edit-actions">
+                                            <button className="edit-btn confirm" onClick={saveImage}>✓</button>
+                                            <button className="edit-btn cancel" onClick={() => { setTempImage(user.profileImage || ''); setEditingImage(false); }}>✕</button>
+                                            {user.profileImage && <button className="edit-btn delete" onClick={deleteImage}>🗑</button>}
                                         </div>
                                     </div>
+                                ) : (
+                                    <>
+                                        {user.profileImage ? <img src={user.profileImage} alt="" className="profile-image" /> : <div className="profile-image-placeholder">👤</div>}
+                                        <div className="edit-icon" onClick={() => { setTempImage(user.profileImage || ''); setEditingImage(true); }}>✏️</div>
+                                    </>
+                                )}
+                            </div>
+                            <div className="profile-info">
+                                {editingName ? (
+                                    <div className="inline-edit">
+                                        <input type="text" value={tempName} onChange={e => setTempName(e.target.value)} className="inline-edit-input" autoFocus />
+                                        <div className="edit-actions">
+                                            <button className="edit-btn confirm" onClick={saveName}>✓</button>
+                                            <button className="edit-btn cancel" onClick={() => { setTempName(user.displayName); setEditingName(false); }}>✕</button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <h2>{user.displayName} <button className="name-edit-icon" onClick={() => { setTempName(user.displayName); setEditingName(true); }}>✏️</button></h2>
+                                )}
+                                <p>@{user.username}</p>
+                            </div>
+                        </div>
+
+                        <div className="password-section">
+                            {!showPasswordForm ? (
+                                <button className="password-toggle" onClick={() => setShowPasswordForm(true)}>🔒 {t.changePassword}</button>
+                            ) : (
+                                <form onSubmit={handleChangePassword} style={{ background: 'rgba(0,0,0,0.05)', padding: '1rem', borderRadius: '4px' }}>
+                                    <h4 style={{ fontFamily: 'Cinzel', marginBottom: '0.5rem' }}>🔒 {t.changePassword}</h4>
+                                    <div className="form-group"><label>{t.currentPassword}</label><input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required /></div>
+                                    <div className="form-group"><label>{t.newPassword}</label><input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required /></div>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button type="submit" className="btn btn-small btn-primary">{t.save}</button>
+                                        <button type="button" className="btn btn-small btn-secondary" onClick={() => { setShowPasswordForm(false); setCurrentPassword(''); setNewPassword(''); }}>{t.cancel}</button>
+                                    </div>
+                                </form>
+                            )}
+                        </div>
+
+                        <hr className="divider" />
+
+                        {/* Adventurers Section */}
+                        <div className="section-header">
+                            <h3>⚔️ {t.myAdventurers}</h3>
+                            <button className="btn btn-small btn-primary" onClick={() => openAdvModal()}>➕</button>
+                        </div>
+                        {adventurers.length === 0 ? (
+                            <p style={{ fontStyle: 'italic', color: 'var(--ink-light)', marginBottom: '1rem' }}>{t.noAdventurersSaved}</p>
+                        ) : (
+                            adventurers.map(adv => (
+                                <div key={adv.id} className="adventurer-card">
+                                    {adv.image ? <img src={adv.image} alt="" /> : <div className="no-image">⚔️</div>}
+                                    <div className="info"><div className="name">{adv.name}</div></div>
+                                    <div className="actions">
+                                        <button className="btn btn-small btn-secondary" onClick={() => openAdvModal(adv)}>✏️</button>
+                                        <button className="btn btn-small btn-danger" onClick={() => deleteAdventurer(adv.id)}>🗑️</button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+
+                        <hr className="divider" />
+
+                        {/* Quest Boards Section */}
+                        <div className="section-header">
+                            <h3>📅 {t.myQuestBoards}</h3>
+                            <div className="section-actions">
+                                <button className="btn btn-small btn-primary" onClick={() => navigate('/create')}>➕</button>
+                                <button className="btn btn-small btn-secondary" onClick={() => navigate('/join')}>🔗</button>
+                            </div>
+                        </div>
+
+                        {events.created.length > 0 && (
+                            <>
+                                <p style={{ fontSize: '0.85rem', color: 'var(--ink-light)', marginBottom: '0.5rem' }}>📜 {t.createdByMe}</p>
+                                {events.created.map(ev => (
+                                    <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}><h4>{ev.name}</h4><p>{ev.dates.length} dates • {ev.description || '...'}</p></a>
                                 ))}
                             </>
                         )}
 
-                        {activeTab === 'events' && (
+                        {events.participated.length > 0 && (
                             <>
-                                <h3 style={{ fontFamily: 'Cinzel', fontSize: '1rem', marginBottom: '0.5rem' }}>📜 {t.createdByMe}</h3>
-                                {events.created.length === 0 ? <p style={{ fontStyle: 'italic', color: 'var(--ink-light)', marginBottom: '1rem' }}>—</p> : events.created.map(ev => (
-                                    <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}><h4>{ev.name}</h4><p>{ev.dates.length} dates • {ev.description || '...'}</p></a>
-                                ))}
-                                <h3 style={{ fontFamily: 'Cinzel', fontSize: '1rem', marginTop: '1.5rem', marginBottom: '0.5rem' }}>🎭 {t.participating}</h3>
-                                {events.participated.length === 0 ? <p style={{ fontStyle: 'italic', color: 'var(--ink-light)' }}>—</p> : events.participated.map(ev => (
+                                <p style={{ fontSize: '0.85rem', color: 'var(--ink-light)', marginTop: '1rem', marginBottom: '0.5rem' }}>🎭 {t.participating}</p>
+                                {events.participated.map(ev => (
                                     <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}><h4>{ev.name}</h4><p>{ev.dates.length} dates • {ev.description || '...'}</p></a>
                                 ))}
                             </>
+                        )}
+
+                        {events.created.length === 0 && events.participated.length === 0 && (
+                            <p style={{ fontStyle: 'italic', color: 'var(--ink-light)' }}>{t.noQuestBoards}</p>
                         )}
                     </div>
 
@@ -1465,7 +1167,8 @@
             );
         }
 
-        function CreateEventPage({ navigate, t, lang, timeFormat }) {
+        function CreateEventPage({ t, lang, timeFormat }) {
+            const { navigate } = useAuth();
             const [name, setName] = useState('');
             const [description, setDescription] = useState('');
             const [selectedDates, setSelectedDates] = useState([]);
@@ -1635,9 +1338,24 @@
             const handleSlotHover = (e, date, hour) => { const rect = e.target.getBoundingClientRect(); setTooltip({ x: Math.min(rect.right + 10, window.innerWidth - 300), y: Math.min(rect.top, window.innerHeight - 200), date, hour, available: getSlotAvailability(date, hour) }); };
             const copyLink = () => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); };
 
-            const formatHour = (hour) => { if (timeFormat === '24') return { hour: hour.toString().padStart(2, '0') + ':00', ampm: '' }; if (hour === 0) return { hour: '12', ampm: 'AM' }; if (hour === 12) return { hour: '12', ampm: 'PM' }; if (hour < 12) return { hour: hour.toString(), ampm: 'AM' }; return { hour: (hour - 12).toString(), ampm: 'PM' }; };
+            // Updated formatHour - no :00 in 24h mode
+            const formatHour = (hour) => { 
+                if (timeFormat === '24') return { hour: hour.toString().padStart(2, '0'), ampm: '' }; 
+                if (hour === 0) return { hour: '12', ampm: 'AM' }; 
+                if (hour === 12) return { hour: '12', ampm: 'PM' }; 
+                if (hour < 12) return { hour: hour.toString(), ampm: 'AM' }; 
+                return { hour: (hour - 12).toString(), ampm: 'PM' }; 
+            };
+
             const formatDateForDisplay = (dateStr) => { const date = new Date(dateStr + 'T12:00:00'); return { dayName: t.days[date.getDay()], dayNum: t.ordinal(date.getDate()) }; };
-            const formatTooltipDate = (dateStr, hour) => { const date = new Date(dateStr + 'T12:00:00'); const h = formatHour(hour); return `${t.days[date.getDay()]}, ${t.months[date.getMonth()]} ${t.ordinal(date.getDate())} ${t.atTime} ${timeFormat === '24' ? h.hour : `${h.hour} ${h.ampm}`}`; };
+            
+            const formatTooltipDate = (dateStr, hour) => { 
+                const date = new Date(dateStr + 'T12:00:00'); 
+                const h = formatHour(hour); 
+                const timeStr = timeFormat === '24' ? `${h.hour}:00` : `${h.hour} ${h.ampm}`;
+                return `${t.days[date.getDay()]}, ${t.months[date.getMonth()]} ${t.ordinal(date.getDate())} ${t.atTime} ${timeStr}`; 
+            };
+            
             const groupDatesByMonth = (dates) => { const groups = []; let cur = null; dates.forEach((ds, i) => { const d = new Date(ds + 'T12:00:00'); const k = `${d.getFullYear()}-${d.getMonth()}`; if (!cur || cur.key !== k) { cur = { key: k, name: t.months[d.getMonth()], count: 1 }; groups.push(cur); } else cur.count++; }); return groups; };
 
             if (loading) return <div className="panel loading">🎲 {t.loadingDice}</div>;
@@ -1690,7 +1408,25 @@
                         </main>
                     </div>
 
-                    {tooltip && !isDragging && <div className="tooltip" style={{ left: tooltip.x, top: tooltip.y }}><h4>{formatTooltipDate(tooltip.date, tooltip.hour)}</h4>{tooltip.available.length === 0 ? <p style={{fontStyle: 'italic'}}>{t.noOneAvailable}</p> : tooltip.available.map((a, i) => <div key={i} className="tooltip-entry"><div className="tooltip-name">{a.name}</div>{a.note && <div className="tooltip-note">"{a.note}"</div>}</div>)}</div>}
+                    {/* Updated tooltip with images */}
+                    {tooltip && !isDragging && (
+                        <div className="tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
+                            <h4>{formatTooltipDate(tooltip.date, tooltip.hour)}</h4>
+                            {tooltip.available.length === 0 ? (
+                                <p style={{fontStyle: 'italic'}}>{t.noOneAvailable}</p>
+                            ) : (
+                                tooltip.available.map((a, i) => (
+                                    <div key={i} className="tooltip-entry">
+                                        {a.image && <img src={a.image} alt="" />}
+                                        <div>
+                                            <div className="tooltip-name">{a.name}</div>
+                                            {a.note && <div className="tooltip-note">"{a.note}"</div>}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
 
                     {nameModal && (
                         <div className="modal-overlay" onClick={() => setNameModal(false)}>
