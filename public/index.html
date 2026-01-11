@@ -22,14 +22,18 @@
             --unavailable: #8b4049;
             --partial: #b8860b;
             --shadow: rgba(44, 24, 16, 0.3);
+            --maybe: #d4a574;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Crimson Text', Georgia, serif;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"),
-                linear-gradient(135deg, #1a0f0a 0%, #2d1f15 50%, #1a0f0a 100%);
+            background: 
+                linear-gradient(rgba(26, 15, 10, 0.85), rgba(26, 15, 10, 0.85)),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%23543d2c' fill-opacity='0.4'%3E%3Crect x='0' y='0' width='100' height='100'/%3E%3Cpath d='M0 0h50v50H0zM50 50h50v50H50z' fill='%23604530'/%3E%3C/g%3E%3Cg fill='none' stroke='%23382618' stroke-width='0.5'%3E%3Cpath d='M0 25h100M0 75h100M25 0v100M75 0v100'/%3E%3Cellipse cx='12' cy='12' rx='8' ry='3' transform='rotate(45 12 12)'/%3E%3Cellipse cx='87' cy='38' rx='6' ry='2' transform='rotate(-30 87 38)'/%3E%3Cellipse cx='35' cy='85' rx='7' ry='2' transform='rotate(15 35 85)'/%3E%3C/g%3E%3C/svg%3E");
+            background-color: #1a0f0a;
+            background-size: 150px 150px;
             min-height: 100vh;
             color: var(--ink);
         }
@@ -40,22 +44,31 @@
             text-align: center;
             margin-bottom: 2rem;
             padding: 2rem;
-            background: linear-gradient(to bottom, rgba(244, 228, 188, 0.95), rgba(232, 212, 168, 0.95));
+            background: linear-gradient(to bottom, rgba(244, 228, 188, 0.97), rgba(232, 212, 168, 0.97));
             border: 3px solid var(--ink);
             border-radius: 4px;
             box-shadow: 0 4px 20px var(--shadow), inset 0 0 60px rgba(44, 24, 16, 0.1);
             position: relative;
         }
 
-        .header::before {
-            content: '⚔️';
+        .header-dragon {
             position: absolute;
-            top: -15px;
+            top: -20px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 1.5rem;
+            width: 60px;
+            height: 40px;
             background: var(--parchment);
-            padding: 0 1rem;
+            padding: 0 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-dragon svg {
+            width: 50px;
+            height: 35px;
+            fill: var(--ink);
         }
 
         .header h1 {
@@ -70,6 +83,15 @@
 
         .header h1 a { color: inherit; text-decoration: none; }
         .header p { font-size: 1.1rem; font-style: italic; color: var(--ink-light); }
+
+        .header-left {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
         .header-right {
             position: absolute;
@@ -99,26 +121,27 @@
         .top-controls { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
 
         .toggle-group { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
-        .toggle-group label { color: var(--ink-light); }
+        .toggle-group label { color: var(--ink-light); font-size: 0.8rem; }
 
         .toggle-btn {
             font-family: 'Cinzel', serif;
-            font-size: 0.75rem;
-            padding: 0.3rem 0.6rem;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
             border: 1px solid var(--ink);
             background: var(--parchment-light);
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.25rem;
         }
 
         .toggle-btn:first-of-type { border-radius: 3px 0 0 3px; }
         .toggle-btn:last-of-type { border-radius: 0 3px 3px 0; }
         .toggle-btn.active { background: var(--ink); color: var(--parchment); }
         .toggle-btn:hover:not(.active) { background: var(--parchment-dark); }
-        .toggle-btn .flag { width: 18px; height: 14px; display: inline-block; background-size: cover; background-position: center; border-radius: 2px; }
+
+        .toggle-btn .flag { width: 16px; height: 12px; display: inline-block; background-size: cover; background-position: center; border-radius: 2px; }
         .flag-gb { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3CclipPath id='a'%3E%3Cpath d='M0 0v30h60V0z'/%3E%3C/clipPath%3E%3CclipPath id='b'%3E%3Cpath d='M30 15h30v15zv15H0zH0V0zV0h30z'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23a)'%3E%3Cpath d='M0 0v30h60V0z' fill='%23012169'/%3E%3Cpath d='M0 0l60 30m0-30L0 30' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M0 0l60 30m0-30L0 30' clip-path='url(%23b)' stroke='%23C8102E' stroke-width='4'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23C8102E' stroke-width='6'/%3E%3C/g%3E%3C/svg%3E"); }
         .flag-rs { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 450 300'%3E%3Crect width='450' height='100' fill='%23C6363C'/%3E%3Crect y='100' width='450' height='100' fill='%230C4076'/%3E%3Crect y='200' width='450' height='100' fill='%23fff'/%3E%3C/svg%3E"); }
 
@@ -127,7 +150,8 @@
         @media (max-width: 900px) {
             .main-content { grid-template-columns: 1fr; }
             .header h1 { font-size: 1.8rem; }
-            .header-right { position: static; margin-top: 1rem; justify-content: center; }
+            .header-left, .header-right { position: static; margin-top: 0.5rem; justify-content: center; }
+            .header-left { order: 2; }
         }
 
         .panel {
@@ -146,7 +170,21 @@
             border-bottom: 2px solid var(--gold);
             padding-bottom: 0.5rem;
             margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
+
+        .panel h2 .edit-event-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .panel h2 .edit-event-btn:hover { opacity: 1; }
 
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 0.3rem; color: var(--ink); font-family: 'Cinzel', serif; font-size: 0.9rem; }
@@ -169,6 +207,7 @@
         }
 
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; }
 
         .btn {
             font-family: 'Cinzel', serif;
@@ -205,8 +244,11 @@
             border-radius: 3px;
             margin: 0.2rem;
             font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
+        .participant-tag:hover { background: var(--ink-light); }
         .participant-tag img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; }
         .participant-tag.active { background: var(--gold); color: var(--ink); }
 
@@ -317,26 +359,19 @@
             border: 3px solid var(--ink);
             border-radius: 4px;
             padding: 2rem;
-            max-width: 450px;
+            max-width: 500px;
             width: 100%;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             max-height: 90vh;
             overflow-y: auto;
         }
 
+        .modal-wide { max-width: 600px; }
+
         .modal h3 { font-family: 'Cinzel', serif; margin-bottom: 1rem; color: var(--ink); }
         .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
-        .modal-buttons-spread {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1.5rem;
-            gap: 1rem;
-        }
-
-        .modal-buttons-spread .btn-danger {
-            margin-right: auto;
-        }
+        .modal-buttons-spread { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; gap: 1rem; }
+        .modal-buttons-spread .btn-danger { margin-right: auto; }
 
         .view-toggle { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
         .view-toggle .btn { flex: 1; font-size: 0.75rem; padding: 0.5rem 0.3rem; }
@@ -370,6 +405,7 @@
         .date-cell:hover { background: var(--parchment-dark); }
         .date-cell.selected { background: var(--available); color: white; }
         .date-cell.disabled { opacity: 0.3; cursor: not-allowed; }
+        .date-cell.has-availability { background: var(--gold); color: var(--ink); }
 
         .month-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
         .month-nav button { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.3rem 0.6rem; }
@@ -378,6 +414,7 @@
         .loading { text-align: center; padding: 3rem; font-style: italic; color: var(--ink-light); }
         .error-message { background: #ffebee; border: 1px solid var(--unavailable); color: var(--unavailable); padding: 1rem; border-radius: 4px; margin: 1rem 0; }
         .success-message { background: #e8f5e9; border: 1px solid var(--available); color: var(--available); padding: 1rem; border-radius: 4px; margin: 1rem 0; }
+        .warning-message { background: #fff8e1; border: 1px solid var(--gold); color: var(--ink); padding: 1rem; border-radius: 4px; margin: 1rem 0; }
 
         .saved-indicator {
             position: fixed;
@@ -417,74 +454,19 @@
         .landing-card p { font-size: 0.85rem; color: var(--ink-light); }
 
         /* Profile styles */
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid var(--gold);
-        }
-
+        .profile-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--gold); }
         .profile-image-container { position: relative; }
+        .profile-image { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--ink); object-fit: cover; background: var(--parchment-dark); }
+        .profile-image-placeholder { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--ink); background: var(--parchment-dark); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
 
-        .profile-image {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 3px solid var(--ink);
-            object-fit: cover;
-            background: var(--parchment-dark);
-        }
-
-        .profile-image-placeholder {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 3px solid var(--ink);
-            background: var(--parchment-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-        }
-
-        .edit-icon {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background: var(--ink);
-            color: var(--parchment);
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.8rem;
-            border: 2px solid var(--parchment);
-            transition: all 0.2s;
-        }
-
+        .edit-icon { position: absolute; bottom: 0; right: 0; background: var(--ink); color: var(--parchment); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem; border: 2px solid var(--parchment); transition: all 0.2s; }
         .edit-icon:hover { background: var(--ink-light); }
 
         .inline-edit { display: flex; align-items: center; gap: 0.5rem; }
         .inline-edit-input { font-family: 'Cinzel', serif; font-size: 1.5rem; padding: 0.3rem 0.5rem; border: 1px solid var(--gold); border-radius: 3px; }
 
         .edit-actions { display: flex; gap: 0.3rem; }
-        .edit-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
+        .edit-btn { width: 28px; height: 28px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.2s; }
         .edit-btn.confirm { background: var(--available); color: white; }
         .edit-btn.cancel { background: #999; color: white; }
         .edit-btn.delete { background: var(--unavailable); color: white; }
@@ -493,29 +475,11 @@
         .profile-info h2 { font-family: 'Cinzel', serif; border: none; padding: 0; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
         .profile-info p { color: var(--ink-light); font-size: 0.9rem; }
 
-        .name-edit-icon {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.8rem;
-            opacity: 0.6;
-            transition: opacity 0.2s;
-        }
+        .name-edit-icon { background: none; border: none; cursor: pointer; font-size: 0.8rem; opacity: 0.6; transition: opacity 0.2s; }
         .name-edit-icon:hover { opacity: 1; }
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .section-header h3 {
-            font-family: 'Cinzel', serif;
-            font-size: 1.1rem;
-            color: var(--ink);
-        }
-
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .section-header h3 { font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--ink); }
         .section-actions { display: flex; gap: 0.5rem; }
 
         .adventurer-card {
@@ -536,7 +500,13 @@
         .adventurer-card .no-image { width: 50px; height: 50px; border-radius: 50%; background: var(--ink); color: var(--parchment); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid var(--ink); }
         .adventurer-card .info { flex: 1; }
         .adventurer-card .name { font-family: 'Cinzel', serif; font-weight: 600; }
+        .adventurer-card .subtitle { font-size: 0.8rem; color: var(--ink-light); }
         .adventurer-card .actions { display: flex; gap: 0.5rem; }
+
+        .adventurer-detail { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--ink-light); font-size: 0.85rem; }
+        .adventurer-detail-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.3rem; }
+        .adventurer-detail-item { display: flex; gap: 0.3rem; }
+        .adventurer-detail-item strong { color: var(--ink); }
 
         .event-list-item {
             display: block;
@@ -551,86 +521,30 @@
         }
 
         .event-list-item:hover { border-color: var(--gold); background: var(--parchment); }
-        .event-list-item h4 { font-family: 'Cinzel', serif; margin-bottom: 0.3rem; }
+        .event-list-item h4 { font-family: 'Cinzel', serif; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem; }
         .event-list-item p { font-size: 0.85rem; color: var(--ink-light); }
-        .event-list-item .participants-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
-        .event-list-item .mini-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid var(--ink); }
-        .event-list-item .mini-avatar-placeholder { width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: var(--parchment); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; border: 1px solid var(--ink); }
-        .event-list-item .my-adventurer { background: var(--gold); padding: 0.2rem 0.5rem; border-radius: 3px; font-size: 0.75rem; display: flex; align-items: center; gap: 0.3rem; }
-        .event-list-item .my-adventurer img { width: 18px; height: 18px; border-radius: 50%; }
+        .event-list-item .participants-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
 
-        .image-upload { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-        .image-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--ink); }
-        .image-preview-placeholder { width: 80px; height: 80px; border-radius: 50%; border: 2px dashed var(--ink-light); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--ink-light); }
+        .password-section { background: var(--parchment-light); border: 1px solid var(--ink-light); border-radius: 4px; padding: 1rem; margin-top: 1rem; }
+        .password-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .password-header h4 { font-family: 'Cinzel', serif; font-size: 0.95rem; color: var(--ink); display: flex; align-items: center; gap: 0.5rem; }
+        .password-header .toggle-arrow { transition: transform 0.2s; }
+        .password-header .toggle-arrow.open { transform: rotate(180deg); }
+        .password-form { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--ink-light); }
+
+        .confirm-dialog { text-align: center; }
+        .confirm-dialog p { margin-bottom: 1.5rem; font-size: 1.1rem; }
+        .confirm-dialog .btn { margin: 0 0.5rem; }
+
+        .switch-adventurer-btn { background: none; border: none; padding: 0.2rem 0.4rem; font-size: 0.7rem; cursor: pointer; color: var(--ink-light); margin-left: 0.3rem; transition: all 0.2s; opacity: 0.6; }
+        .switch-adventurer-btn:hover { opacity: 1; color: var(--ink); }
 
         .divider { border: none; border-top: 1px solid var(--ink-light); margin: 1.5rem 0; }
 
-        /* Password section - styled box */
-        .password-section {
-            background: var(--parchment-light);
-            border: 1px solid var(--ink-light);
-            border-radius: 4px;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-
-        .password-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .password-header h4 {
-            font-family: 'Cinzel', serif;
-            font-size: 0.95rem;
-            color: var(--ink);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .password-header .toggle-arrow {
-            transition: transform 0.2s;
-        }
-
-        .password-header .toggle-arrow.open {
-            transform: rotate(180deg);
-        }
-
-        .password-form {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--ink-light);
-        }
-
-        .confirm-dialog {
-            text-align: center;
-        }
-
-        .confirm-dialog p {
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-        }
-
-        .confirm-dialog .btn { margin: 0 0.5rem; }
-
-        .switch-adventurer-btn {
-            background: none;
-            border: none;
-            padding: 0.2rem 0.4rem;
-            font-size: 0.7rem;
-            cursor: pointer;
-            color: var(--ink-light);
-            margin-left: 0.3rem;
-            transition: all 0.2s;
-            opacity: 0.6;
-        }
-
-        .switch-adventurer-btn:hover {
-            opacity: 1;
-            color: var(--ink);
-        }
+        .quest-board-list { margin-top: 0.5rem; }
+        .quest-board-list-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: white; border-radius: 3px; margin-bottom: 0.3rem; cursor: pointer; transition: all 0.2s; }
+        .quest-board-list-item:hover { background: var(--parchment-dark); }
+        .quest-board-list-item .name { flex: 1; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -680,7 +594,7 @@
                 cancel: "Cancel",
                 addNote: "Add a Note",
                 yourNote: "Your note",
-                notePlaceholder: "e.g., Joining remotely, might need a dinner break...",
+                notePlaceholder: "e.g., Maybe, need to check...",
                 saveNote: "Save Note",
                 saved: "Saved!",
                 noOneAvailable: "No one available yet",
@@ -688,7 +602,7 @@
                 loadingDice: "Rolling for initiative...",
                 instructionsTitle: "Instructions:",
                 instruction1: "Click slots to mark availability",
-                instruction2: "Right-click (or long-press) available slots to add notes",
+                instruction2: "Right-click any slot to add notes",
                 instruction3: "Notes appear as 📜 icons",
                 months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                 days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
@@ -745,6 +659,17 @@
                 no: "No",
                 switchAdventurer: "Switch",
                 joinedAs: "Joined as",
+                questBoards: "quest boards",
+                bio: "Bio",
+                level: "Level",
+                race: "Race",
+                class: "Class",
+                notes: "Notes",
+                viewAdventurer: "View Adventurer",
+                editEvent: "Edit Quest Board",
+                warningRemoveDates: "Warning: Some dates have existing availability. Removing them will delete that data.",
+                warningChangeHours: "Warning: Changing hours may affect existing availability data.",
+                update: "Update",
             },
             sr: {
                 questBoard: "Tabla Zadataka",
@@ -783,7 +708,7 @@
                 cancel: "Otkaži",
                 addNote: "Dodaj Belešku",
                 yourNote: "Tvoja beleška",
-                notePlaceholder: "npr., Priključujem se online, možda ću imati pauzu za večeru...",
+                notePlaceholder: "npr., Možda, moram da proverim...",
                 saveNote: "Sačuvaj",
                 saved: "Sačuvano!",
                 noOneAvailable: "Niko još nije dostupan",
@@ -791,7 +716,7 @@
                 loadingDice: "Bacamo kockice...",
                 instructionsTitle: "Uputstva:",
                 instruction1: "Klikni na polja da označiš dostupnost",
-                instruction2: "Desni klik (ili dugi pritisak) na dostupna polja za beleške",
+                instruction2: "Desni klik na bilo koje polje za beleške",
                 instruction3: "Beleške se prikazuju kao 📜 ikone",
                 months: ["Januar", "Februar", "Mart", "April", "Maj", "Jun", "Jul", "Avgust", "Septembar", "Oktobar", "Novembar", "Decembar"],
                 days: ["Nedelja", "Ponedeljak", "Utorak", "Sreda", "Četvrtak", "Petak", "Subota"],
@@ -848,8 +773,30 @@
                 no: "Ne",
                 switchAdventurer: "Promeni",
                 joinedAs: "Kao",
+                questBoards: "tabli",
+                bio: "Biografija",
+                level: "Nivo",
+                race: "Rasa",
+                class: "Klasa",
+                notes: "Beleške",
+                viewAdventurer: "Pogledaj Avanturistu",
+                editEvent: "Izmeni Tablu",
+                warningRemoveDates: "Upozorenje: Neki datumi imaju postojeću dostupnost. Uklanjanje će obrisati te podatke.",
+                warningChangeHours: "Upozorenje: Promena sati može uticati na postojeće podatke o dostupnosti.",
+                update: "Ažuriraj",
             }
         };
+
+        const DragonSVG = () => (
+            <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 5 C30 5 15 20 15 35 C15 45 25 55 40 55 L45 55 C45 55 43 50 45 45 C47 40 55 38 55 38 C55 38 63 40 65 45 C67 50 65 55 65 55 L70 55 C85 55 95 45 95 35 C95 20 80 5 60 5 C55 5 52 8 50 10 C48 8 45 5 50 5" fill="currentColor"/>
+                <circle cx="30" cy="28" r="4" fill="var(--gold)"/>
+                <circle cx="70" cy="28" r="4" fill="var(--gold)"/>
+                <path d="M15 35 C10 30 5 32 2 28 M15 38 C8 36 3 40 0 38" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <path d="M85 35 C90 30 95 32 98 28 M85 38 C92 36 97 40 100 38" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <path d="M40 45 Q50 52 60 45" stroke="var(--gold)" strokeWidth="2" fill="none"/>
+            </svg>
+        );
 
         function getSlotKey(date, hour) { return `${date}-${hour}`; }
 
@@ -917,6 +864,21 @@
                 <AuthContext.Provider value={{ user, setUser, login, logout, t, lang, timeFormat, navigate }}>
                     <div className="app-container">
                         <header className="header">
+                            <div className="header-dragon"><DragonSVG /></div>
+                            <div className="header-left">
+                                <div className="toggle-group">
+                                    <button className={`toggle-btn ${timeFormat === '12' ? 'active' : ''}`} onClick={() => setTimeFormat('12')}>12h</button>
+                                    <button className={`toggle-btn ${timeFormat === '24' ? 'active' : ''}`} onClick={() => setTimeFormat('24')}>24h</button>
+                                </div>
+                                <div className="toggle-group">
+                                    <button className={`toggle-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>
+                                        <span className="flag flag-gb"></span> EN
+                                    </button>
+                                    <button className={`toggle-btn ${lang === 'sr' ? 'active' : ''}`} onClick={() => setLang('sr')}>
+                                        <span className="flag flag-rs"></span> SR
+                                    </button>
+                                </div>
+                            </div>
                             {user && (
                                 <div className="header-right">
                                     <div className="user-badge" onClick={() => navigate('/profile')}>
@@ -928,22 +890,6 @@
                             )}
                             <h1><a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>{t.questBoard}</a></h1>
                             <p>{t.tagline}</p>
-                            <div className="top-controls">
-                                <div className="toggle-group">
-                                    <label>{t.timeFormat}:</label>
-                                    <button className={`toggle-btn ${timeFormat === '12' ? 'active' : ''}`} onClick={() => setTimeFormat('12')}>12h</button>
-                                    <button className={`toggle-btn ${timeFormat === '24' ? 'active' : ''}`} onClick={() => setTimeFormat('24')}>24h</button>
-                                </div>
-                                <div className="toggle-group">
-                                    <label>{t.language}:</label>
-                                    <button className={`toggle-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>
-                                        <span className="flag flag-gb"></span> EN
-                                    </button>
-                                    <button className={`toggle-btn ${lang === 'sr' ? 'active' : ''}`} onClick={() => setLang('sr')}>
-                                        <span className="flag flag-rs"></span> SR
-                                    </button>
-                                </div>
-                            </div>
                         </header>
                         {route.page === 'home' && <LandingPage t={t} />}
                         {route.page === 'create' && <CreateEventPage t={t} lang={lang} timeFormat={timeFormat} />}
@@ -1092,8 +1038,7 @@
             const [newPassword, setNewPassword] = useState('');
 
             const [advModal, setAdvModal] = useState(null);
-            const [advName, setAdvName] = useState('');
-            const [advImage, setAdvImage] = useState('');
+            const [advViewModal, setAdvViewModal] = useState(null);
             const [confirmDelete, setConfirmDelete] = useState(null);
 
             useEffect(() => { if (!user) { navigate('/'); return; } loadData(); }, [user]);
@@ -1125,15 +1070,15 @@
                 catch (err) { setError(err.message); }
             };
 
-            const openAdvModal = (adv = null) => {
-                if (adv) { setAdvName(adv.name); setAdvImage(adv.image || ''); setAdvModal({ mode: 'edit', id: adv.id }); } 
-                else { setAdvName(''); setAdvImage(''); setAdvModal({ mode: 'create' }); }
-            };
-
-            const saveAdventurer = async () => {
+            const saveAdventurer = async (data) => {
                 try {
-                    if (advModal.mode === 'create') { const data = await api('/api/adventurers', { method: 'POST', body: JSON.stringify({ name: advName, image: advImage || null }) }); setAdventurers([data, ...adventurers]); } 
-                    else { await api(`/api/adventurers/${advModal.id}`, { method: 'PUT', body: JSON.stringify({ name: advName, image: advImage || null }) }); setAdventurers(adventurers.map(a => a.id === advModal.id ? { ...a, name: advName, image: advImage } : a)); }
+                    if (advModal.mode === 'create') { 
+                        const res = await api('/api/adventurers', { method: 'POST', body: JSON.stringify(data) }); 
+                        setAdventurers([{ ...res, questBoardCount: 0, questBoards: [] }, ...adventurers]); 
+                    } else { 
+                        await api(`/api/adventurers/${advModal.id}`, { method: 'PUT', body: JSON.stringify(data) }); 
+                        setAdventurers(adventurers.map(a => a.id === advModal.id ? { ...a, ...data } : a)); 
+                    }
                     setAdvModal(null);
                 } catch (err) { setError(err.message); }
             };
@@ -1143,7 +1088,6 @@
                 catch (err) { setError(err.message); }
             };
 
-            // Get my adventurer for an event
             const getMyAdventurerForEvent = (eventId) => {
                 const savedName = localStorage.getItem(`quest-board-user-${eventId}`);
                 const savedImage = localStorage.getItem(`quest-board-user-image-${eventId}`);
@@ -1194,7 +1138,6 @@
                             </div>
                         </div>
 
-                        {/* Password Section - Styled Box */}
                         <div className="password-section">
                             <div className="password-header" onClick={() => setShowPasswordForm(!showPasswordForm)}>
                                 <h4>🔒 {t.changePassword}</h4>
@@ -1214,25 +1157,25 @@
 
                         <hr className="divider" />
 
-                        {/* Adventurers Section */}
                         <div className="section-header">
                             <h3>⚔️ {t.myAdventurers}</h3>
-                            <button className="btn btn-small btn-primary" onClick={() => openAdvModal()}>➕</button>
+                            <button className="btn btn-small btn-primary" onClick={() => setAdvModal({ mode: 'create' })}>➕</button>
                         </div>
                         {adventurers.length === 0 ? (
                             <p style={{ fontStyle: 'italic', color: 'var(--ink-light)', marginBottom: '1rem' }}>{t.noAdventurersSaved}</p>
                         ) : (
                             adventurers.map(adv => (
-                                <div key={adv.id} className="adventurer-card" onClick={() => openAdvModal(adv)}>
+                                <div key={adv.id} className="adventurer-card" onClick={() => setAdvViewModal(adv)}>
                                     {adv.image ? <img src={adv.image} alt="" /> : <div className="no-image">⚔️</div>}
                                     <div className="info">
                                         <div className="name">{adv.name}</div>
-                                        <div style={{ fontSize: '0.8rem', color: 'var(--ink-light)' }}>
-                                            📅 {adv.questBoardCount || 0} {lang === 'sr' ? 'tabli' : 'quest boards'}
+                                        <div className="subtitle">
+                                            {adv.level && `Lvl ${adv.level}`} {adv.race} {adv.class}
+                                            {!adv.level && !adv.race && !adv.class && `📅 ${adv.questBoardCount || 0} ${t.questBoards}`}
                                         </div>
                                     </div>
                                     <div className="actions">
-                                        <button className="btn btn-small btn-secondary" onClick={(e) => { e.stopPropagation(); openAdvModal(adv); }}>✏️</button>
+                                        <button className="btn btn-small btn-secondary" onClick={(e) => { e.stopPropagation(); setAdvModal({ mode: 'edit', ...adv }); }}>✏️</button>
                                     </div>
                                 </div>
                             ))
@@ -1240,7 +1183,6 @@
 
                         <hr className="divider" />
 
-                        {/* Quest Boards Section */}
                         <div className="section-header">
                             <h3>📅 {t.myQuestBoards}</h3>
                             <div className="section-actions">
@@ -1262,14 +1204,14 @@
                                     return (
                                         <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}>
                                             {sortedParticipants.length > 0 && (
-                                                <div className="participants-row" style={{ marginBottom: '0.5rem' }}>
-                                                    {sortedParticipants.slice(0, 8).map((p, i) => (
+                                                <div className="participants-row">
+                                                    {sortedParticipants.slice(0, 6).map((p, i) => (
                                                         <span key={i} className={`participant-tag ${myAdv && p.name === myAdv.name ? 'active' : ''}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
                                                             {p.image ? <img src={p.image} alt="" style={{ width: '16px', height: '16px' }} /> : null}
                                                             {p.name}
                                                         </span>
                                                     ))}
-                                                    {sortedParticipants.length > 8 && <span style={{ fontSize: '0.75rem', color: 'var(--ink-light)' }}>+{sortedParticipants.length - 8}</span>}
+                                                    {sortedParticipants.length > 6 && <span style={{ fontSize: '0.75rem', color: 'var(--ink-light)' }}>+{sortedParticipants.length - 6}</span>}
                                                 </div>
                                             )}
                                             <h4>{ev.name}</h4>
@@ -1293,14 +1235,14 @@
                                     return (
                                         <a key={ev.id} href={`/event/${ev.id}`} className="event-list-item" onClick={e => { e.preventDefault(); navigate(`/event/${ev.id}`); }}>
                                             {sortedParticipants.length > 0 && (
-                                                <div className="participants-row" style={{ marginBottom: '0.5rem' }}>
-                                                    {sortedParticipants.slice(0, 8).map((p, i) => (
+                                                <div className="participants-row">
+                                                    {sortedParticipants.slice(0, 6).map((p, i) => (
                                                         <span key={i} className={`participant-tag ${myAdv && p.name === myAdv.name ? 'active' : ''}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
                                                             {p.image ? <img src={p.image} alt="" style={{ width: '16px', height: '16px' }} /> : null}
                                                             {p.name}
                                                         </span>
                                                     ))}
-                                                    {sortedParticipants.length > 8 && <span style={{ fontSize: '0.75rem', color: 'var(--ink-light)' }}>+{sortedParticipants.length - 8}</span>}
+                                                    {sortedParticipants.length > 6 && <span style={{ fontSize: '0.75rem', color: 'var(--ink-light)' }}>+{sortedParticipants.length - 6}</span>}
                                                 </div>
                                             )}
                                             <h4>{ev.name}</h4>
@@ -1316,29 +1258,48 @@
                         )}
                     </div>
 
-                    {/* Edit Adventurer Modal */}
-                    {advModal && (
-                        <div className="modal-overlay" onClick={() => setAdvModal(null)}>
+                    {/* View Adventurer Modal */}
+                    {advViewModal && (
+                        <div className="modal-overlay" onClick={() => setAdvViewModal(null)}>
                             <div className="modal" onClick={e => e.stopPropagation()}>
-                                <h3>⚔️ {advModal.mode === 'create' ? t.createAdventurer : t.editAdventurer}</h3>
-                                <div className="form-group"><label>{t.adventurerName} *</label><input type="text" value={advName} onChange={e => setAdvName(e.target.value)} autoFocus /></div>
-                                <div className="form-group">
-                                    <label>{t.adventurerImage}</label>
-                                    <input type="url" value={advImage} onChange={e => setAdvImage(e.target.value)} placeholder="https://..." />
-                                    <div className="image-upload" style={{ marginTop: '0.5rem' }}>{advImage ? <img src={advImage} alt="Preview" className="image-preview" onError={e => e.target.style.display = 'none'} /> : <div className="image-preview-placeholder">⚔️</div>}</div>
-                                </div>
-                                <div className="modal-buttons-spread">
-                                    {advModal.mode === 'edit' ? (
-                                        <button className="btn btn-danger btn-small" onClick={() => setConfirmDelete(advModal.id)}>🗑️ {t.deleteAdventurer}</button>
-                                    ) : <div></div>}
-                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                        <button className="btn btn-secondary" onClick={() => setAdvModal(null)}>{t.cancel}</button>
-                                        <button className="btn btn-primary" onClick={saveAdventurer} disabled={!advName.trim()}>{t.save}</button>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                                    {advViewModal.image ? <img src={advViewModal.image} alt="" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--ink)' }} /> : <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', color: 'var(--parchment)' }}>⚔️</div>}
+                                    <div>
+                                        <h3 style={{ margin: 0 }}>{advViewModal.name}</h3>
+                                        {(advViewModal.level || advViewModal.race || advViewModal.class) && (
+                                            <p style={{ color: 'var(--ink-light)', margin: '0.3rem 0 0 0' }}>
+                                                {advViewModal.level && `Level ${advViewModal.level}`} {advViewModal.race} {advViewModal.class}
+                                            </p>
+                                        )}
                                     </div>
+                                </div>
+                                {advViewModal.bio && <p style={{ fontStyle: 'italic', marginBottom: '1rem', padding: '0.5rem', background: 'var(--parchment-light)', borderRadius: '3px' }}>{advViewModal.bio}</p>}
+                                {advViewModal.notes && <p style={{ fontSize: '0.9rem', color: 'var(--ink-light)', marginBottom: '1rem' }}><strong>{t.notes}:</strong> {advViewModal.notes}</p>}
+                                
+                                {advViewModal.questBoards && advViewModal.questBoards.length > 0 && (
+                                    <>
+                                        <h4 style={{ fontFamily: 'Cinzel', fontSize: '0.9rem', marginBottom: '0.5rem' }}>📅 {t.myQuestBoards} ({advViewModal.questBoards.length})</h4>
+                                        <div className="quest-board-list">
+                                            {advViewModal.questBoards.map(qb => (
+                                                <div key={qb.id} className="quest-board-list-item" onClick={() => { setAdvViewModal(null); navigate(`/event/${qb.id}`); }}>
+                                                    <span className="name">{qb.name || qb.id}</span>
+                                                    <span>→</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                                
+                                <div className="modal-buttons">
+                                    <button className="btn btn-secondary" onClick={() => setAdvViewModal(null)}>{t.cancel}</button>
+                                    <button className="btn btn-primary" onClick={() => { setAdvModal({ mode: 'edit', ...advViewModal }); setAdvViewModal(null); }}>✏️ {t.edit}</button>
                                 </div>
                             </div>
                         </div>
                     )}
+
+                    {/* Edit Adventurer Modal */}
+                    {advModal && <AdventurerEditModal t={t} modal={advModal} onClose={() => setAdvModal(null)} onSave={saveAdventurer} onDelete={(id) => setConfirmDelete(id)} />}
 
                     {/* Confirm Delete Modal */}
                     {confirmDelete && (
@@ -1353,6 +1314,50 @@
                             </div>
                         </div>
                     )}
+                </div>
+            );
+        }
+
+        function AdventurerEditModal({ t, modal, onClose, onSave, onDelete }) {
+            const [name, setName] = useState(modal.name || '');
+            const [image, setImage] = useState(modal.image || '');
+            const [bio, setBio] = useState(modal.bio || '');
+            const [level, setLevel] = useState(modal.level || '');
+            const [race, setRace] = useState(modal.race || '');
+            const [charClass, setCharClass] = useState(modal.class || '');
+            const [notes, setNotes] = useState(modal.notes || '');
+
+            const handleSave = () => {
+                onSave({ name, image: image || null, bio: bio || null, level: level ? parseInt(level) : null, race: race || null, class: charClass || null, notes: notes || null });
+            };
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal modal-wide" onClick={e => e.stopPropagation()}>
+                        <h3>⚔️ {modal.mode === 'create' ? t.createAdventurer : t.editAdventurer}</h3>
+                        <div className="form-group"><label>{t.adventurerName} *</label><input type="text" value={name} onChange={e => setName(e.target.value)} autoFocus /></div>
+                        <div className="form-group">
+                            <label>{t.adventurerImage}</label>
+                            <input type="url" value={image} onChange={e => setImage(e.target.value)} placeholder="https://..." />
+                            {image && <img src={image} alt="Preview" style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', marginTop: '0.5rem' }} onError={e => e.target.style.display = 'none'} />}
+                        </div>
+                        <div className="form-row-3">
+                            <div className="form-group"><label>{t.level}</label><input type="number" min="1" max="20" value={level} onChange={e => setLevel(e.target.value)} /></div>
+                            <div className="form-group"><label>{t.race}</label><input type="text" value={race} onChange={e => setRace(e.target.value)} placeholder="Human, Elf..." /></div>
+                            <div className="form-group"><label>{t.class}</label><input type="text" value={charClass} onChange={e => setCharClass(e.target.value)} placeholder="Fighter, Wizard..." /></div>
+                        </div>
+                        <div className="form-group"><label>{t.bio}</label><textarea rows={2} value={bio} onChange={e => setBio(e.target.value)} placeholder="A brief backstory..." /></div>
+                        <div className="form-group"><label>{t.notes}</label><textarea rows={2} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Player notes..." /></div>
+                        <div className="modal-buttons-spread">
+                            {modal.mode === 'edit' ? (
+                                <button className="btn btn-danger btn-small" onClick={() => onDelete(modal.id)}>🗑️ {t.deleteAdventurer}</button>
+                            ) : <div></div>}
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button className="btn btn-secondary" onClick={onClose}>{t.cancel}</button>
+                                <button className="btn btn-primary" onClick={handleSave} disabled={!name.trim()}>{t.save}</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             );
         }
@@ -1437,7 +1442,7 @@
         }
 
         function EventPage({ eventId, t, lang, timeFormat }) {
-            const { user } = useAuth();
+            const { user, navigate } = useAuth();
             const [event, setEvent] = useState(null);
             const [loading, setLoading] = useState(true);
             const [error, setError] = useState('');
@@ -1450,6 +1455,8 @@
             const [tempNote, setTempNote] = useState('');
             const [nameModal, setNameModal] = useState(false);
             const [switchModal, setSwitchModal] = useState(false);
+            const [editEventModal, setEditEventModal] = useState(false);
+            const [viewAdventurerModal, setViewAdventurerModal] = useState(null);
             const [tempName, setTempName] = useState('');
             const [showSaved, setShowSaved] = useState(false);
             const [copied, setCopied] = useState(false);
@@ -1497,37 +1504,22 @@
                 else { name = tempName.trim(); image = ''; }
                 if (!name) return;
                 
-                // Save current slots
                 const currentSlots = { ...userSlots };
                 const oldUser = currentUser;
                 
-                // Delete old adventurer's availability
                 if (oldUser && oldUser !== name) {
-                    try {
-                        await api(`/api/events/${eventId}/availability/${encodeURIComponent(oldUser)}`, { method: 'DELETE' });
-                    } catch (err) {
-                        console.error('Failed to remove old availability:', err);
-                    }
+                    try { await api(`/api/events/${eventId}/availability/${encodeURIComponent(oldUser)}`, { method: 'DELETE' }); } 
+                    catch (err) { console.error('Failed to remove old availability:', err); }
                 }
                 
-                // Set new user
-                setCurrentUser(name); 
-                setCurrentUserImage(image);
+                setCurrentUser(name); setCurrentUserImage(image);
                 localStorage.setItem(`quest-board-user-${eventId}`, name);
                 localStorage.setItem(`quest-board-user-image-${eventId}`, image);
                 
-                // Check if new adventurer already has availability in this event
-                if (event.availability[name]) {
-                    setUserSlots(event.availability[name]);
-                } else {
-                    // Transfer current slots to new adventurer
-                    setUserSlots(currentSlots);
-                    await saveAvailability(currentSlots, name, image);
-                }
+                if (event.availability[name]) { setUserSlots(event.availability[name]); } 
+                else { setUserSlots(currentSlots); await saveAvailability(currentSlots, name, image); }
                 
-                // Refresh event data
                 await fetchEvent();
-                
                 setSwitchModal(false); setTempName(''); setSelectedAdventurer(null);
             };
 
@@ -1543,18 +1535,36 @@
             const handleMouseUp = () => {
                 if (!isDragging) return;
                 const newSlots = { ...userSlots };
-                draggedSlots.forEach(key => { if (dragMode === 'add') newSlots[key] = { available: true, note: '' }; else delete newSlots[key]; });
+                draggedSlots.forEach(key => { if (dragMode === 'add') newSlots[key] = { available: true, note: newSlots[key]?.note || '' }; else { if (newSlots[key]) newSlots[key] = { ...newSlots[key], available: false }; } });
                 setUserSlots(newSlots); saveAvailability(newSlots);
                 setIsDragging(false); setDragMode(null); setDraggedSlots(new Set());
             };
 
             useEffect(() => { const handler = () => { if (isDragging) handleMouseUp(); }; window.addEventListener('mouseup', handler); return () => window.removeEventListener('mouseup', handler); }, [isDragging, dragMode, draggedSlots, userSlots]);
 
-            const openNoteModal = (date, hour, e) => { e.preventDefault(); e.stopPropagation(); if (viewMode !== 'edit' || !currentUser) return; const key = getSlotKey(date, hour); if (!userSlots[key]?.available) return; setTempNote(userSlots[key]?.note || ''); setNoteModal({ date, hour }); };
+            // Allow notes on any slot (available or not)
+            const openNoteModal = (date, hour, e) => { 
+                e.preventDefault(); e.stopPropagation(); 
+                if (viewMode !== 'edit' || !currentUser) return; 
+                const key = getSlotKey(date, hour); 
+                setTempNote(userSlots[key]?.note || ''); 
+                setNoteModal({ date, hour }); 
+            };
 
-            const saveNote = () => { if (!noteModal) return; const key = getSlotKey(noteModal.date, noteModal.hour); const newSlots = { ...userSlots }; if (newSlots[key]) newSlots[key] = { ...newSlots[key], note: tempNote }; setUserSlots(newSlots); saveAvailability(newSlots); setNoteModal(null); setTempNote(''); };
+            const saveNote = () => { 
+                if (!noteModal) return; 
+                const key = getSlotKey(noteModal.date, noteModal.hour); 
+                const newSlots = { ...userSlots }; 
+                if (!newSlots[key]) newSlots[key] = { available: false, note: '' };
+                newSlots[key] = { ...newSlots[key], note: tempNote }; 
+                setUserSlots(newSlots); 
+                saveAvailability(newSlots); 
+                setNoteModal(null); 
+                setTempNote(''); 
+            };
 
             const getSlotAvailability = (date, hour) => { if (!event) return []; const key = getSlotKey(date, hour); return event.participants.filter(name => event.availability[name]?.[key]?.available).map(name => ({ name, note: event.availability[name][key].note || '', image: event.participantImages?.[name] || '' })); };
+            const getSlotNotes = (date, hour) => { if (!event) return []; const key = getSlotKey(date, hour); return event.participants.filter(name => event.availability[name]?.[key]?.note && !event.availability[name]?.[key]?.available).map(name => ({ name, note: event.availability[name][key].note, image: event.participantImages?.[name] || '' })); };
 
             const getSlotClass = (date, hour) => {
                 const key = getSlotKey(date, hour);
@@ -1565,28 +1575,32 @@
                 if (ratio === 0) return 'empty'; if (ratio < 0.2) return 'level-1'; if (ratio < 0.4) return 'level-2'; if (ratio < 0.6) return 'level-3'; if (ratio < 0.8) return 'level-4'; return 'level-5';
             };
 
-            const hasNote = (date, hour) => { const key = getSlotKey(date, hour); if (viewMode === 'edit') return (userSlots[key]?.note || '').length > 0; return getSlotAvailability(date, hour).some(a => a.note.length > 0); };
-            const handleSlotHover = (e, date, hour) => { const rect = e.target.getBoundingClientRect(); setTooltip({ x: Math.min(rect.right + 10, window.innerWidth - 300), y: Math.min(rect.top, window.innerHeight - 200), date, hour, available: getSlotAvailability(date, hour) }); };
+            const hasNote = (date, hour) => { 
+                const key = getSlotKey(date, hour); 
+                if (viewMode === 'edit') return (userSlots[key]?.note || '').length > 0; 
+                const availableNotes = getSlotAvailability(date, hour).some(a => a.note.length > 0);
+                const otherNotes = getSlotNotes(date, hour).length > 0;
+                return availableNotes || otherNotes;
+            };
+
+            const handleSlotHover = (e, date, hour) => { const rect = e.target.getBoundingClientRect(); setTooltip({ x: Math.min(rect.right + 10, window.innerWidth - 300), y: Math.min(rect.top, window.innerHeight - 200), date, hour, available: getSlotAvailability(date, hour), notes: getSlotNotes(date, hour) }); };
             const copyLink = () => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); };
 
-            const formatHour = (hour) => { 
-                if (timeFormat === '24') return { hour: hour.toString().padStart(2, '0'), ampm: '' }; 
-                if (hour === 0) return { hour: '12', ampm: 'AM' }; 
-                if (hour === 12) return { hour: '12', ampm: 'PM' }; 
-                if (hour < 12) return { hour: hour.toString(), ampm: 'AM' }; 
-                return { hour: (hour - 12).toString(), ampm: 'PM' }; 
+            const formatHour = (hour) => { if (timeFormat === '24') return { hour: hour.toString().padStart(2, '0'), ampm: '' }; if (hour === 0) return { hour: '12', ampm: 'AM' }; if (hour === 12) return { hour: '12', ampm: 'PM' }; if (hour < 12) return { hour: hour.toString(), ampm: 'AM' }; return { hour: (hour - 12).toString(), ampm: 'PM' }; };
+            const formatDateForDisplay = (dateStr) => { const date = new Date(dateStr + 'T12:00:00'); return { dayName: t.days[date.getDay()], dayNum: t.ordinal(date.getDate()) }; };
+            const formatTooltipDate = (dateStr, hour) => { const date = new Date(dateStr + 'T12:00:00'); const h = formatHour(hour); const timeStr = timeFormat === '24' ? `${h.hour}:00` : `${h.hour} ${h.ampm}`; return `${t.days[date.getDay()]}, ${t.months[date.getMonth()]} ${t.ordinal(date.getDate())} ${t.atTime} ${timeStr}`; };
+            const groupDatesByMonth = (dates) => { const groups = []; let cur = null; dates.forEach((ds, i) => { const d = new Date(ds + 'T12:00:00'); const k = `${d.getFullYear()}-${d.getMonth()}`; if (!cur || cur.key !== k) { cur = { key: k, name: t.months[d.getMonth()], count: 1 }; groups.push(cur); } else cur.count++; }); return groups; };
+
+            const viewPublicAdventurer = async (name) => {
+                try {
+                    const data = await api(`/api/adventurers/public/${encodeURIComponent(name)}`);
+                    setViewAdventurerModal(data);
+                } catch {
+                    setViewAdventurerModal({ name, image: event.participantImages?.[name] });
+                }
             };
 
-            const formatDateForDisplay = (dateStr) => { const date = new Date(dateStr + 'T12:00:00'); return { dayName: t.days[date.getDay()], dayNum: t.ordinal(date.getDate()) }; };
-            
-            const formatTooltipDate = (dateStr, hour) => { 
-                const date = new Date(dateStr + 'T12:00:00'); 
-                const h = formatHour(hour); 
-                const timeStr = timeFormat === '24' ? `${h.hour}:00` : `${h.hour} ${h.ampm}`;
-                return `${t.days[date.getDay()]}, ${t.months[date.getMonth()]} ${t.ordinal(date.getDate())} ${t.atTime} ${timeStr}`; 
-            };
-            
-            const groupDatesByMonth = (dates) => { const groups = []; let cur = null; dates.forEach((ds, i) => { const d = new Date(ds + 'T12:00:00'); const k = `${d.getFullYear()}-${d.getMonth()}`; if (!cur || cur.key !== k) { cur = { key: k, name: t.months[d.getMonth()], count: 1 }; groups.push(cur); } else cur.count++; }); return groups; };
+            const isOwner = user && event && event.creatorId === user.id;
 
             if (loading) return <div className="panel loading">🎲 {t.loadingDice}</div>;
             if (error) return <div className="panel"><div className="error-message">{error}</div></div>;
@@ -1618,12 +1632,15 @@
                                 </>
                             )}
                             <h2 style={{marginTop: '1.5rem'}}>🎭 {t.party} ({event.participants.length})</h2>
-                            <div>{event.participants.length === 0 ? <p style={{fontStyle: 'italic', fontSize: '0.9rem'}}>{t.noAdventurers}</p> : event.participants.map(name => <span key={name} className={`participant-tag ${name === currentUser ? 'active' : ''}`}>{event.participantImages?.[name] && <img src={event.participantImages[name]} alt="" />}{name}</span>)}</div>
+                            <div>{event.participants.length === 0 ? <p style={{fontStyle: 'italic', fontSize: '0.9rem'}}>{t.noAdventurers}</p> : event.participants.map(name => <span key={name} className={`participant-tag ${name === currentUser ? 'active' : ''}`} onClick={() => name !== currentUser && viewPublicAdventurer(name)}>{event.participantImages?.[name] && <img src={event.participantImages[name]} alt="" />}{name}</span>)}</div>
                             <div className="share-box"><strong>📨 {t.inviteParty}</strong><span className="share-url">{window.location.href}</span><button className="btn btn-secondary" onClick={copyLink}>{copied ? `✓ ${t.copied}` : `📋 ${t.copyLink}`}</button></div>
                             <div className="legend">{viewMode === 'group' ? <><div className="legend-item"><div className="legend-color" style={{background: 'var(--available)'}}></div><span>{t.all}</span></div><div className="legend-item"><div className="legend-color" style={{background: '#7bc47a'}}></div><span>{t.most}</span></div><div className="legend-item"><div className="legend-color" style={{background: '#a8d5a2'}}></div><span>{t.some}</span></div></> : <div className="legend-item"><div className="legend-color" style={{background: 'var(--available)'}}></div><span>{t.available}</span></div>}<div className="legend-item"><span>📜</span><span>{t.hasNote}</span></div></div>
                         </aside>
                         <main className="panel">
-                            <h2>📅 {event.name}</h2>
+                            <h2>
+                                <span>📅 {event.name}</span>
+                                {isOwner && <button className="edit-event-btn" onClick={() => setEditEventModal(true)} title={t.editEvent}>✏️</button>}
+                            </h2>
                             {event.description && <p style={{marginBottom: '1rem', fontStyle: 'italic'}}>{event.description}</p>}
                             <div className="schedule-grid">
                                 <div className="grid-container" style={{ gridTemplateColumns: `60px repeat(${event.dates.length}, 1fr)`, marginBottom: '2px' }}>
@@ -1647,18 +1664,29 @@
                     {tooltip && !isDragging && (
                         <div className="tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
                             <h4>{formatTooltipDate(tooltip.date, tooltip.hour)}</h4>
-                            {tooltip.available.length === 0 ? (
+                            {tooltip.available.length === 0 && tooltip.notes.length === 0 ? (
                                 <p style={{fontStyle: 'italic'}}>{t.noOneAvailable}</p>
                             ) : (
-                                tooltip.available.map((a, i) => (
-                                    <div key={i} className="tooltip-entry">
-                                        {a.image && <img src={a.image} alt="" />}
-                                        <div>
-                                            <div className="tooltip-name">{a.name}</div>
-                                            {a.note && <div className="tooltip-note">"{a.note}"</div>}
+                                <>
+                                    {tooltip.available.map((a, i) => (
+                                        <div key={i} className="tooltip-entry">
+                                            {a.image && <img src={a.image} alt="" />}
+                                            <div>
+                                                <div className="tooltip-name">✓ {a.name}</div>
+                                                {a.note && <div className="tooltip-note">"{a.note}"</div>}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))
+                                    ))}
+                                    {tooltip.notes.map((a, i) => (
+                                        <div key={`note-${i}`} className="tooltip-entry" style={{ borderLeftColor: 'var(--partial)' }}>
+                                            {a.image && <img src={a.image} alt="" />}
+                                            <div>
+                                                <div className="tooltip-name" style={{ opacity: 0.7 }}>{a.name}</div>
+                                                <div className="tooltip-note">"{a.note}"</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </>
                             )}
                         </div>
                     )}
@@ -1685,7 +1713,7 @@
                         </div>
                     )}
 
-                    {/* Switch Adventurer Modal */}
+                    {/* Switch Modal */}
                     {switchModal && (
                         <div className="modal-overlay" onClick={() => setSwitchModal(false)}>
                             <div className="modal" onClick={e => e.stopPropagation()}>
@@ -1706,6 +1734,7 @@
                         </div>
                     )}
 
+                    {/* Note Modal */}
                     {noteModal && (
                         <div className="modal-overlay" onClick={() => setNoteModal(null)}>
                             <div className="modal" onClick={e => e.stopPropagation()}>
@@ -1720,8 +1749,137 @@
                         </div>
                     )}
 
+                    {/* Edit Event Modal */}
+                    {editEventModal && <EditEventModal t={t} lang={lang} timeFormat={timeFormat} event={event} onClose={() => setEditEventModal(false)} onSave={async () => { await fetchEvent(); setEditEventModal(false); }} />}
+
+                    {/* View Adventurer Modal */}
+                    {viewAdventurerModal && (
+                        <div className="modal-overlay" onClick={() => setViewAdventurerModal(null)}>
+                            <div className="modal" onClick={e => e.stopPropagation()}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                                    {viewAdventurerModal.image ? <img src={viewAdventurerModal.image} alt="" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--ink)' }} /> : <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', color: 'var(--parchment)' }}>⚔️</div>}
+                                    <div>
+                                        <h3 style={{ margin: 0 }}>{viewAdventurerModal.name}</h3>
+                                        {(viewAdventurerModal.level || viewAdventurerModal.race || viewAdventurerModal.class) && (
+                                            <p style={{ color: 'var(--ink-light)', margin: '0.3rem 0 0 0' }}>
+                                                {viewAdventurerModal.level && `Level ${viewAdventurerModal.level}`} {viewAdventurerModal.race} {viewAdventurerModal.class}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                                {viewAdventurerModal.bio && <p style={{ fontStyle: 'italic', marginBottom: '1rem', padding: '0.5rem', background: 'var(--parchment-light)', borderRadius: '3px' }}>{viewAdventurerModal.bio}</p>}
+                                <div className="modal-buttons">
+                                    <button className="btn btn-secondary" onClick={() => setViewAdventurerModal(null)}>{t.cancel}</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {showSaved && <div className="saved-indicator">✓ {t.saved}</div>}
                 </>
+            );
+        }
+
+        function EditEventModal({ t, lang, timeFormat, event, onClose, onSave }) {
+            const [name, setName] = useState(event.name);
+            const [description, setDescription] = useState(event.description || '');
+            const [selectedDates, setSelectedDates] = useState([...event.dates]);
+            const [startHour, setStartHour] = useState(event.startHour);
+            const [endHour, setEndHour] = useState(event.endHour);
+            const [currentMonth, setCurrentMonth] = useState(new Date());
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+            const [warning, setWarning] = useState('');
+
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+
+            const datesWithAvailability = new Set();
+            Object.values(event.availability).forEach(slots => {
+                Object.keys(slots).forEach(key => {
+                    if (slots[key]?.available) {
+                        const date = key.split('-').slice(0, 3).join('-');
+                        datesWithAvailability.add(date);
+                    }
+                });
+            });
+
+            const formatHourOption = (hour) => {
+                if (timeFormat === '24') return `${hour.toString().padStart(2, '0')}:00`;
+                if (hour === 0) return '12:00 AM';
+                if (hour === 12) return '12:00 PM';
+                if (hour < 12) return `${hour}:00 AM`;
+                return `${hour - 12}:00 PM`;
+            };
+
+            const getDaysInMonth = (date) => {
+                const year = date.getFullYear(), month = date.getMonth();
+                const firstDay = new Date(year, month, 1), lastDay = new Date(year, month + 1, 0);
+                const days = [];
+                for (let i = 0; i < firstDay.getDay(); i++) days.push(null);
+                for (let d = 1; d <= lastDay.getDate(); d++) days.push(new Date(year, month, d));
+                return days;
+            };
+
+            const toggleDate = (date) => {
+                const dateStr = date.toISOString().split('T')[0];
+                const isRemoving = selectedDates.includes(dateStr);
+                
+                if (isRemoving && datesWithAvailability.has(dateStr)) {
+                    setWarning(t.warningRemoveDates);
+                }
+                
+                setSelectedDates(prev => prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr].sort());
+            };
+
+            const handleSave = async () => {
+                if (!name.trim() || selectedDates.length === 0) return;
+                setLoading(true); setError('');
+                try {
+                    await api(`/api/events/${event.id}`, { method: 'PUT', body: JSON.stringify({ name: name.trim(), description: description.trim(), dates: selectedDates, startHour, endHour }) });
+                    onSave();
+                } catch (err) { setError(err.message); } 
+                finally { setLoading(false); }
+            };
+
+            const days = getDaysInMonth(currentMonth);
+            const monthName = t.months[currentMonth.getMonth()] + ' ' + currentMonth.getFullYear();
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal modal-wide" onClick={e => e.stopPropagation()}>
+                        <h3>✏️ {t.editEvent}</h3>
+                        {error && <div className="error-message">{error}</div>}
+                        {warning && <div className="warning-message">{warning}</div>}
+                        <div className="form-group"><label>{t.eventName} *</label><input type="text" value={name} onChange={(e) => setName(e.target.value)} /></div>
+                        <div className="form-group"><label>{t.description}</label><textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} /></div>
+                        <div className="form-group">
+                            <label>{t.selectDates} ({selectedDates.length} {t.selected})</label>
+                            <div className="month-nav">
+                                <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}>◀</button>
+                                <span>{monthName}</span>
+                                <button type="button" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}>▶</button>
+                            </div>
+                            <div className="date-picker-grid">
+                                {t.daysShort.map((d, i) => <div key={i} className="date-picker-header">{d}</div>)}
+                                {days.map((date, i) => {
+                                    const dateStr = date ? date.toISOString().split('T')[0] : '';
+                                    const isSelected = selectedDates.includes(dateStr);
+                                    const hasAvail = datesWithAvailability.has(dateStr);
+                                    return <div key={i} className={`date-cell ${!date ? 'disabled' : ''} ${isSelected ? 'selected' : ''} ${hasAvail && !isSelected ? 'has-availability' : ''}`} onClick={() => date && toggleDate(date)}>{date ? date.getDate() : ''}</div>;
+                                })}
+                            </div>
+                            <p style={{ fontSize: '0.75rem', color: 'var(--ink-light)', marginTop: '0.5rem' }}>🟡 = has existing availability</p>
+                        </div>
+                        <div className="form-row">
+                            <div className="form-group"><label>{t.startTime}</label><select value={startHour} onChange={(e) => setStartHour(Number(e.target.value))}>{Array.from({length: 24}, (_, i) => <option key={i} value={i}>{formatHourOption(i)}</option>)}</select></div>
+                            <div className="form-group"><label>{t.endTime}</label><select value={endHour} onChange={(e) => setEndHour(Number(e.target.value))}>{Array.from({length: 24}, (_, i) => <option key={i} value={i}>{formatHourOption(i)}</option>)}</select></div>
+                        </div>
+                        <div className="modal-buttons">
+                            <button className="btn btn-secondary" onClick={onClose}>{t.cancel}</button>
+                            <button className="btn btn-primary" onClick={handleSave} disabled={loading || !name.trim() || selectedDates.length === 0}>{loading ? '...' : t.update}</button>
+                        </div>
+                    </div>
+                </div>
             );
         }
 
